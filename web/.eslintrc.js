@@ -4,10 +4,8 @@ module.exports = {
     es6: true,
     node: true,
   },
-  extends: [
-    'plugin:react/recommended',
-    'airbnb',
-  ],
+  // Ensure 'prettier' is the last in 'extends'
+  extends: ['plugin:react/recommended', 'airbnb', 'prettier/react', 'prettier'],
   globals: {
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly',
@@ -20,10 +18,14 @@ module.exports = {
     ecmaVersion: 2018,
     sourceType: 'module',
   },
-  plugins: [
-    'react',
-    '@typescript-eslint',
-  ],
+  plugins: ['react', '@typescript-eslint', 'prettier'],
   rules: {
+    'prettier/prettier': 'error',
+    'react/jsx-filename-extension': [
+      2,
+      {
+        extensions: ['.jsx', '.tsx'],
+      },
+    ],
   },
 };
