@@ -1,5 +1,7 @@
 import Head from 'next/head';
-import { seoData } from '../data/seo';
+import { seoData } from '../data/Seo';
+
+import { Button } from 'antd-mobile';
 
 export function Meta(props) {
   return (
