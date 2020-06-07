@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import type { NextPage } from 'next';
+import Link from 'next/link';
+import MobileDetect from 'mobile-detect';
 import {
   Button,
   Container,
@@ -15,19 +18,13 @@ import {
   Visibility,
 } from 'semantic-ui-react';
 
-// Heads up!
-// We using React Static to prerender our docs with server side rendering, this is a quite simple solution.
-// For more advanced usage please check Responsive docs under the "Usage" section.
-const getWidth = (): number => {
+const getWidthFactory = (isMobileFromSSR) => (): number => {
   const isSSR = typeof window === 'undefined';
-
-  return isSSR ? (Responsive.onlyTablet.minWidth as number) : window.innerWidth;
+  const ssrValue: number = isMobileFromSSR
+    ? (Responsive.onlyMobile.maxWidth as number)
+    : (Responsive.onlyTablet.minWidth as number);
+  return isSSR ? ssrValue : window.innerWidth;
 };
-
-/* eslint-disable react/no-multi-comp */
-/* Heads up! HomepageHeading uses inline styling, however it's not the best practice. Use CSS or styled components for
- * such things.
- */
 
 type HomepageHeadingProps = {
   mobile?: boolean;
@@ -37,7 +34,7 @@ const HomepageHeading = ({ mobile }: HomepageHeadingProps) => (
   <Container text>
     <Header
       as="h1"
-      content="Imagine-a-Company"
+      content="Rankathon"
       inverted
       style={{
         fontSize: mobile ? '2em' : '4em',
@@ -48,7 +45,7 @@ const HomepageHeading = ({ mobile }: HomepageHeadingProps) => (
     />
     <Header
       as="h2"
-      content="Do whatever you want when you want to."
+      content="Smart, algorithm powered hackathons."
       inverted
       style={{
         fontSize: mobile ? '1.5em' : '1.7em',
@@ -68,7 +65,7 @@ const HomepageHeading = ({ mobile }: HomepageHeadingProps) => (
  * It can be more complicated, but you can create really flexible markup.
  */
 
-function DesktopContainer({ children }) {
+function DesktopContainer({ getWidth, children }) {
   const [fixed, setFixed] = useState<boolean>(false);
 
   function hideFixedMenu() {
@@ -103,9 +100,11 @@ function DesktopContainer({ children }) {
               <Menu.Item as="a" active>
                 Home
               </Menu.Item>
-              <Menu.Item as="a">Work</Menu.Item>
-              <Menu.Item as="a">Company</Menu.Item>
-              <Menu.Item as="a">Careers</Menu.Item>
+              <Menu.Item as="a" href="about">
+                About
+              </Menu.Item>
+              <Menu.Item as="a">Try</Menu.Item>
+              <Menu.Item as="a">Contact</Menu.Item>
               <Menu.Item position="right">
                 <Button as="a" inverted={!fixed}>
                   Log in
@@ -131,6 +130,7 @@ function DesktopContainer({ children }) {
 }
 
 type MobileContainerProps = {
+  getWidth: () => number;
   children: React.ReactNode;
 };
 
@@ -146,7 +146,7 @@ function MobileContainer(props: MobileContainerProps) {
   return (
     <Responsive
       as={Sidebar.Pushable}
-      getWidth={getWidth}
+      getWidth={props.getWidth}
       maxWidth={Responsive.onlyMobile.maxWidth}
     >
       <Sidebar
@@ -157,14 +157,36 @@ function MobileContainer(props: MobileContainerProps) {
         vertical
         visible={sidebarOpened}
       >
-        <Menu.Item as="a" active>
-          Home
+        <Menu.Item active>
+          <Link href="">
+            <a>Home</a>
+          </Link>
         </Menu.Item>
-        <Menu.Item as="a">Work</Menu.Item>
-        <Menu.Item as="a">Company</Menu.Item>
-        <Menu.Item as="a">Careers</Menu.Item>
-        <Menu.Item as="a">Log in</Menu.Item>
-        <Menu.Item as="a">Sign Up</Menu.Item>
+        <Menu.Item>
+          <Link href="">
+            <a>About</a>
+          </Link>
+        </Menu.Item>
+        <Menu.Item>
+          <Link href="">
+            <a>Try</a>
+          </Link>
+        </Menu.Item>
+        <Menu.Item>
+          <Link href="">
+            <a>Contact</a>
+          </Link>
+        </Menu.Item>
+        <Menu.Item>
+          <Link href="">
+            <a>Log in</a>
+          </Link>
+        </Menu.Item>
+        <Menu.Item>
+          <Link href="">
+            <a>Sign Up</a>
+          </Link>
+        </Menu.Item>
       </Sidebar>
 
       <Sidebar.Pusher dimmed={sidebarOpened}>
@@ -198,19 +220,26 @@ function MobileContainer(props: MobileContainerProps) {
   );
 }
 
-type DesktopContainerProps = {
-  children: React.ReactNode;
+type ResponsiveContainerProps = {
+  getWidth: () => number;
 };
 
-const ResponsiveContainer: React.FC = (props) => (
+const ResponsiveContainer: React.FC<ResponsiveContainerProps> = ({
+  getWidth,
+  children,
+}) => (
   <div>
-    <DesktopContainer>{props.children}</DesktopContainer>
-    <MobileContainer>{props.children}</MobileContainer>
+    <DesktopContainer getWidth={getWidth}>{children}</DesktopContainer>
+    <MobileContainer getWidth={getWidth}>{children}</MobileContainer>
   </div>
 );
 
-const HomepageLayout: React.FC = () => (
-  <ResponsiveContainer>
+type PageProps = {
+  getWidth: () => number;
+};
+
+const HomepageLayout: NextPage<PageProps> = ({ getWidth }) => (
+  <ResponsiveContainer getWidth={getWidth}>
     <Segment style={{ padding: '8em 0em' }} vertical>
       <Grid container stackable verticalAlign="middle">
         <Grid.Row>
@@ -232,12 +261,7 @@ const HomepageLayout: React.FC = () => (
             </p>
           </Grid.Column>
           <Grid.Column floated="right" width={6}>
-            <Image
-              bordered
-              rounded
-              size="large"
-              src="/images/wireframe/white-image.png"
-            />
+            <Image rounded size="large" src="img/logo.svg" />
           </Grid.Column>
         </Grid.Row>
         <Grid.Row>
@@ -264,7 +288,7 @@ const HomepageLayout: React.FC = () => (
               "I shouldn't have gone with their competitor."
             </Header>
             <p style={{ fontSize: '1.33em' }}>
-              <Image avatar src="/images/avatar/large/nan.jpg" />
+              <Image avatar src="img/icon.svg" />
               <b>Nan</b> Chief Fun Officer Acme Toys
             </p>
           </Grid.Column>
@@ -293,7 +317,9 @@ const HomepageLayout: React.FC = () => (
           horizontal
           style={{ margin: '3em 0em', textTransform: 'uppercase' }}
         >
-          <a href="#">Case Studies</a>
+          <Link href="">
+            <a href="#">Case Studies</a>
+          </Link>
         </Divider>
 
         <Header as="h3" style={{ fontSize: '2em' }}>
@@ -347,5 +373,11 @@ const HomepageLayout: React.FC = () => (
     </Segment>
   </ResponsiveContainer>
 );
+
+HomepageLayout.getInitialProps = async ({ req }) => {
+  const result: MobileDetect = new MobileDetect(req.headers['user-agent']);
+  const isMobile: boolean = !!result.mobile();
+  return { getWidth: getWidthFactory(isMobile) };
+};
 
 export default HomepageLayout;
