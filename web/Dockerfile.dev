@@ -2,5 +2,6 @@ FROM node:12.18.0-alpine
 WORKDIR /web
 COPY ./package.json ./yarn.lock ./
 RUN yarn install
-COPY . .
+# We don't `COPY . .` here because we want to mount our source as a volume so
+# that hot reload still works
 CMD ["yarn","dev"]

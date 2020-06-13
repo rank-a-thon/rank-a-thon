@@ -25,7 +25,12 @@ services:
       context: "./web"
     volumes:
       - ~/.cache/yarn:/web/.cache/yarn
-      - ./web:/web
+      # Hacky way to get node_modules to work the way I want it - for Docker
+      # to fetch all deps on image build, and not use my local node_modules
+      - ./web/src:/web/src
+      - ./web/public:/web/public
+      - ./web/next-env.d.ts:/web/next-env.d.ts
+      - ./web/tsconfig.json:/web/tsconfig.json
   postgres:
     image: "postgres:12.3-alpine"
     ports:
