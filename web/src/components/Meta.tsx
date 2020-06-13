@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import { seoData } from '../data/seo';
+import { seoData } from '../data/Seo';
 
 export function Meta(props) {
   return (
