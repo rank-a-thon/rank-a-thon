@@ -1,0 +1,60 @@
+version: "3.8"
+services:
+  api:
+    restart: on-failure
+    build:
+      dockerfile: Dockerfile.dev
+      context: "./api"
+    environment:
+      - ENV=LOCAL
+      - PGUSER=${PGUSER}
+      - PGHOST=${PGHOST}
+      - PGPASSWORD=${PGPASSWORD}
+      - PGDATABASE=${PGDATABASE}
+      - PGPORT=${PGPORT}
+      - REDISPORT=${REDISPORT}
+      - REDISHOST=${REDISHOST}
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./api:/api
+  web:
+    build:
+      dockerfile: Dockerfile.dev
+      context: "./web"
+    volumes:
+      - ~/.cache/yarn:/web/.cache/yarn
+      - ./web:/web
+  postgres:
+    image: "postgres:12.3-alpine"
+    ports:
+      - "5432:5432"
+    environment:
+      - PGUSER=${PGUSER}
+      - PGHOST=${PGHOST}
+      - POSTGRES_PASSWORD=${PGPASSWORD}
+      - PGDATABASE=${PGDATABASE}
+      - PGDATA= /tmp
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+  redis:
+    image: redis:6.0.5-alpine
+    volumes:
+      - ./redis-data:/data
+    ports:
+      - 6379:6379
+  nginx:
+    restart: always
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./proxy
+    depends_on:
+      - api
+      - web
+    ports:
+      - "5555:80"
+
+volumes:
+  postgres-data:
+    external: true

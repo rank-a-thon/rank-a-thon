@@ -134,3 +134,6 @@ dist
 .idea/
 
 backend/cert
+
+api/tmp
+redis-data/
