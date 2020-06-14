@@ -4,7 +4,6 @@ WORKDIR /api
 COPY ./go.mod .
 RUN go mod download
 RUN go get github.com/pilu/fresh
-RUN mkdir cert
 COPY . .
-RUN sh generate-certificate.sh
+RUN go install
 CMD ["fresh"]

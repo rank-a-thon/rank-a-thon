@@ -1,6 +1,7 @@
 version: "3.8"
 services:
   api:
+    container_name: api
     restart: on-failure
     build:
       dockerfile: Dockerfile.dev
@@ -20,6 +21,7 @@ services:
     volumes:
       - ./api:/api
   web:
+    container_name: web
     build:
       dockerfile: Dockerfile.dev
       context: "./web"
@@ -32,6 +34,7 @@ services:
       - ./web/next-env.d.ts:/web/next-env.d.ts
       - ./web/tsconfig.json:/web/tsconfig.json
   postgres:
+    container_name: postgres
     image: "postgres:12.3-alpine"
     ports:
       - "5432:5432"
@@ -45,12 +48,14 @@ services:
       - ./postgres-data:/var/lib/postgresql/data
       - ./api/db:/db
   redis:
+    container_name: redis
     image: redis:6.0.5-alpine
     volumes:
       - ./redis-data:/data
     ports:
       - 6379:6379
   nginx:
+    container_name: nginx
     restart: always
     build:
       dockerfile: Dockerfile.dev
