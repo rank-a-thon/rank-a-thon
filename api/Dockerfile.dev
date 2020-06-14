@@ -6,4 +6,5 @@ RUN go mod download
 RUN go get github.com/pilu/fresh
 COPY . .
 RUN go install
+RUN sleep 15
 CMD ["fresh"]
