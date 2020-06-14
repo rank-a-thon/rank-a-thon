@@ -133,7 +133,7 @@ dist
 
 .idea/
 
-backend/cert
+api/cert
 
 api/tmp
 redis-data/

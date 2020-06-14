@@ -3,8 +3,8 @@ package models
 import (
 	"errors"
 
-	"github.com/rank-a-thon/rank-a-thon/backend/db"
-	"github.com/rank-a-thon/rank-a-thon/backend/forms"
+	"github.com/rank-a-thon/rank-a-thon/api/db"
+	"github.com/rank-a-thon/rank-a-thon/api/forms"
 )
 
 // Article ...

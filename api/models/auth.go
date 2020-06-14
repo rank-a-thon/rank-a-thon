@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/rank-a-thon/rank-a-thon/backend/db"
+	"github.com/rank-a-thon/rank-a-thon/api/db"
 	uuid "github.com/twinj/uuid"
 )
 

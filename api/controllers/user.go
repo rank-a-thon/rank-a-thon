@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"github.com/rank-a-thon/rank-a-thon/backend/forms"
-	"github.com/rank-a-thon/rank-a-thon/backend/models"
+	"github.com/rank-a-thon/rank-a-thon/api/forms"
+	"github.com/rank-a-thon/rank-a-thon/api/models"
 
 	"net/http"
 

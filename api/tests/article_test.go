@@ -14,10 +14,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/rank-a-thon/rank-a-thon/backend/controllers"
-	"github.com/rank-a-thon/rank-a-thon/backend/db"
-	"github.com/rank-a-thon/rank-a-thon/backend/forms"
 	"github.com/joho/godotenv"
+	"github.com/rank-a-thon/rank-a-thon/api/controllers"
+	"github.com/rank-a-thon/rank-a-thon/api/db"
+	"github.com/rank-a-thon/rank-a-thon/api/forms"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"

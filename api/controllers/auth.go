@@ -8,8 +8,8 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"github.com/rank-a-thon/rank-a-thon/backend/forms"
-	"github.com/rank-a-thon/rank-a-thon/backend/models"
+	"github.com/rank-a-thon/rank-a-thon/api/forms"
+	"github.com/rank-a-thon/rank-a-thon/api/models"
 )
 
 type AuthController struct{}
