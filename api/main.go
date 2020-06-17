@@ -14,6 +14,12 @@ import (
 	uuid "github.com/twinj/uuid"
 
 	"github.com/gin-gonic/gin"
+
+	"golang.org/x/net/context"
+
+	firebase "firebase.google.com/go"
+
+	"google.golang.org/api/option"
 )
 
 //CORSMiddleware ...
@@ -58,6 +64,12 @@ func TokenAuthMiddleware() gin.HandlerFunc {
 }
 
 func main() {
+
+	opt := option.WithCredentialsFile(os.Getenv("GOOGLE_APPLICATION_CREDENTIALS"))
+	app, err := firebase.NewApp(context.Background(), nil, opt)
+	if err != nil {
+		return nil, fmt.Errorf("error initializing app: %v", err)
+	}
 
 	//Start the default gin server
 	r := gin.Default()
