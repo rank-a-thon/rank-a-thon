@@ -17,6 +17,7 @@ services:
       - DB_NAME=${DB_NAME}
       - ACCESS_SECRET=${DB_ACCESS_SECRET}
       - REFRESH_SECRET=${DB_REFRESH_SECRET}
+      - REDIS_HOST=${REDIS_HOST}
     depends_on:
       - postgres
       - redis
