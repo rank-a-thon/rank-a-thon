@@ -8,11 +8,15 @@ services:
       context: "./api"
     environment:
       - ENV=LOCAL
-      - PGUSER=${PGUSER}
-      - PGHOST=${PGHOST}
-      - PGPASSWORD=${PGPASSWORD}
+      - SSL=${API_SSL}
+      - PORT=${API_PORT}
+      - PGUSER=${DB_USER}
+      - PGHOST=${DB_HOST}
+      - PGPASSWORD=${DB_PASS}
       - PGDATABASE=${PGDATABASE}
-      - PGPORT=${PGPORT}
+      - PGPORT=${DB_PORT}
+      - ACCESS_SECRET=${DB_ACCESS_SECRET}
+      - REFRESH_SECRET=${DB_REFRESH_SECRET}
       - REDISPORT=${REDISPORT}
       - REDISHOST=${REDISHOST}
     depends_on:
@@ -39,9 +43,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - PGUSER=${PGUSER}
-      - PGHOST=${PGHOST}
-      - POSTGRES_PASSWORD=${PGPASSWORD}
+      - PGUSER=${DB_USER}
+      - PGHOST=${DB_HOST}
+      - POSTGRES_PASSWORD=${DB_PASS}
       - PGDATABASE=${PGDATABASE}
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
