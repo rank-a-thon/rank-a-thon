@@ -138,3 +138,5 @@ api/cert
 api/tmp
 redis-data/
 postgres-data/
+
+secrets/

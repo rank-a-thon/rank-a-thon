@@ -64,20 +64,20 @@ func TokenAuthMiddleware() gin.HandlerFunc {
 }
 
 func main() {
-
-	opt := option.WithCredentialsFile(os.Getenv("GOOGLE_APPLICATION_CREDENTIALS"))
-	app, err := firebase.NewApp(context.Background(), nil, opt)
-	if err != nil {
-		return nil, fmt.Errorf("error initializing app: %v", err)
-	}
-
 	//Start the default gin server
 	r := gin.Default()
 
 	//Load the .env file
-	err := godotenv.Load()
-	if err != nil {
+	envLoadError := godotenv.Load()
+	if envLoadError != nil {
 		log.Fatal("Error loading .env file, please create one in the root directory")
+	}
+
+	opt := option.WithCredentialsFile(os.Getenv("GOOGLE_APPLICATION_CREDENTIALS"))
+	_, fireBaseErr := firebase.NewApp(context.Background(), nil, opt) // app, err :=
+	if fireBaseErr != nil {
+		fmt.Errorf("error initializing app: %v", fireBaseErr)
+		return
 	}
 
 	r.Use(CORSMiddleware())
