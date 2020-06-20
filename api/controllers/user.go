@@ -1,6 +1,12 @@
 package controllers
 
 import (
+	"context"
+	"log"
+
+	firebase "firebase.google.com/go"
+	"firebase.google.com/go/auth"
+
 	"github.com/rank-a-thon/rank-a-thon/api/forms"
 	"github.com/rank-a-thon/rank-a-thon/api/models"
 
@@ -27,6 +33,83 @@ func getUserID(context *gin.Context) (userID int64) {
 	}
 
 	return userID
+}
+
+func getUser(ctx context.Context, app *firebase.App, idToken string) *auth.UserRecord {
+	// [START get_user_golang]
+	// Get an auth client from the firebase.App
+	client, err := app.Auth(ctx)
+	if err != nil {
+		log.Fatalf("error getting Auth client: %v\n", err)
+	}
+
+	user, err := client.GetUser(ctx, idToken)
+	if err != nil {
+		log.Fatalf("error getting user %s: %v\n", idToken, err)
+	}
+	log.Printf("Successfully fetched user data: %v\n", user)
+	// [END get_user_golang]
+	return user
+}
+
+func getUserByEmail(ctx context.Context, client *auth.Client) *auth.UserRecord {
+	email := "some@email.com"
+	// [START get_user_by_email_golang]
+	user, err := client.GetUserByEmail(ctx, email)
+	if err != nil {
+		log.Fatalf("error getting user by email %s: %v\n", email, err)
+	}
+	log.Printf("Successfully fetched user data: %v\n", user)
+	// [END get_user_by_email_golang]
+	return user
+}
+
+func createUser(ctx context.Context, client *auth.Client) *auth.UserRecord {
+	// [START create_user_golang]
+	params := (&auth.UserToCreate{}).
+		Email("user@example.com").
+		EmailVerified(false).
+		PhoneNumber("+15555550100").
+		Password("secretPassword").
+		DisplayName("John Doe").
+		Disabled(false)
+	user, err := client.CreateUser(ctx, params)
+	if err != nil {
+		log.Fatalf("error creating user: %v\n", err)
+	}
+	log.Printf("Successfully created user: %v\n", user)
+	// [END create_user_golang]
+	return user
+}
+
+func updateUser(ctx context.Context, client *auth.Client) {
+	uid := "d"
+	// [START update_user_golang]
+	params := (&auth.UserToUpdate{}).
+		Email("user@example.com").
+		EmailVerified(true).
+		PhoneNumber("+15555550100").
+		Password("newPassword").
+		DisplayName("John Doe").
+		PhotoURL("http://www.example.com/12345678/photo.png").
+		Disabled(true)
+	u, err := client.UpdateUser(ctx, uid, params)
+	if err != nil {
+		log.Fatalf("error updating user: %v\n", err)
+	}
+	log.Printf("Successfully updated user: %v\n", u)
+	// [END update_user_golang]
+}
+
+func deleteUser(ctx context.Context, client *auth.Client) {
+	uid := "d"
+	// [START delete_user_golang]
+	err := client.DeleteUser(ctx, uid)
+	if err != nil {
+		log.Fatalf("error deleting user: %v\n", err)
+	}
+	log.Printf("Successfully deleted user: %s\n", uid)
+	// [END delete_user_golang]
 }
 
 func (ctrl UserController) Login(context *gin.Context) {

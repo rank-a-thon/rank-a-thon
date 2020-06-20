@@ -1,10 +1,15 @@
 package controllers
 
 import (
+	"context"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
+
+	firebase "firebase.google.com/go"
+	"firebase.google.com/go/auth"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -23,6 +28,19 @@ func (ctl AuthController) TokenValid(context *gin.Context) {
 		context.Abort()
 		return
 	}
+}
+
+func verifyIDToken(ctx context.Context, app *firebase.App, idToken string) *auth.Token {
+	client, err := app.Auth(ctx)
+	if err != nil {
+		log.Fatalf("error getting Auth client: %v\n", err)
+	}
+	token, err := client.VerifyIDToken(ctx, idToken)
+	if err != nil {
+		log.Fatalf("error verifying ID token: %v\n", err)
+	}
+	log.Printf("Verified ID token: %v\n", token)
+	return token
 }
 
 func (ctl AuthController) Refresh(context *gin.Context) {
