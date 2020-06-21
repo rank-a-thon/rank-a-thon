@@ -66,7 +66,7 @@ func TokenAuthMiddleware() gin.HandlerFunc {
 
 func autoMigrateDB() {
 	db := database.GetDB()
-	err := db.AutoMigrate(&models.User{}, &models.Article{}).Error
+	err := db.AutoMigrate(&models.User{}, &models.Submission{}).Error
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -117,14 +117,14 @@ func main() {
 		//Refresh the token when needed to generate new access_token and refresh_token for the user
 		v1.POST("/token/refresh", auth.Refresh)
 
-		/*** START Article ***/
-		article := new(controllers.ArticleController)
+		/*** START Submission ***/
+		submission := new(controllers.SubmissionController)
 
-		v1.POST("/article", TokenAuthMiddleware(), article.Create)
-		v1.GET("/articles", TokenAuthMiddleware(), article.All)
-		v1.GET("/article/:id", TokenAuthMiddleware(), article.One)
-		v1.PUT("/article/:id", TokenAuthMiddleware(), article.Update)
-		v1.DELETE("/article/:id", TokenAuthMiddleware(), article.Delete)
+		v1.POST("/submission", TokenAuthMiddleware(), submission.Create)
+		v1.GET("/submissions", TokenAuthMiddleware(), submission.All)
+		v1.GET("/submission/:id", TokenAuthMiddleware(), submission.One)
+		v1.PUT("/submission/:id", TokenAuthMiddleware(), submission.Update)
+		v1.DELETE("/submission/:id", TokenAuthMiddleware(), submission.Delete)
 	}
 
 	r.LoadHTMLGlob("./public/html/*")

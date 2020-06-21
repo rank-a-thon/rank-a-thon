@@ -41,14 +41,14 @@ func SetupRouter() *gin.Engine {
 
 		v1.POST("/token/refresh", auth.Refresh)
 
-		/*** START Article ***/
-		article := new(controllers.ArticleController)
+		/*** START submission ***/
+		submission := new(controllers.SubmissionController)
 
-		v1.POST("/article", article.Create)
-		v1.GET("/articles", article.All)
-		v1.GET("/article/:id", article.One)
-		v1.PUT("/article/:id", article.Update)
-		v1.DELETE("/article/:id", article.Delete)
+		v1.POST("/submission", submission.Create)
+		v1.GET("/submissions", submission.All)
+		v1.GET("/submission/:id", submission.One)
+		v1.PUT("/submission/:id", submission.Update)
+		v1.DELETE("/submission/:id", submission.Delete)
 	}
 
 	return r
@@ -67,7 +67,7 @@ var testPassword = "123456"
 var accessToken string
 var refreshToken string
 
-var articleID int
+var submissionID int
 
 /**
 * TestIntDB
@@ -236,22 +236,22 @@ func TestInvalidLogin(t *testing.T) {
 }
 
 /**
-* TestCreateArticle
-* Test article creation
+* TestCreateSubmission
+* Test submission creation
 *
 * Must return response code 200
  */
-func TestCreateArticle(t *testing.T) {
+func TestCreateSubmission(t *testing.T) {
 	testRouter := SetupRouter()
 
-	var articleForm forms.ArticleForm
+	var submissionForm forms.SubmissionForm
 
-	articleForm.Title = "Testing article title"
-	articleForm.Content = "Testing article content"
+	submissionForm.Title = "Testing submission title"
+	submissionForm.Content = "Testing submission content"
 
-	data, _ := json.Marshal(articleForm)
+	data, _ := json.Marshal(submissionForm)
 
-	req, err := http.NewRequest("POST", "/v1/article", bytes.NewBufferString(string(data)))
+	req, err := http.NewRequest("POST", "/v1/submission", bytes.NewBufferString(string(data)))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer: %s", accessToken))
 
@@ -274,27 +274,27 @@ func TestCreateArticle(t *testing.T) {
 
 	json.Unmarshal(body, &res)
 
-	articleID = res.ID
+	submissionID = res.ID
 
 	assert.Equal(t, resp.Code, http.StatusOK)
 }
 
 /**
-* TestCreateInvalidArticle
-* Test article invalid creation
+* TestCreateInvalidSubmission
+* Test submission invalid creation
 *
 * Must return response code 406
  */
-func TestCreateInvalidArticle(t *testing.T) {
+func TestCreateInvalidSubmission(t *testing.T) {
 	testRouter := SetupRouter()
 
-	var articleForm forms.ArticleForm
+	var submissionForm forms.SubmissionForm
 
-	articleForm.Title = "Testing article title"
+	submissionForm.Title = "Testing submission title"
 
-	data, _ := json.Marshal(articleForm)
+	data, _ := json.Marshal(submissionForm)
 
-	req, err := http.NewRequest("POST", "/v1/article", bytes.NewBufferString(string(data)))
+	req, err := http.NewRequest("POST", "/v1/submission", bytes.NewBufferString(string(data)))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer: %s", accessToken))
 
@@ -309,15 +309,15 @@ func TestCreateInvalidArticle(t *testing.T) {
 }
 
 /**
-* TestGetArticle
-* Test getting one article
+* TestGetSubmission
+* Test getting one submission
 *
 * Must return response code 200
  */
-func TestGetArticle(t *testing.T) {
+func TestGetSubmission(t *testing.T) {
 	testRouter := SetupRouter()
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("/v1/article/%d", articleID), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("/v1/submission/%d", submissionID), nil)
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer: %s", accessToken))
 
 	if err != nil {
@@ -331,15 +331,15 @@ func TestGetArticle(t *testing.T) {
 }
 
 /**
-* TestGetInvalidArticle
-* Test getting invalid article
+* TestGetInvalidSubmission
+* Test getting invalid submission
 *
 * Must return response code 404
  */
-func TestGetInvalidArticle(t *testing.T) {
+func TestGetInvalidSubmission(t *testing.T) {
 	testRouter := SetupRouter()
 
-	req, err := http.NewRequest("GET", "/v1/article/invalid", nil)
+	req, err := http.NewRequest("GET", "/v1/submission/invalid", nil)
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer: %s", accessToken))
 
 	if err != nil {
@@ -353,15 +353,15 @@ func TestGetInvalidArticle(t *testing.T) {
 }
 
 /**
-* TestGetArticleNotLoggedin
-* Test getting the article with logged out user
+* TestGetSubmissionNotLoggedin
+* Test getting the submission with logged out user
 *
 * Must return response code 401
  */
-func TestGetArticleNotLoggedin(t *testing.T) {
+func TestGetSubmissionNotLoggedin(t *testing.T) {
 	testRouter := SetupRouter()
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("/v1/article/%d", articleID), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("/v1/submission/%d", submissionID), nil)
 	req.Header.Set("Content-Type", "application/json")
 
 	if err != nil {
@@ -375,15 +375,15 @@ func TestGetArticleNotLoggedin(t *testing.T) {
 }
 
 /**
-* TestGetArticleUnauthorized
-* Test getting the article with unauthorized user (wrong or expired access_token)
+* TestGetSubmissionUnauthorized
+* Test getting the submission with unauthorized user (wrong or expired access_token)
 *
 * Must return response code 401
  */
-func TestGetArticleUnauthorized(t *testing.T) {
+func TestGetSubmissionUnauthorized(t *testing.T) {
 	testRouter := SetupRouter()
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("/v1/article/%d", articleID), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("/v1/submission/%d", submissionID), nil)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer: %s", "abc123"))
 
@@ -398,22 +398,22 @@ func TestGetArticleUnauthorized(t *testing.T) {
 }
 
 /**
-* TestUpdateArticle
-* Test updating an article
+* TestUpdateSubmission
+* Test updating an submission
 *
 * Must return response code 200
  */
-func TestUpdateArticle(t *testing.T) {
+func TestUpdateSubmission(t *testing.T) {
 	testRouter := SetupRouter()
 
-	var articleForm forms.ArticleForm
+	var submissionForm forms.SubmissionForm
 
-	articleForm.Title = "Testing new article title"
-	articleForm.Content = "Testing new article content"
+	submissionForm.Title = "Testing new submission title"
+	submissionForm.Content = "Testing new submission content"
 
-	data, _ := json.Marshal(articleForm)
+	data, _ := json.Marshal(submissionForm)
 
-	url := fmt.Sprintf("/v1/article/%d", articleID)
+	url := fmt.Sprintf("/v1/submission/%d", submissionID)
 
 	req, err := http.NewRequest("PUT", url, bytes.NewBufferString(string(data)))
 	req.Header.Set("Content-Type", "application/json")
@@ -430,15 +430,15 @@ func TestUpdateArticle(t *testing.T) {
 }
 
 /**
-* TestDeleteArticle
-* Test deleting an article
+* TestDeleteSubmission
+* Test deleting an submission
 *
 * Must return response code 200
  */
-func TestDeleteArticle(t *testing.T) {
+func TestDeleteSubmission(t *testing.T) {
 	testRouter := SetupRouter()
 
-	url := fmt.Sprintf("/v1/article/%d", articleID)
+	url := fmt.Sprintf("/v1/submission/%d", submissionID)
 
 	req, err := http.NewRequest("DELETE", url, nil)
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer: %s", accessToken))
@@ -534,7 +534,7 @@ func TestUserLogout(t *testing.T) {
 
 /**
 * TestCleanUp
-* Deletes the created user with it's articles
+* Deletes the created user with it's submissions
 *
 * Must pass
  */
