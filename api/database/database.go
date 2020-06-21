@@ -23,6 +23,16 @@ func Init() {
 	}
 }
 
+func InitForTest() {
+	dbInfo := "host=localhost port=5432 user=postgres dbname=rankathon_test sslmode=disable"
+	fmt.Println(dbInfo)
+	var err error
+	db, err = ConnectDB(dbInfo)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 func ConnectDB(dataSourceName string) (*gorm.DB, error) {
 	db, err := gorm.Open("postgres", dataSourceName)
 	if err != nil {

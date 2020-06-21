@@ -6,7 +6,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"os"
 
 	"io/ioutil"
 	"log"
@@ -18,6 +17,7 @@ import (
 	"github.com/rank-a-thon/rank-a-thon/api/controllers"
 	"github.com/rank-a-thon/rank-a-thon/api/database"
 	"github.com/rank-a-thon/rank-a-thon/api/forms"
+	"github.com/rank-a-thon/rank-a-thon/api/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -83,10 +83,10 @@ func TestIntDB(t *testing.T) {
 		log.Fatal("Error loading .env file, please create one in the root directory")
 	}
 
-	fmt.Println("DB_PASS", os.Getenv("DB_PASS"))
-
-	database.Init()
+	database.InitForTest()
 	database.InitRedis("1")
+	db := database.GetDB()
+	db.AutoMigrate(&models.User{}, &models.Submission{})
 }
 
 /**
@@ -540,7 +540,7 @@ func TestUserLogout(t *testing.T) {
  */
 func TestCleanUp(t *testing.T) {
 	var err error
-	err = database.GetDB().Table("public.user").Where("email = ?", testEmail).Delete(User{}).Error
+	err = database.GetDB().Table("public.users").Where("email = ?", testEmail).Delete(&models.User{}).Error
 	//_, err = database.GetDB().Exec("DELETE FROM public.user WHERE email=$1", testEmail)
 	if err != nil {
 		t.Error(err)
