@@ -28,7 +28,6 @@ var authModel = new(AuthModel)
 func (m UserModel) Login(form forms.LoginForm) (user User, token Token, err error) {
 	err = database.GetDB().
 		Table("public.users").Where("email = ?", strings.ToLower(form.Email)).Take(&user).Error
-	//err = database.GetDB().SelectOne(&user, "SELECT id, email, password, name, updated_at, created_at FROM public.user WHERE email=LOWER($1) LIMIT 1", form.Email)
 
 	if err != nil {
 		return user, token, err
@@ -68,7 +67,6 @@ func (m UserModel) Register(form forms.RegisterForm) (user User, err error) {
 	var count int
 	err = db.Table("public.users").
 		Where("email = ?", strings.ToLower(form.Email)).Select("count(id)").Count(&count).Error
-	//checkUser, err := db.SelectInt("SELECT count(id) FROM public.user WHERE email=LOWER($1) LIMIT 1", form.Email)
 
 	if err != nil {
 		return user, err
@@ -88,9 +86,6 @@ func (m UserModel) Register(form forms.RegisterForm) (user User, err error) {
 	user = User{Email: form.Email, Password: string(hashedPassword), Name: form.Name}
 	err = db.Table("public.users").Create(&user).Scan(&user).Error
 
-	//err = db.QueryRow("INSERT INTO public.user(email, password, name) VALUES($1, $2, $3) RETURNING id",
-	//	form.Email, string(hashedPassword), form.Name).Scan(&user.ID)
-
 	return user, err
 }
 
@@ -98,6 +93,5 @@ func (m UserModel) Register(form forms.RegisterForm) (user User, err error) {
 func (m UserModel) One(userID uint) (user User, err error) {
 	err = database.GetDB().Table("public.users").
 		Where("id = ?", userID).Take(&user).Error
-	//err = database.GetDB().SelectOne(&user, "SELECT id, email, name FROM public.user WHERE id=$1", userID)
 	return user, err
 }
