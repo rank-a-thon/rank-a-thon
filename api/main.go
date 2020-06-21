@@ -66,7 +66,10 @@ func TokenAuthMiddleware() gin.HandlerFunc {
 
 func autoMigrateDB() {
 	db := database.GetDB()
-	db.AutoMigrate(&models.User{}, &models.Article{})
+	err := db.AutoMigrate(&models.User{}, &models.Article{}).Error
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func main() {
@@ -111,7 +114,7 @@ func main() {
 		/*** START AUTH ***/
 		auth := new(controllers.AuthController)
 
-		//Rerfresh the token when needed to generate new access_token and refresh_token for the user
+		//Refresh the token when needed to generate new access_token and refresh_token for the user
 		v1.POST("/token/refresh", auth.Refresh)
 
 		/*** START Article ***/

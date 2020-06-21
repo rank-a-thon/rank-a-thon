@@ -2,7 +2,6 @@ package models
 
 import (
 	"errors"
-
 	"github.com/jinzhu/gorm"
 	"github.com/rank-a-thon/rank-a-thon/api/database"
 	"github.com/rank-a-thon/rank-a-thon/api/forms"
@@ -11,7 +10,7 @@ import (
 // Article ...
 type Article struct {
 	gorm.Model
-	UserID    uint  `gorm:"column:user_id;not null;unique" json:"-"`
+	UserID    uint  `gorm:"column:user_id;not null" json:"-"`
 	Title     string `gorm:"column:title" json:"title"`
 	Content   string `gorm:"column:content" json:"content"`
 	User      User   `gorm:"column:user;foreignkey:UserID" json:"user"`
@@ -23,18 +22,19 @@ type ArticleModel struct{}
 // Create ...
 func (m ArticleModel) Create(userID uint, form forms.ArticleForm) (articleID uint, err error) {
 	article := Article{UserID: userID, Title: form.Title, Content: form.Content}
-	err = database.GetDB().Table("public.article").Create(&article).Pluck("id", articleID).Error
+	err = database.GetDB().Table("public.articles").Create(&article).Error
 	//err = database.GetDB().QueryRow(
 	//	"INSERT INTO public.article(user_id, title, content) VALUES($1, $2, $3) RETURNING id",
 	//	userID, form.Title, form.Content).Scan(&articleID)
-	return articleID, err
+	return article.ID, err
 }
 
 // One ...
 func (m ArticleModel) One(userID, id uint) (article Article, err error) {
-	err = database.GetDB().Table("public.article").
-		Where("article.user_id = ? AND article.id = ?", userID, id).
-		Joins("left join public.user on article.user_id = user.id").
+	err = database.GetDB().Preload("User").Table("public.articles").
+		Where("articles.user_id = ? AND articles.id = ?", userID, id).
+		//Select("articles.id, articles.title, articles.content, articles.updated_at, articles.created_at").
+		Joins("left join public.users on articles.user_id = users.id").
 		Take(&article).Error
 	//err = database.GetDB().SelectOne(
 	//	&article,
@@ -45,10 +45,10 @@ func (m ArticleModel) One(userID, id uint) (article Article, err error) {
 
 // All ...
 func (m ArticleModel) All(userID uint) (articles []Article, err error) {
-	err = database.GetDB().Table("public.article").
-		Where("article.user_id = ?", userID).
-		Joins("left join public.user on article.user_id = user.id").
-		Order("article.id desc").
+	err = database.GetDB().Preload("User").Table("public.articles").
+		Where("articles.user_id = ?", userID).
+		Joins("left join public.users on articles.user_id = users.id").
+		Order("articles.id desc").
 		Find(&articles).Error
 	//_, err = database.GetDB().Select(
 	//	&articles,
@@ -64,11 +64,10 @@ func (m ArticleModel) Update(userID uint, id uint, form forms.ArticleForm) (err 
 	if err != nil {
 		return errors.New("article not found")
 	}
-	err = database.GetDB().Table("public.article").Model(&m).
+	err = database.GetDB().Table("public.articles").Model(&Article{}).
 		Where("id = ?", id).
 		Updates(map[string]interface{}{"title": form.Title, "content": form.Content}).Error
 	//_, err = database.GetDB().Exec("UPDATE public.article SET title=$2, content=$3 WHERE id=$1", id, form.Title, form.Content)
-
 	return err
 }
 
@@ -79,7 +78,7 @@ func (m ArticleModel) Delete(userID, id uint) (err error) {
 	if err != nil {
 		return errors.New("Article not found")
 	}
-	err = database.GetDB().Table("public.article").Where("id = ?", id).Delete(Article{}).Error
+	err = database.GetDB().Table("public.articles").Where("id = ?", id).Delete(Article{}).Error
 	//_, err = database.GetDB().Exec("DELETE FROM public.article WHERE id=$1", id)
 
 	return err
