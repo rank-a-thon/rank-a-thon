@@ -11,12 +11,9 @@ import (
 // Article ...
 type Article struct {
 	gorm.Model
-	ID        int64  `gorm:"column:id;primary_key;auto_increment" json:"id"`
-	UserID    int64  `gorm:"column:user_id;not null;unique" json:"-"`
+	UserID    uint  `gorm:"column:user_id;not null;unique" json:"-"`
 	Title     string `gorm:"column:title" json:"title"`
 	Content   string `gorm:"column:content" json:"content"`
-	UpdatedAt int64  `gorm:"column:updated_at" json:"updated_at"`
-	CreatedAt int64  `gorm:"column:created_at" json:"created_at"`
 	User      User   `gorm:"column:user;foreignkey:UserID" json:"user"`
 }
 
@@ -24,7 +21,7 @@ type Article struct {
 type ArticleModel struct{}
 
 // Create ...
-func (m ArticleModel) Create(userID int64, form forms.ArticleForm) (articleID int64, err error) {
+func (m ArticleModel) Create(userID uint, form forms.ArticleForm) (articleID uint, err error) {
 	article := Article{UserID: userID, Title: form.Title, Content: form.Content}
 	err = database.GetDB().Table("public.article").Create(&article).Pluck("id", articleID).Error
 	//err = database.GetDB().QueryRow(
@@ -34,7 +31,7 @@ func (m ArticleModel) Create(userID int64, form forms.ArticleForm) (articleID in
 }
 
 // One ...
-func (m ArticleModel) One(userID, id int64) (article Article, err error) {
+func (m ArticleModel) One(userID, id uint) (article Article, err error) {
 	err = database.GetDB().Table("public.article").
 		Where("article.user_id = ? AND article.id = ?", userID, id).
 		Joins("left join public.user on article.user_id = user.id").
@@ -47,8 +44,9 @@ func (m ArticleModel) One(userID, id int64) (article Article, err error) {
 }
 
 // All ...
-func (m ArticleModel) All(userID int64) (articles []Article, err error) {
+func (m ArticleModel) All(userID uint) (articles []Article, err error) {
 	err = database.GetDB().Table("public.article").
+		Where("article.user_id = ?", userID).
 		Joins("left join public.user on article.user_id = user.id").
 		Order("article.id desc").
 		Find(&articles).Error
@@ -60,7 +58,7 @@ func (m ArticleModel) All(userID int64) (articles []Article, err error) {
 }
 
 // Update ...
-func (m ArticleModel) Update(userID int64, id int64, form forms.ArticleForm) (err error) {
+func (m ArticleModel) Update(userID uint, id uint, form forms.ArticleForm) (err error) {
 	_, err = m.One(userID, id)
 
 	if err != nil {
@@ -75,7 +73,7 @@ func (m ArticleModel) Update(userID int64, id int64, form forms.ArticleForm) (er
 }
 
 // Delete ...
-func (m ArticleModel) Delete(userID, id int64) (err error) {
+func (m ArticleModel) Delete(userID, id uint) (err error) {
 	_, err = m.One(userID, id)
 
 	if err != nil {

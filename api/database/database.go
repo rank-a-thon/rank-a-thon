@@ -15,9 +15,9 @@ import (
 var db *gorm.DB
 
 func Init() {
-	dbinfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_USER"), os.Getenv("DB_PASS"), os.Getenv("DB_NAME"))
+	dbInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_USER"), os.Getenv("DB_PASS"), os.Getenv("DB_NAME"))
 	var err error
-	db, err = ConnectDB(dbinfo)
+	db, err = ConnectDB(dbInfo)
 	if err != nil {
 		log.Fatal(err)
 	}

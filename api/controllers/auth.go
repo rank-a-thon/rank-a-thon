@@ -78,7 +78,7 @@ func (ctl AuthController) Refresh(context *gin.Context) {
 			context.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid authorization, please login again"})
 			return
 		}
-		userID, err := strconv.ParseInt(fmt.Sprintf("%.f", claims["user_id"]), 10, 64)
+		userID, err := strconv.ParseUint(fmt.Sprintf("%.f", claims["user_id"]), 10, 64)
 		if err != nil {
 			context.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid authorization, please login again"})
 			return
@@ -91,13 +91,13 @@ func (ctl AuthController) Refresh(context *gin.Context) {
 		}
 
 		// Create new pairs of refresh and access tokens
-		ts, createErr := authModel.CreateToken(userID)
+		ts, createErr := authModel.CreateToken(uint(userID))
 		if createErr != nil {
 			context.JSON(http.StatusForbidden, gin.H{"message": "Invalid authorization, please login again"})
 			return
 		}
 		// Save the tokens metadata to redis
-		saveErr := authModel.CreateAuth(userID, ts)
+		saveErr := authModel.CreateAuth(uint(userID), ts)
 		if saveErr != nil {
 			context.JSON(http.StatusForbidden, gin.H{"message": "Invalid authorization, please login again"})
 			return

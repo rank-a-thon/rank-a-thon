@@ -19,7 +19,7 @@ type UserController struct{}
 
 var userModel = new(models.UserModel)
 
-func getUserID(context *gin.Context) (userID int64) {
+func getUserID(context *gin.Context) (userID uint) {
 
 	tokenAuth, err := authModel.ExtractTokenMetadata(context.Request)
 	if err != nil {

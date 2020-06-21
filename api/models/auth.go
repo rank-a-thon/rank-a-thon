@@ -26,7 +26,7 @@ type TokenDetails struct {
 // AccessDetails ...
 type AccessDetails struct {
 	AccessUUID string
-	UserID     int64
+	UserID     uint
 }
 
 // Token ...
@@ -39,7 +39,7 @@ type Token struct {
 type AuthModel struct{}
 
 // CreateToken ...
-func (m AuthModel) CreateToken(userID int64) (*TokenDetails, error) {
+func (m AuthModel) CreateToken(userID uint) (*TokenDetails, error) {
 
 	td := &TokenDetails{}
 	td.AtExpires = time.Now().Add(time.Minute * 15).Unix()
@@ -75,16 +75,15 @@ func (m AuthModel) CreateToken(userID int64) (*TokenDetails, error) {
 }
 
 // CreateAuth ...
-func (m AuthModel) CreateAuth(userid int64, td *TokenDetails) error {
+func (m AuthModel) CreateAuth(userID uint, td *TokenDetails) error {
 	at := time.Unix(td.AtExpires, 0) //converting Unix to UTC(to Time object)
 	rt := time.Unix(td.RtExpires, 0)
 	now := time.Now()
-
-	errAccess := database.GetRedis().Set(td.AccessUUID, strconv.Itoa(int(userid)), at.Sub(now)).Err()
+	errAccess := database.GetRedis().Set(td.AccessUUID, strconv.FormatUint(uint64(userID), 10), at.Sub(now)).Err()
 	if errAccess != nil {
 		return errAccess
 	}
-	errRefresh := database.GetRedis().Set(td.RefreshUUID, strconv.Itoa(int(userid)), rt.Sub(now)).Err()
+	errRefresh := database.GetRedis().Set(td.RefreshUUID, strconv.FormatUint(uint64(userID), 10), rt.Sub(now)).Err()
 	if errRefresh != nil {
 		return errRefresh
 	}
@@ -142,33 +141,33 @@ func (m AuthModel) ExtractTokenMetadata(r *http.Request) (*AccessDetails, error)
 		if !ok {
 			return nil, err
 		}
-		userID, err := strconv.ParseInt(fmt.Sprintf("%.f", claims["user_id"]), 10, 64)
+		userID, err := strconv.ParseUint(fmt.Sprintf("%.f", claims["user_id"]), 10, 64)
 		if err != nil {
 			return nil, err
 		}
 		return &AccessDetails{
 			AccessUUID: accessUUID,
-			UserID:     userID,
+			UserID:     uint(userID),
 		}, nil
 	}
 	return nil, err
 }
 
 // FetchAuth ...
-func (m AuthModel) FetchAuth(authD *AccessDetails) (int64, error) {
-	userid, err := database.GetRedis().Get(authD.AccessUUID).Result()
+func (m AuthModel) FetchAuth(authD *AccessDetails) (uint, error) {
+	userIDString, err := database.GetRedis().Get(authD.AccessUUID).Result()
 	if err != nil {
 		return 0, err
 	}
-	userID, _ := strconv.ParseInt(userid, 10, 64)
-	return userID, nil
+	userID, _ := strconv.ParseUint(userIDString, 10, 64)
+	return uint(userID), nil
 }
 
 //DeleteAuth ...
-func (m AuthModel) DeleteAuth(givenUUID string) (int64, error) {
+func (m AuthModel) DeleteAuth(givenUUID string) (uint, error) {
 	deleted, err := database.GetRedis().Del(givenUUID).Result()
 	if err != nil {
 		return 0, err
 	}
-	return deleted, nil
+	return uint(deleted), nil
 }

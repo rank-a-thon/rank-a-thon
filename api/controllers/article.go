@@ -56,9 +56,9 @@ func (ctrl ArticleController) One(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 
 		id := context.Param("id")
-		if id, err := strconv.ParseInt(id, 10, 64); err == nil {
+		if id, err := strconv.ParseUint(id, 10, 64); err == nil {
 
-			data, err := articleModel.One(userID, id)
+			data, err := articleModel.One(userID, uint(id))
 
 			if err != nil {
 				context.JSON(http.StatusNotFound, gin.H{"Message": "Article not found", "error": err.Error()})
@@ -78,7 +78,7 @@ func (ctrl ArticleController) Update(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 
 		id := context.Param("id")
-		if id, err := strconv.ParseInt(id, 10, 64); err == nil {
+		if id, err := strconv.ParseUint(id, 10, 64); err == nil {
 
 			var articleForm forms.ArticleForm
 
@@ -88,7 +88,7 @@ func (ctrl ArticleController) Update(context *gin.Context) {
 				return
 			}
 
-			err := articleModel.Update(userID, id, articleForm)
+			err := articleModel.Update(userID, uint(id), articleForm)
 			if err != nil {
 				context.JSON(http.StatusNotAcceptable, gin.H{"Message": "Article could not be updated", "error": err.Error()})
 				context.Abort()
@@ -107,9 +107,9 @@ func (ctrl ArticleController) Delete(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 
 		id := context.Param("id")
-		if id, err := strconv.ParseInt(id, 10, 64); err == nil {
+		if id, err := strconv.ParseUint(id, 10, 64); err == nil {
 
-			err := articleModel.Delete(userID, id)
+			err := articleModel.Delete(userID, uint(id))
 			if err != nil {
 				context.JSON(http.StatusNotAcceptable, gin.H{"Message": "Article could not be deleted", "error": err.Error()})
 				context.Abort()

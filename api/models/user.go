@@ -14,12 +14,9 @@ import (
 // User ...
 type User struct {
 	gorm.Model
-	ID        int64  `gorm:"column:id;primary_key;auto_increment" json:"id"`
-	Email     string `gorm:"column:email;not null;unique" json:"email"`
-	Password  string `gorm:"column:password" json:"-"`
-	Name      string `gorm:"column:name" json:"name"`
-	UpdatedAt int64  `gorm:"column:updated_at" json:"-"`
-	CreatedAt int64  `gorm:"column:created_at" json:"-"`
+	Email    string `gorm:"column:email;not null;unique" json:"email"`
+	Password string `gorm:"column:password" json:"-"`
+	Name     string `gorm:"column:name" json:"name"`
 }
 
 // UserModel ...
@@ -68,7 +65,7 @@ func (m UserModel) Register(form forms.RegisterForm) (user User, err error) {
 
 	// Check if the user exists in database
 
-	var count int	
+	var count int
 	err = db.Table("public.user").
 		Where("email = ?", strings.ToLower(form.Email)).Select("count(id)").Count(&count).Error
 	//checkUser, err := db.SelectInt("SELECT count(id) FROM public.user WHERE email=LOWER($1) LIMIT 1", form.Email)
@@ -98,7 +95,7 @@ func (m UserModel) Register(form forms.RegisterForm) (user User, err error) {
 }
 
 // One ...
-func (m UserModel) One(userID int64) (user User, err error) {
+func (m UserModel) One(userID uint) (user User, err error) {
 	err = database.GetDB().Table("public.user").
 		Where("id = ?", userID).Take(&user).Error
 	//err = database.GetDB().SelectOne(&user, "SELECT id, email, name FROM public.user WHERE id=$1", userID)
