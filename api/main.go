@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/rank-a-thon/rank-a-thon/api/models"
 	"log"
 	"net/http"
 	"os"
@@ -10,7 +11,7 @@ import (
 	"github.com/gin-contrib/gzip"
 	"github.com/joho/godotenv"
 	"github.com/rank-a-thon/rank-a-thon/api/controllers"
-	"github.com/rank-a-thon/rank-a-thon/api/db"
+	"github.com/rank-a-thon/rank-a-thon/api/database"
 	uuid "github.com/twinj/uuid"
 
 	"github.com/gin-gonic/gin"
@@ -63,6 +64,11 @@ func TokenAuthMiddleware() gin.HandlerFunc {
 	}
 }
 
+func autoMigrateDB() {
+	db := database.GetDB()
+	db.AutoMigrate(&models.User{}, &models.Article{})
+}
+
 func main() {
 	//Start the default gin server
 	r := gin.Default()
@@ -86,11 +92,12 @@ func main() {
 
 	//Start PostgreSQL database
 	//Example: db.GetDB() - More info in the models folder
-	db.Init()
+	database.Init()
+	autoMigrateDB()
 
 	//Start Redis on database 1 - it's used to store the JWT but you can use it for anythig else
 	//Example: db.GetRedis().Set(KEY, VALUE, at.Sub(now)).Err()
-	db.InitRedis("1")
+	database.InitRedis("1")
 
 	v1 := r.Group("/v1")
 	{

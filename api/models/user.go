@@ -2,8 +2,10 @@ package models
 
 import (
 	"errors"
+	"strings"
 
-	"github.com/rank-a-thon/rank-a-thon/api/db"
+	"github.com/jinzhu/gorm"
+	"github.com/rank-a-thon/rank-a-thon/api/database"
 	"github.com/rank-a-thon/rank-a-thon/api/forms"
 
 	"golang.org/x/crypto/bcrypt"
@@ -11,12 +13,13 @@ import (
 
 // User ...
 type User struct {
-	ID        int64  `db:"id, primarykey, autoincrement" json:"id"`
-	Email     string `db:"email" json:"email"`
-	Password  string `db:"password" json:"-"`
-	Name      string `db:"name" json:"name"`
-	UpdatedAt int64  `db:"updated_at" json:"-"`
-	CreatedAt int64  `db:"created_at" json:"-"`
+	gorm.Model
+	ID        int64  `gorm:"column:id;primary_key;auto_increment" json:"id"`
+	Email     string `gorm:"column:email;not null;unique" json:"email"`
+	Password  string `gorm:"column:password" json:"-"`
+	Name      string `gorm:"column:name" json:"name"`
+	UpdatedAt int64  `gorm:"column:updated_at" json:"-"`
+	CreatedAt int64  `gorm:"column:created_at" json:"-"`
 }
 
 // UserModel ...
@@ -26,8 +29,9 @@ var authModel = new(AuthModel)
 
 // Login ...
 func (m UserModel) Login(form forms.LoginForm) (user User, token Token, err error) {
-
-	err = db.GetDB().SelectOne(&user, "SELECT id, email, password, name, updated_at, created_at FROM public.user WHERE email=LOWER($1) LIMIT 1", form.Email)
+	err = database.GetDB().
+		Table("public.user").Where("email = ?", strings.ToLower(form.Email)).Take(&user).Error
+	//err = database.GetDB().SelectOne(&user, "SELECT id, email, password, name, updated_at, created_at FROM public.user WHERE email=LOWER($1) LIMIT 1", form.Email)
 
 	if err != nil {
 		return user, token, err
@@ -40,34 +44,41 @@ func (m UserModel) Login(form forms.LoginForm) (user User, token Token, err erro
 	err = bcrypt.CompareHashAndPassword(byteHashedPassword, bytePassword)
 
 	if err != nil {
-		return user, token, errors.New("Invalid password")
+		return user, token, errors.New("invalid password")
 	}
 
 	//Generate the JWT auth token
 	tokenDetails, err := authModel.CreateToken(user.ID)
+	if err != nil {
+		return user, token, err
+	}
 
-	saveErr := authModel.CreateAuth(user.ID, tokenDetails)
-	if saveErr == nil {
+	err = authModel.CreateAuth(user.ID, tokenDetails)
+	if err == nil {
 		token.AccessToken = tokenDetails.AccessToken
 		token.RefreshToken = tokenDetails.RefreshToken
 	}
 
-	return user, token, nil
+	return user, token, err
 }
 
 // Register ...
 func (m UserModel) Register(form forms.RegisterForm) (user User, err error) {
-	getDb := db.GetDB()
+	db := database.GetDB()
 
 	// Check if the user exists in database
-	checkUser, err := getDb.SelectInt("SELECT count(id) FROM public.user WHERE email=LOWER($1) LIMIT 1", form.Email)
+
+	var count int	
+	err = db.Table("public.user").
+		Where("email = ?", strings.ToLower(form.Email)).Select("count(id)").Count(&count).Error
+	//checkUser, err := db.SelectInt("SELECT count(id) FROM public.user WHERE email=LOWER($1) LIMIT 1", form.Email)
 
 	if err != nil {
 		return user, err
 	}
 
-	if checkUser > 0 {
-		return user, errors.New("User already exists")
+	if count > 0 {
+		return user, errors.New("user already exists")
 	}
 
 	bytePassword := []byte(form.Password)
@@ -77,16 +88,19 @@ func (m UserModel) Register(form forms.RegisterForm) (user User, err error) {
 	}
 
 	//Create the user and return back the user ID
-	err = getDb.QueryRow("INSERT INTO public.user(email, password, name) VALUES($1, $2, $3) RETURNING id", form.Email, string(hashedPassword), form.Name).Scan(&user.ID)
+	user = User{Email: form.Email, Password: string(hashedPassword), Name: form.Name}
+	err = db.Table("public.user").Create(&user).Scan(&user).Error
 
-	user.Name = form.Name
-	user.Email = form.Email
+	//err = db.QueryRow("INSERT INTO public.user(email, password, name) VALUES($1, $2, $3) RETURNING id",
+	//	form.Email, string(hashedPassword), form.Name).Scan(&user.ID)
 
 	return user, err
 }
 
 // One ...
 func (m UserModel) One(userID int64) (user User, err error) {
-	err = db.GetDB().SelectOne(&user, "SELECT id, email, name FROM public.user WHERE id=$1", userID)
+	err = database.GetDB().Table("public.user").
+		Where("id = ?", userID).Take(&user).Error
+	//err = database.GetDB().SelectOne(&user, "SELECT id, email, name FROM public.user WHERE id=$1", userID)
 	return user, err
 }

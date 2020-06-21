@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/rank-a-thon/rank-a-thon/api/db"
+	"github.com/rank-a-thon/rank-a-thon/api/database"
 	uuid "github.com/twinj/uuid"
 )
 
@@ -80,11 +80,11 @@ func (m AuthModel) CreateAuth(userid int64, td *TokenDetails) error {
 	rt := time.Unix(td.RtExpires, 0)
 	now := time.Now()
 
-	errAccess := db.GetRedis().Set(td.AccessUUID, strconv.Itoa(int(userid)), at.Sub(now)).Err()
+	errAccess := database.GetRedis().Set(td.AccessUUID, strconv.Itoa(int(userid)), at.Sub(now)).Err()
 	if errAccess != nil {
 		return errAccess
 	}
-	errRefresh := db.GetRedis().Set(td.RefreshUUID, strconv.Itoa(int(userid)), rt.Sub(now)).Err()
+	errRefresh := database.GetRedis().Set(td.RefreshUUID, strconv.Itoa(int(userid)), rt.Sub(now)).Err()
 	if errRefresh != nil {
 		return errRefresh
 	}
@@ -156,7 +156,7 @@ func (m AuthModel) ExtractTokenMetadata(r *http.Request) (*AccessDetails, error)
 
 // FetchAuth ...
 func (m AuthModel) FetchAuth(authD *AccessDetails) (int64, error) {
-	userid, err := db.GetRedis().Get(authD.AccessUUID).Result()
+	userid, err := database.GetRedis().Get(authD.AccessUUID).Result()
 	if err != nil {
 		return 0, err
 	}
@@ -166,7 +166,7 @@ func (m AuthModel) FetchAuth(authD *AccessDetails) (int64, error) {
 
 //DeleteAuth ...
 func (m AuthModel) DeleteAuth(givenUUID string) (int64, error) {
-	deleted, err := db.GetRedis().Del(givenUUID).Result()
+	deleted, err := database.GetRedis().Del(givenUUID).Result()
 	if err != nil {
 		return 0, err
 	}

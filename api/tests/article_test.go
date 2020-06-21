@@ -16,7 +16,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/rank-a-thon/rank-a-thon/api/controllers"
-	"github.com/rank-a-thon/rank-a-thon/api/db"
+	"github.com/rank-a-thon/rank-a-thon/api/database"
 	"github.com/rank-a-thon/rank-a-thon/api/forms"
 
 	"github.com/gin-gonic/gin"
@@ -85,8 +85,8 @@ func TestIntDB(t *testing.T) {
 
 	fmt.Println("DB_PASS", os.Getenv("DB_PASS"))
 
-	db.Init()
-	db.InitRedis("1")
+	database.Init()
+	database.InitRedis("1")
 }
 
 /**
@@ -540,7 +540,8 @@ func TestUserLogout(t *testing.T) {
  */
 func TestCleanUp(t *testing.T) {
 	var err error
-	_, err = db.GetDB().Exec("DELETE FROM public.user WHERE email=$1", testEmail)
+	err = database.GetDB().Table("public.user").Where("email = ?", testEmail).Delete(User{}).Error
+	//_, err = database.GetDB().Exec("DELETE FROM public.user WHERE email=$1", testEmail)
 	if err != nil {
 		t.Error(err)
 	}
