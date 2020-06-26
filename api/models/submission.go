@@ -10,7 +10,7 @@ import (
 // Submission ...
 type Submission struct {
 	gorm.Model
-	UserID    uint  `gorm:"column:user_id;not null" json:"-"`
+	UserID    uint   `gorm:"column:user_id;not null" json:"-"`
 	Title     string `gorm:"column:title" json:"title"`
 	Content   string `gorm:"column:content" json:"content"`
 	User      User   `gorm:"column:user;foreignkey:UserID" json:"user"`
