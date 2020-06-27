@@ -170,3 +170,15 @@ func (ctrl UserController) Logout(context *gin.Context) {
 
 	context.JSON(http.StatusOK, gin.H{"message": "Successfully logged out"})
 }
+
+func isJudgeForUserID(id uint) (bool, error) {
+	user, err := userModel.One(id)
+	if err != nil {
+		return false, err
+	}
+	if user.UserType == models.Judge {
+		return true, nil
+	} else {
+		return false, nil
+	}
+}

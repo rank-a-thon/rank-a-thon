@@ -23,8 +23,8 @@ import (
 	"google.golang.org/api/option"
 )
 
-//CORSMiddleware ...
-//CORS (Cross-Origin Resource Sharing)
+// CORSMiddleware ...
+// CORS (Cross-Origin Resource Sharing)
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost")
@@ -43,20 +43,20 @@ func CORSMiddleware() gin.HandlerFunc {
 	}
 }
 
-//RequestIDMiddleware ...
-//Generate a unique ID and attach it to each request for future reference or use
+// RequestIDMiddleware ...
+// Generate a unique ID and attach it to each request for future reference or use
 func RequestIDMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		uuid := uuid.NewV4()
-		c.Writer.Header().Set("X-Request-Id", uuid.String())
+		newUUID := uuid.NewV4()
+		c.Writer.Header().Set("X-Request-Id", newUUID.String())
 		c.Next()
 	}
 }
 
 var auth = new(controllers.AuthController)
 
-//TokenAuthMiddleware ...
-//JWT Authentication middleware attached to each request that needs to be authenitcated to validate the access_token in the header
+// TokenAuthMiddleware ...
+// JWT Authentication middleware attached to each request that needs to be authenticated to validate the access_token in the header
 func TokenAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		auth.TokenValid(c)
@@ -73,10 +73,10 @@ func autoMigrateDB() {
 }
 
 func main() {
-	//Start the default gin server
+	// Start the default gin server
 	r := gin.Default()
 
-	//Load the .env file
+	// Load the .env file
 	envLoadError := godotenv.Load()
 	if envLoadError != nil {
 		log.Fatal("Error loading .env file, please create one in the root directory")
@@ -93,15 +93,15 @@ func main() {
 	r.Use(RequestIDMiddleware())
 	r.Use(gzip.Gzip(gzip.DefaultCompression))
 
-	//Start PostgreSQL database
-	//Example: db.GetDB() - More info in the models folder
+	// Start PostgreSQL database
+	// Example: db.GetDB() - More info in the models folder
 	database.Init()
 	autoMigrateDB()
 	db := database.GetDB()
 	defer db.Close()
 
-	//Start Redis on database 1 - it's used to store the JWT but you can use it for anythig else
-	//Example: db.GetRedis().Set(KEY, VALUE, at.Sub(now)).Err()
+	// Start Redis on database 1 - it's used to store the JWT but you can use it for anythig else
+	// Example: db.GetRedis().Set(KEY, VALUE, at.Sub(now)).Err()
 	database.InitRedis("1")
 
 	v1 := r.Group("/v1")
@@ -116,7 +116,7 @@ func main() {
 		/*** START AUTH ***/
 		auth := new(controllers.AuthController)
 
-		//Refresh the token when needed to generate new access_token and refresh_token for the user
+		// Refresh the token when needed to generate new access_token and refresh_token for the user
 		v1.POST("/token/refresh", auth.Refresh)
 
 		/*** START Submission ***/
@@ -127,6 +127,15 @@ func main() {
 		v1.GET("/submission/:id", TokenAuthMiddleware(), submission.One)
 		v1.PUT("/submission/:id", TokenAuthMiddleware(), submission.Update)
 		v1.DELETE("/submission/:id", TokenAuthMiddleware(), submission.Delete)
+
+		/*** START Evaluation ***/
+		evaluation := new(controllers.EvaluationController)
+
+		v1.GET("/evaluations", TokenAuthMiddleware(), evaluation.All)
+		v1.GET("/evaluation/:id", TokenAuthMiddleware(), evaluation.One)
+		v1.PUT("/evaluation/:id", TokenAuthMiddleware(), evaluation.Update)
+
+
 	}
 
 	r.LoadHTMLGlob("./public/html/*")
@@ -158,7 +167,7 @@ func main() {
 			KEY  string
 		}{}
 
-		//Generated using sh generate-certificate.sh
+		// Generated using sh generate-certificate.sh
 		SSLKeys.CERT = "./cert/myCA.cer"
 		SSLKeys.KEY = "./cert/myCA.key"
 

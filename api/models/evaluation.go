@@ -8,11 +8,12 @@ import (
     "github.com/rank-a-thon/rank-a-thon/api/forms"
 )
 
-// Submission ...
+// Evaluation ...
 type Evaluation struct {
     gorm.Model
     JudgeID    	      	    uint    `gorm:"column:judge_id;not null" json:"judge_id"`
     SubmissionID            uint    `gorm:"column:submission_id;not null" json:"submission_id"`
+    // Rankings are integers 1-10 when set
     MainRanking		        uint    `gorm:"column:main_ranking;default:0" json:"main_ranking"`
     AnnoyingRanking         uint    `gorm:"column:annoying_ranking;default:0" json:"annoying_ranking"`
     EntertainRanking        uint	`gorm:"column:entertaining_ranking;default:0" json:"entertaining_ranking"`
@@ -22,7 +23,7 @@ type Evaluation struct {
     AwesomelyUselessRanking uint    `gorm:"column:awesomely_useless_ranking;default:0" json:"awesomely_useless_ranking"`
 }
 
-// SubmissionModel ...
+// EvaluationModel ...
 type EvaluationModel struct{}
 
 // Create ...
@@ -76,7 +77,7 @@ func (m EvaluationModel) Delete(id uint) (err error) {
     if err != nil {
         return errors.New(fmt.Sprintf("error deleting: evaluation %d not found", id))
     }
-    err = database.GetDB().Table("public.submissions").Where("id = ?", id).Delete(Submission{}).Error
+    err = database.GetDB().Table("public.evaluations").Where("id = ?", id).Delete(Evaluation{}).Error
 
     return err
 }
