@@ -1,6 +1,6 @@
 package forms
 
 type SubmissionForm struct {
-	Title   string `form:"title" json:"title" binding:"required,max=100"`
-	Content string `form:"content" json:"content" binding:"required,max=1000"`
+	ProjectName string `form:"project_name" json:"project_name" binding:"required,max=100"`
+	Description string `form:"description" json:"description" binding:"required,max=3000"`
 }

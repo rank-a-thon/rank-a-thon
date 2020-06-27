@@ -10,10 +10,11 @@ import (
 // Submission ...
 type Submission struct {
 	gorm.Model
-	UserID    uint   `gorm:"column:user_id;not null" json:"-"`
-	Title     string `gorm:"column:title" json:"title"`
-	Content   string `gorm:"column:content" json:"content"`
-	User      User   `gorm:"column:user;foreignkey:UserID" json:"user"`
+	//TODO change UserID and User to TeamID and Team
+	UserID      uint   `gorm:"column:user_id;not null" json:"-"`
+	ProjectName string `gorm:"column:project_name" json:"project_name"`
+	Description string `gorm:"column:description" json:"description"`
+	User        User   `gorm:"column:user;foreignkey:UserID" json:"user"`
 }
 
 // SubmissionModel ...
@@ -21,7 +22,7 @@ type SubmissionModel struct{}
 
 // Create ...
 func (m SubmissionModel) Create(userID uint, form forms.SubmissionForm) (submissionID uint, err error) {
-	submission := Submission{UserID: userID, Title: form.Title, Content: form.Content}
+	submission := Submission{UserID: userID, ProjectName: form.ProjectName, Description: form.Description}
 	err = database.GetDB().Table("public.submissions").Create(&submission).Error
 	return submission.ID, err
 }
@@ -30,7 +31,6 @@ func (m SubmissionModel) Create(userID uint, form forms.SubmissionForm) (submiss
 func (m SubmissionModel) One(userID, id uint) (submission Submission, err error) {
 	err = database.GetDB().Preload("User").Table("public.submissions").
 		Where("submissions.user_id = ? AND submissions.id = ?", userID, id).
-		//Select("submissions.id, submissions.title, submissions.content, submissions.updated_at, submissions.created_at").
 		Joins("left join public.users on submissions.user_id = users.id").
 		Take(&submission).Error
 	return submission, err
@@ -55,7 +55,7 @@ func (m SubmissionModel) Update(userID uint, id uint, form forms.SubmissionForm)
 	}
 	err = database.GetDB().Table("public.submissions").Model(&Submission{}).
 		Where("id = ?", id).
-		Updates(map[string]interface{}{"title": form.Title, "content": form.Content}).Error
+		Updates(map[string]interface{}{"project_name": form.ProjectName, "description": form.Description}).Error
 	return err
 }
 

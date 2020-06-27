@@ -246,8 +246,8 @@ func TestCreateSubmission(t *testing.T) {
 
 	var submissionForm forms.SubmissionForm
 
-	submissionForm.Title = "Testing submission title"
-	submissionForm.Content = "Testing submission content"
+	submissionForm.ProjectName = "Testing submission project name"
+	submissionForm.Description = "Testing submission description"
 
 	data, _ := json.Marshal(submissionForm)
 
@@ -290,7 +290,7 @@ func TestCreateInvalidSubmission(t *testing.T) {
 
 	var submissionForm forms.SubmissionForm
 
-	submissionForm.Title = "Testing submission title"
+	submissionForm.ProjectName = "Testing submission project name"
 
 	data, _ := json.Marshal(submissionForm)
 
@@ -408,8 +408,8 @@ func TestUpdateSubmission(t *testing.T) {
 
 	var submissionForm forms.SubmissionForm
 
-	submissionForm.Title = "Testing new submission title"
-	submissionForm.Content = "Testing new submission content"
+	submissionForm.ProjectName = "Testing new submission project name"
+	submissionForm.Description = "Testing new submission description"
 
 	data, _ := json.Marshal(submissionForm)
 

@@ -20,3 +20,4 @@ type Team struct {
 type TeamModel struct {}
 
 //TODO
+// One user can only belong to one team
