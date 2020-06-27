@@ -377,6 +377,9 @@ const HomepageLayout: NextPage<PageProps> = ({ getWidth }) => (
 );
 
 HomepageLayout.getInitialProps = async ({ req }) => {
+  if (!req) {
+    return { getWidth: getWidthFactory(true) };
+  }
   const result: MobileDetect = new MobileDetect(req.headers['user-agent']);
   const isMobile: boolean = !!result.mobile();
   return { getWidth: getWidthFactory(isMobile) };
