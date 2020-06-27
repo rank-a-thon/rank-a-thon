@@ -66,7 +66,13 @@ func TokenAuthMiddleware() gin.HandlerFunc {
 
 func autoMigrateDB() {
 	db := database.GetDB()
-	err := db.AutoMigrate(&models.User{}, &models.Team{}, &models.Submission{}, &models.Evaluation{}).Error
+	err := db.AutoMigrate(
+		&models.User{},
+		&models.Team{},
+		&models.TeamInvite{},
+		&models.Submission{},
+		&models.Evaluation{},
+	).Error
 	if err != nil {
 		log.Fatal(err)
 	}

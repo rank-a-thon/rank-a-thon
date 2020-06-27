@@ -3,7 +3,6 @@ package models
 import (
 	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/jinzhu/gorm"
 	"github.com/rank-a-thon/rank-a-thon/api/database"
@@ -13,8 +12,8 @@ import (
 // Team
 type Team struct {
 	gorm.Model
-	TeamName				string	  `gorm:"column:team_name" json:"team_name"`
-	UserIDs 				[]uint    `gorm:"column:user_ids" json:"user_ids"`
+	TeamName				string	  `gorm:"column:team_name;not_null" json:"team_name"`
+	UserIDs 				[]uint    `gorm:"column:user_ids;not_null" json:"user_ids"`
 	IsFreshmanTeam          bool      `gorm:"column:is_freshman_team;default:false" json:"is_freshman_team"`
 	IsPreUniversityTeam     bool      `gorm:"column:is_pre_university_team;default:false" json:"is_pre_university_team"`
 	IsBeginnerTeam          bool      `gorm:"column:is_beginner_team;default:false" json:"is_beginner_team"`
