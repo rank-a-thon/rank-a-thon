@@ -14,10 +14,11 @@ import (
 // User ...
 type User struct {
 	gorm.Model
-	Email    string `gorm:"column:email;not null;unique" json:"email"`
-	Password string `gorm:"column:password" json:"-"`
-	Name     string `gorm:"column:name" json:"name"`
+	Email    string   `gorm:"column:email;not null;unique" json:"email"`
+	Password string   `gorm:"column:password" json:"-"`
+	Name     string   `gorm:"column:name" json:"name"`
 	UserType UserType `gorm:"column:user_type;default:0" json:"user_type"`
+	TeamID   uint     `gorm:"column:team_id;default:0" json:"team_id"`
 }
 
 // UserModel ...
