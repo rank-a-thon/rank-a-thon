@@ -5,16 +5,18 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/rank-a-thon/rank-a-thon/api/database"
 	"github.com/rank-a-thon/rank-a-thon/api/forms"
+	"strings"
 )
 
 // Submission ...
 type Submission struct {
 	gorm.Model
 	//TODO change UserID and User to TeamID and Team
-	UserID      uint   `gorm:"column:user_id;not null" json:"-"`
-	ProjectName string `gorm:"column:project_name" json:"project_name"`
-	Description string `gorm:"column:description" json:"description"`
-	User        User   `gorm:"column:user;foreignkey:UserID" json:"user"`
+	UserID      uint      `gorm:"column:user_id;not null" json:"-"`
+	ProjectName string    `gorm:"column:project_name" json:"project_name"`
+	Description string    `gorm:"column:description" json:"description"`
+	Images      string    `gorm:"column:images" json:"images"` // comma separated list of image ids
+	User        User      `gorm:"column:user;foreignkey:UserID" json:"user"`
 }
 
 // SubmissionModel ...
@@ -22,7 +24,13 @@ type SubmissionModel struct{}
 
 // Create ...
 func (m SubmissionModel) Create(userID uint, form forms.SubmissionForm) (submissionID uint, err error) {
-	submission := Submission{UserID: userID, ProjectName: form.ProjectName, Description: form.Description}
+
+	submission := Submission{
+		UserID: userID,
+		ProjectName: form.ProjectName,
+		Description: form.Description,
+		Images: strings.Join(form.Images, ","),
+	}
 	err = database.GetDB().Table("public.submissions").Create(&submission).Error
 	return submission.ID, err
 }
@@ -55,7 +63,11 @@ func (m SubmissionModel) Update(userID uint, id uint, form forms.SubmissionForm)
 	}
 	err = database.GetDB().Table("public.submissions").Model(&Submission{}).
 		Where("id = ?", id).
-		Updates(map[string]interface{}{"project_name": form.ProjectName, "description": form.Description}).Error
+		Updates(map[string]interface{}{
+			"project_name": form.ProjectName,
+			"description": form.Description,
+			"images": strings.Join(form.Images, ","),
+		}).Error
 	return err
 }
 
