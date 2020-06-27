@@ -1,21 +1,15 @@
 import React, { useState } from 'react';
 import type { NextPage } from 'next';
 import Link from 'next/link';
-import MobileDetect from 'mobile-detect';
 import {
   Button,
-  Container,
-  Divider,
   Grid,
-  Header,
   Icon,
   Image,
-  List,
   Menu,
   Responsive,
   Segment,
   Sidebar,
-  Visibility,
   GridColumn,
   Input,
 } from 'semantic-ui-react';
@@ -107,48 +101,110 @@ type PageProps = {
   getWidth?: () => number;
 };
 
-const LoginLayout: NextPage<PageProps> = () => (
-  <MobileContainer>
-    <Segment vertical style={{ marginTop: '2em' }}>
-      <Grid textAlign="center" verticalAlign="middle">
-        <Grid.Row>
-          <Grid.Column>
-            <p>
-              <Image
-                rounded
-                size="small"
-                src="img/icon.svg"
-                style={{ margin: '0.7em auto' }}
-              />
-            </p>
-            <p>
-              <Input
-                size="large"
-                style={{ margin: '0.5em auto', width: '70%' }}
-                placeholder="Username"
-              />
-            </p>
-            <p>
-              <Input
-                size="large"
-                style={{ margin: '0.5em auto', width: '70%' }}
-                placeholder="Password"
-              />
-            </p>
-            <p>
-              <Button primary style={{ margin: '1em 0.5em' }} size="huge">
-                Login
-              </Button>
-              <Button secondary style={{ margin: '1em 0.5em' }} size="huge">
-                Sign-Up
-              </Button>
-            </p>
-            <p>Forgot Password?</p>
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
-    </Segment>
-  </MobileContainer>
-);
+const LoginLayout: NextPage<PageProps> = () => {
+  const [authAction, setAuthAction] = useState<'login' | 'signup'>('login');
+
+  function handleTabClick(e, { name }) {
+    setAuthAction(name);
+  }
+
+  return (
+    <MobileContainer>
+      <Segment vertical style={{ marginTop: '2em' }}>
+        <Grid textAlign="center" verticalAlign="middle">
+          <Grid.Row>
+            <Grid.Column>
+              <p>
+                <Image
+                  rounded
+                  size="small"
+                  src="img/icon.svg"
+                  style={{ margin: '0 auto' }}
+                />
+              </p>
+              <Menu tabular widths={2}>
+                <Menu.Item
+                  name="login"
+                  active={authAction === 'login'}
+                  onClick={handleTabClick}
+                />
+                <Menu.Item
+                  name="signup"
+                  active={authAction === 'signup'}
+                  onClick={handleTabClick}
+                />
+              </Menu>
+
+              {authAction === 'login' && (
+                <>
+                  <p>
+                    <Input
+                      size="large"
+                      style={{ margin: '0.5em auto', width: '70%' }}
+                      placeholder="Email"
+                    />
+                  </p>
+                  <p>
+                    <Input
+                      size="large"
+                      style={{ margin: '0.5em auto', width: '70%' }}
+                      placeholder="Password"
+                    />
+                  </p>
+                  <Button primary style={{ margin: '1em 0.5em' }} size="huge">
+                    Login
+                  </Button>
+                  <p>Forgot Password?</p>
+                </>
+              )}
+
+              {authAction === 'signup' && (
+                <>
+                  <p>
+                    <Input
+                      size="large"
+                      style={{ margin: '0.2em auto', width: '70%' }}
+                      placeholder="Name"
+                    />
+                  </p>
+                  <p>
+                    <Input
+                      size="large"
+                      style={{ margin: '0.2em auto', width: '70%' }}
+                      placeholder="Email"
+                    />
+                  </p>
+                  <p>
+                    <Input
+                      size="large"
+                      style={{ margin: '0.2em auto', width: '70%' }}
+                      placeholder="Password"
+                    />
+                  </p>
+                  <p>
+                    <Input
+                      size="large"
+                      style={{ margin: '0.2em auto', width: '70%' }}
+                      placeholder="Repeat Password"
+                    />
+                  </p>
+                  <p>
+                    <Button
+                      secondary
+                      style={{ margin: '1em 0.5em' }}
+                      size="huge"
+                    >
+                      Sign-Up
+                    </Button>
+                  </p>
+                </>
+              )}
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
+      </Segment>
+    </MobileContainer>
+  );
+};
 
 export default LoginLayout;
