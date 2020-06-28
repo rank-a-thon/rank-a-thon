@@ -121,10 +121,11 @@ func main() {
 
 		/*** START Team ***/
 		team := new(controllers.TeamController)
-		v1.POST("/team", TokenAuthMiddleware(), team.Create)
-		v1.GET("/team", TokenAuthMiddleware(), team.One)
-		v1.PUT("/team", TokenAuthMiddleware(), team.Update)
-		v1.DELETE("/team", TokenAuthMiddleware(), team.Delete)
+		v1.POST("/team/:event", TokenAuthMiddleware(), team.Create)
+		v1.GET("/teams", TokenAuthMiddleware(), team.All)
+		v1.GET("/team/:event", TokenAuthMiddleware(), team.One)
+		v1.PUT("/team/:event", TokenAuthMiddleware(), team.Update)
+		v1.DELETE("/team/:event", TokenAuthMiddleware(), team.Delete)
 
 		/*** START AUTH ***/
 		auth := new(controllers.AuthController)

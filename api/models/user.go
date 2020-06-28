@@ -15,11 +15,11 @@ import (
 // User ...
 type User struct {
 	gorm.Model
-	Email    string   `gorm:"column:email;not null;unique" json:"email"`
-	Password string   `gorm:"column:password" json:"-"`
-	Name     string   `gorm:"column:name" json:"name"`
-	UserType UserType `gorm:"column:user_type;default:0" json:"user_type"`
-	TeamID   uint     `gorm:"column:team_id;default:0" json:"team_id"`
+	Email    		   string    `gorm:"column:email;not null;unique" json:"email"`
+	Password 		   string    `gorm:"column:password" json:"-"`
+	Name    		   string    `gorm:"column:name" json:"name"`
+	UserType 		   UserType  `gorm:"column:user_type;default:0" json:"user_type"`
+	TeamIDForEvent	   string    `gorm:"column:team_id_for_event;default:'{}'" json:"team_id_for_event"`
 }
 
 // UserModel ...
@@ -99,16 +99,20 @@ func (m UserModel) One(userID uint) (user User, err error) {
 	return user, err
 }
 
-func (m UserModel) UpdateTeamForUser(userID, teamID uint) (err error) {
-	_, err = m.One(userID)
+func (m UserModel) UpdateTeamForUser(userID, teamID uint, event Event) (err error) {
+	user, err := m.One(userID)
 
 	if err != nil {
 		return errors.New(fmt.Sprintf("user %d not found", userID))
 	}
+
+	teamIDForEvent := JsonStringToStringUintMap(user.TeamIDForEvent)
+	teamIDForEvent[string(event)] = teamID
+
 	err = database.GetDB().Table("public.users").Model(&User{}).
 		Where("id = ?", userID).
 		Updates(map[string]interface{}{
-			"team_id": teamID,
+			"team_id_for_event": StringUintMapToJsonString(teamIDForEvent),
 		}).Error
 	return err
 }

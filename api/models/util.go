@@ -58,7 +58,7 @@ func ConvertToInt64(number interface{}) int64 {
 	return number.(int64)
 }
 
-func UintSliceToString(slice []uint) string {
+func UintSliceToJsonString(slice []uint) string {
 	sliceJson, err := json.Marshal(slice)
 	if err != nil {
 		panic(err)
@@ -66,11 +66,26 @@ func UintSliceToString(slice []uint) string {
 	return string(sliceJson)
 }
 
-func StringToUintSlice(str string) (slice []uint) {
+func JsonStringToUintSlice(str string) (slice []uint) {
 	byteSlice := []byte(str)
-	var data []uint
-	if err := json.Unmarshal(byteSlice, &data); err != nil {
+	if err := json.Unmarshal(byteSlice, &slice); err != nil {
 		panic(err)
 	}
-	return data
+	return slice
+}
+
+func StringUintMapToJsonString(dict map[string]uint) string {
+	jsonMap, err := json.Marshal(dict)
+	if err != nil {
+		panic(err)
+	}
+	return string(jsonMap)
+}
+
+func JsonStringToStringUintMap(strMap string) (mp map[string]uint) {
+	byteSlice := []byte(strMap)
+	if err := json.Unmarshal(byteSlice, &mp); err != nil {
+		panic(err)
+	}
+	return mp
 }

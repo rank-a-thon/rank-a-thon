@@ -13,6 +13,7 @@ import (
 type Team struct {
 	gorm.Model
 	TeamName				string	  `gorm:"column:team_name;not_null" json:"team_name"`
+	Event					Event	  `gorm:"column:event;not_null" json:"event"`
 	UserIDs 				string    `gorm:"column:user_ids;not_null" json:"user_ids"`
 	IsFreshmanTeam          bool      `gorm:"column:is_freshman_team;default:false" json:"is_freshman_team"`
 	IsPreUniversityTeam     bool      `gorm:"column:is_pre_university_team;default:false" json:"is_pre_university_team"`
@@ -23,22 +24,23 @@ type Team struct {
 type TeamModel struct {}
 
 // Create ...
-func (m TeamModel) Create(userID uint, form forms.TeamForm) (TeamID uint, err error) {
-	teamID, err := getTeamIDForUser(userID)
+func (m TeamModel) Create(userID uint, form forms.TeamForm, event Event) (TeamID uint, err error) {
+	teamID, err := getTeamIDForUser(userID, event)
 	if err != nil {
 		return 0, err
 	} else if teamID != 0 {
 		return teamID, errors.New(fmt.Sprintf("error creating team: user %d already belongs to team %d", userID, teamID))
 	}
 	team := Team{
-		TeamName: form.TeamName,
-		UserIDs: UintSliceToString([]uint{userID}),
-		IsFreshmanTeam: form.IsFreshmanTeam,
+		TeamName:            form.TeamName,
+		Event:				 event,
+		UserIDs:             UintSliceToJsonString([]uint{userID}),
+		IsFreshmanTeam:      form.IsFreshmanTeam,
 		IsPreUniversityTeam: form.IsPreUniversityTeam,
-		IsBeginnerTeam: form.IsBeginnerTeam,
+		IsBeginnerTeam:      form.IsBeginnerTeam,
 	}
 	err = database.GetDB().Table("public.teams").Create(&team).Error
-	err = userModel.UpdateTeamForUser(userID, team.ID)
+	err = userModel.UpdateTeamForUser(userID, team.ID, event)
 	return team.ID, err
 }
 
@@ -48,6 +50,19 @@ func (m TeamModel) One(teamID uint) (team Team, err error) {
 		Where("teams.id = ?", teamID).
 		Take(&team).Error
 	return team, err
+}
+
+// All ...
+func (m TeamModel) All(userID uint) (teams []Team, err error) {
+	user, err := userModel.One(userID)
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("user %d not found", userID))
+	}
+	for _, teamID := range JsonStringToStringUintMap(user.TeamIDForEvent) {
+		team, _ := m.One(teamID)
+		teams = append(teams, team)
+	}
+	return teams, err
 }
 
 // Update ...
@@ -70,17 +85,30 @@ func (m TeamModel) Update(teamID uint, form forms.TeamForm) (err error) {
 
 func (m TeamModel) AddTeamMember(userID uint, teamID uint) (err error) {
 	team, err := m.One(teamID)
-
 	if err != nil {
 		return errors.New(fmt.Sprintf("team %d not found", teamID))
 	}
-	teamUserIDs := StringToUintSlice(team.UserIDs)
+
+	user, err := userModel.One(userID)
+	if err != nil {
+		return errors.New(fmt.Sprintf("user %d not found", userID))
+	}
+	if JsonStringToStringUintMap(user.TeamIDForEvent)[string(team.Event)] != 0 {
+		return errors.New(fmt.Sprintf("user %d is already part of team %d for event %s", userID, teamID, team.Event))
+	}
+
+	teamUserIDs := JsonStringToUintSlice(team.UserIDs)
+	for _, id := range teamUserIDs {
+		if id == userID {
+			return errors.New(fmt.Sprintf("user %d is already part of team %d for event %s", userID, teamID, team.Event))
+		}
+	}
 	err = database.GetDB().Table("public.teams").Model(&Team{}).
 		Where("id = ?", teamID).
 		Updates(map[string]interface{}{
 			"user_ids": append(teamUserIDs, userID),
 		}).Error
-	err = userModel.UpdateTeamForUser(userID, teamID)
+	err = userModel.UpdateTeamForUser(userID, teamID, team.Event)
 	return err
 }
 
@@ -92,7 +120,7 @@ func (m TeamModel) RemoveTeamMember(userID uint, teamID uint) (err error) {
 	}
 
 	indexToRemove := -1
-	teamUserIDs := StringToUintSlice(team.UserIDs)
+	teamUserIDs := JsonStringToUintSlice(team.UserIDs)
 	for i, v := range teamUserIDs {
 		if v == userID {
 			indexToRemove = i
@@ -107,7 +135,7 @@ func (m TeamModel) RemoveTeamMember(userID uint, teamID uint) (err error) {
 		Updates(map[string]interface{}{
 			"user_ids": append(teamUserIDs[:indexToRemove], teamUserIDs[indexToRemove+1:]...),
 		}).Error
-	err = userModel.UpdateTeamForUser(userID, 0)
+	err = userModel.UpdateTeamForUser(userID, 0, team.Event)
 	return err
 }
 
@@ -117,9 +145,9 @@ func (m TeamModel) Delete(teamID uint) (err error) {
 	if err != nil {
 		return errors.New(fmt.Sprintf("team %d not found", teamID))
 	}
-	teamUserIDs := StringToUintSlice(team.UserIDs)
+	teamUserIDs := JsonStringToUintSlice(team.UserIDs)
 	for _, id := range teamUserIDs {
-		err = userModel.UpdateTeamForUser(id, 0)
+		err = userModel.UpdateTeamForUser(id, 0, team.Event)
 	}
 	err = database.GetDB().Table("public.teams").Where("id = ?", teamID).Delete(Team{}).Error
 
@@ -128,10 +156,11 @@ func (m TeamModel) Delete(teamID uint) (err error) {
 
 var userModel = new(UserModel)
 
-func getTeamIDForUser(userID uint) (uint, error) {
+func getTeamIDForUser(userID uint, event Event) (uint, error) {
 	user, err := userModel.One(userID)
 	if err != nil {
 		return 0, err
 	}
-	return user.TeamID, nil
+	teamIDForEvent := JsonStringToStringUintMap(user.TeamIDForEvent)
+	return teamIDForEvent[string(event)], nil
 }
