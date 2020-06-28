@@ -22,27 +22,37 @@ const DashboardLayout: NextPage<PageProps> = () => {
         <p style={{ fontSize: '2.5em', marginBottom: '0' }}>Good morning,</p>
         <p style={{ fontSize: '2.5em', fontWeight: 'bold' }}>{name}</p>
         <p style={{ fontSize: '2em' }}>What would you like to do today?</p>
-        <Button
-          size="big"
-          style={{ display: 'block', margin: '1em auto', width: '100%' }}
-          color="pink"
-        >
-          View Announcements
-        </Button>
-        <Button
-          size="big"
-          color="purple"
-          style={{ display: 'block', margin: '1em auto', width: '100%' }}
-        >
-          Edit Team
-        </Button>
-        <Button
-          size="big"
-          color="violet"
-          style={{ display: 'block', margin: '1em auto', width: '100%' }}
-        >
-          Explore Projects
-        </Button>
+
+        <Link href="/announcements">
+          <Button
+            as="a"
+            size="big"
+            style={{ display: 'block', margin: '1em auto', width: '100%' }}
+            color="pink"
+          >
+            View Announcements
+          </Button>
+        </Link>
+        <Link href="/team">
+          <Button
+            as="a"
+            size="big"
+            color="purple"
+            style={{ display: 'block', margin: '1em auto', width: '100%' }}
+          >
+            Edit Team
+          </Button>
+        </Link>
+        <Link href="/explore">
+          <Button
+            as="a"
+            size="big"
+            color="violet"
+            style={{ display: 'block', margin: '1em auto', width: '100%' }}
+          >
+            Explore Projects
+          </Button>
+        </Link>
       </Segment>
     </MobilePostAuthContainer>
   );
