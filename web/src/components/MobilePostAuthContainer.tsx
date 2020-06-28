@@ -37,33 +37,38 @@ function MobilePostAuthContainer(props: MobileContainerProps) {
           visible={sidebarOpened}
         >
           <Menu.Item active>
-            <Link href="/">
-              <a>Home</a>
+            <Link href="/dashboard">
+              <a>Dashboard</a>
             </Link>
           </Menu.Item>
           <Menu.Item>
-            <Link href="">
-              <a>About</a>
+            <Link href="/announcements">
+              <a>Announcements</a>
             </Link>
           </Menu.Item>
           <Menu.Item>
-            <Link href="">
-              <a>Try</a>
+            <Link href="/team">
+              <a>Manage Team</a>
             </Link>
           </Menu.Item>
           <Menu.Item>
-            <Link href="">
-              <a>Contact</a>
+            <Link href="/explore">
+              <a>View Projects</a>
             </Link>
           </Menu.Item>
           <Menu.Item>
-            <Link href="">
-              <a>Log in</a>
+            <Link href="/map">
+              <a>Map</a>
             </Link>
           </Menu.Item>
           <Menu.Item>
-            <Link href="">
-              <a>Sign Up</a>
+            <Link href="/schedule">
+              <a>Schedule</a>
+            </Link>
+          </Menu.Item>
+          <Menu.Item>
+            <Link href="/login">
+              <a>Log Out</a>
             </Link>
           </Menu.Item>
         </Sidebar>
@@ -94,22 +99,30 @@ function MobilePostAuthContainer(props: MobileContainerProps) {
         </Sidebar.Pusher>
       </Sidebar.Pushable>
       <Menu widths={4} icon="labeled" fixed="bottom" size="tiny">
-        <Menu.Item name="Explore">
-          <Icon name="search" />
-          Explore
-        </Menu.Item>
-        <Menu.Item name="Schedule">
-          <Icon name="time" />
-          Schedule
-        </Menu.Item>
-        <Menu.Item name="Map">
-          <Icon name="map" />
-          Map
-        </Menu.Item>
-        <Menu.Item name="Team">
-          <Icon name="group" />
-          Team
-        </Menu.Item>
+        <Link href="/explore">
+          <Menu.Item as="a" name="Explore">
+            <Icon name="search" />
+            Explore
+          </Menu.Item>
+        </Link>
+        <Link href="/schedule">
+          <Menu.Item as="a" name="Schedule">
+            <Icon name="time" />
+            Schedule
+          </Menu.Item>
+        </Link>
+        <Link href="/map">
+          <Menu.Item as="a" name="Map">
+            <Icon name="map" />
+            Map
+          </Menu.Item>
+        </Link>
+        <Link href="/team">
+          <Menu.Item as="a" name="Team">
+            <Icon name="group" />
+            Team
+          </Menu.Item>
+        </Link>
       </Menu>
     </>
   );
