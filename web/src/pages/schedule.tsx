@@ -10,7 +10,7 @@ type PageProps = {
 
 const DashboardLayout: NextPage<PageProps> = () => {
   return (
-    <MobilePostAuthContainer title="Schedule">
+    <MobilePostAuthContainer title="Schedule" requireAuth>
       <Segment basic textAlign="center" style={{ padding: '1em' }}>
         <p style={{ fontSize: '1.3em', marginBottom: '0' }}>
           This schedule will always be updated:

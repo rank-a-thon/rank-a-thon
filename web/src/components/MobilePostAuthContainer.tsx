@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import {
@@ -10,12 +10,13 @@ import {
   GridColumn,
 } from 'semantic-ui-react';
 
-import { clearMe } from '../data/me';
+import { clearMe, getMe } from '../data/me';
 
 type MobileContainerProps = {
   getWidth?: () => number;
   children: React.ReactNode;
   title: string;
+  requireAuth?: boolean;
 };
 
 function MobilePostAuthContainer(props: MobileContainerProps) {
@@ -32,6 +33,14 @@ function MobilePostAuthContainer(props: MobileContainerProps) {
     clearMe();
     router.push('/login');
   }
+
+  useEffect(() => {
+    // Hook to check for auth
+    // If user is not authed, kick them back to login screen
+    if (props.requireAuth && !getMe()) {
+      logOut();
+    }
+  }, []);
 
   return (
     <>

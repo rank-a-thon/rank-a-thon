@@ -11,7 +11,7 @@ type PageProps = {
 const DashboardLayout: NextPage<PageProps> = () => {
   const paragraph = 'Hey';
   return (
-    <MobilePostAuthContainer title="Announcements">
+    <MobilePostAuthContainer title="Announcements" requireAuth>
       <Item.Group divided>
         {announcements.map((announcement, index) => (
           <Item key={index} style={{ padding: '0' }}>

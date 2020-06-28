@@ -17,7 +17,7 @@ const DashboardLayout: NextPage<PageProps> = () => {
   }, []);
 
   return (
-    <MobilePostAuthContainer title="Dashboard">
+    <MobilePostAuthContainer title="Dashboard" requireAuth>
       <Segment basic textAlign="left" style={{ padding: '1.5em 2em' }}>
         <p style={{ fontSize: '2.5em', marginBottom: '0' }}>Good morning,</p>
         <p style={{ fontSize: '2.5em', fontWeight: 'bold' }}>{name}</p>

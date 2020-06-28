@@ -9,7 +9,7 @@ type PageProps = {
 
 const DashboardLayout: NextPage<PageProps> = () => {
   return (
-    <MobilePostAuthContainer title="Team">
+    <MobilePostAuthContainer title="Team" requireAuth>
       <Segment
         basic
         textAlign="left"
