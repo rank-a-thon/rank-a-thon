@@ -106,7 +106,7 @@ func (m TeamModel) AddTeamMember(userID uint, teamID uint) (err error) {
 	err = database.GetDB().Table("public.teams").Model(&Team{}).
 		Where("id = ?", teamID).
 		Updates(map[string]interface{}{
-			"user_ids": append(teamUserIDs, userID),
+			"user_ids": UintSliceToJsonString(append(teamUserIDs, userID)),
 		}).Error
 	err = userModel.UpdateTeamForUser(userID, teamID, team.Event)
 	return err

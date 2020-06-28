@@ -99,6 +99,12 @@ func (m UserModel) One(userID uint) (user User, err error) {
 	return user, err
 }
 
+func (m UserModel) GetUserByEmail(email string) (user User, err error) {
+	err = database.GetDB().Table("public.users").
+		Where("email = ?", email).Take(&user).Error
+	return user, err
+}
+
 func (m UserModel) UpdateTeamForUser(userID, teamID uint, event Event) (err error) {
 	user, err := m.One(userID)
 

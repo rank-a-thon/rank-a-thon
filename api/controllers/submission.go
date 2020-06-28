@@ -38,15 +38,12 @@ func (ctrl SubmissionController) Create(context *gin.Context) {
 
 func (ctrl SubmissionController) All(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
-
 		data, err := submissionModel.All(userID)
-
 		if err != nil {
 			context.JSON(http.StatusNotAcceptable, gin.H{"Message": "Could not get submissions", "error": err.Error()})
 			context.Abort()
 			return
 		}
-
 		context.JSON(http.StatusOK, gin.H{"data": data})
 	}
 }
@@ -66,7 +63,6 @@ func (ctrl SubmissionController) One(context *gin.Context) {
 			}
 
 			context.JSON(http.StatusOK, gin.H{"data": data})
-
 		} else {
 			context.JSON(http.StatusNotFound, gin.H{"Message": "Invalid parameter"})
 		}

@@ -126,6 +126,13 @@ func main() {
 		v1.GET("/team/:event", TokenAuthMiddleware(), team.One)
 		v1.PUT("/team/:event", TokenAuthMiddleware(), team.Update)
 		v1.DELETE("/team/:event", TokenAuthMiddleware(), team.Delete)
+		v1.DELETE("/remove-team-member/:event", TokenAuthMiddleware(), team.RemoveTeamMember)
+
+		/*** Team Invites ***/
+		v1.POST("/team-invite", TokenAuthMiddleware(), team.SendInvite)
+		v1.GET("/team-invites", TokenAuthMiddleware(), team.GetInvites)
+		v1.DELETE("/team-invite/accept", TokenAuthMiddleware(), team.AcceptInvite)
+		v1.DELETE("/team-invite/decline", TokenAuthMiddleware(), team.DeclineInvite)
 
 		/*** START AUTH ***/
 		auth := new(controllers.AuthController)
@@ -145,7 +152,6 @@ func main() {
 		v1.GET("/evaluations", TokenAuthMiddleware(), evaluation.All)
 		v1.GET("/evaluation/:id", TokenAuthMiddleware(), evaluation.One)
 		v1.PUT("/evaluation/:id", TokenAuthMiddleware(), evaluation.Update)
-
 
 	}
 
