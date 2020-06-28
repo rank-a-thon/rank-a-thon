@@ -53,10 +53,12 @@ const HomepageHeading = ({ mobile }: HomepageHeadingProps) => (
         marginTop: mobile ? '0.5em' : '1.5em',
       }}
     />
-    <Button primary size="huge">
-      Get Started
-      <Icon name="arrow right" />
-    </Button>
+    <Link href="/signup">
+      <Button as="a" primary size="huge">
+        Sign Up Now
+        <Icon name="arrow right" />
+      </Button>
+    </Link>
   </Container>
 );
 
@@ -162,7 +164,7 @@ function MobileContainer(props: MobileContainerProps) {
             <a>Home</a>
           </Link>
         </Menu.Item>
-        <Menu.Item>
+        {/* <Menu.Item>
           <Link href="">
             <a>About</a>
           </Link>
@@ -176,14 +178,14 @@ function MobileContainer(props: MobileContainerProps) {
           <Link href="">
             <a>Contact</a>
           </Link>
-        </Menu.Item>
+        </Menu.Item> */}
         <Menu.Item>
-          <Link href="login">
+          <Link href="/login">
             <a>Log in</a>
           </Link>
         </Menu.Item>
         <Menu.Item>
-          <Link href="">
+          <Link href="/signup">
             <a>Sign Up</a>
           </Link>
         </Menu.Item>
@@ -207,9 +209,11 @@ function MobileContainer(props: MobileContainerProps) {
                     Log in
                   </Button>
                 </Link>
-                <Button as="a" inverted style={{ marginLeft: '0.5em' }}>
-                  Sign Up
-                </Button>
+                <Link href="/signup">
+                  <Button as="a" inverted style={{ marginLeft: '0.5em' }}>
+                    Sign Up
+                  </Button>
+                </Link>
               </Menu.Item>
             </Menu>
           </Container>
@@ -362,12 +366,9 @@ const HomepageLayout: NextPage<PageProps> = ({ getWidth }) => (
             </Grid.Column>
             <Grid.Column width={7}>
               <Header as="h4" inverted>
-                Footer Header
+                &copy; Rankathon 2020
               </Header>
-              <p>
-                Extra space for a call to action inside the footer that could
-                help re-engage users.
-              </p>
+              <p>Orbital is hard.</p>
             </Grid.Column>
           </Grid.Row>
         </Grid>

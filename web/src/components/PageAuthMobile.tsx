@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { NextPage } from 'next';
-import { useRouter } from 'next/router';
+import { useRouter, Router } from 'next/router';
 import Link from 'next/link';
 import {
   Button,
@@ -21,10 +21,13 @@ import { saveMe } from '../data/me';
 type MobileContainerProps = {
   getWidth?: () => number;
   children: React.ReactNode;
+  title: string;
 };
 
 function MobileContainer(props: MobileContainerProps) {
   const [sidebarOpened, setSidebarOpened] = useState<boolean>(false);
+
+  const router = useRouter();
   function handleSidebarHide() {
     setSidebarOpened(false);
   }
@@ -33,7 +36,7 @@ function MobileContainer(props: MobileContainerProps) {
   }
 
   return (
-    <Sidebar.Pushable>
+    <Sidebar.Pushable style={{ height: '100vh' }}>
       <Sidebar
         as={Menu}
         animation="push"
@@ -42,12 +45,12 @@ function MobileContainer(props: MobileContainerProps) {
         vertical
         visible={sidebarOpened}
       >
-        <Menu.Item active>
+        <Menu.Item active={router.pathname === '/'}>
           <Link href="/">
             <a>Home</a>
           </Link>
         </Menu.Item>
-        <Menu.Item>
+        {/* <Menu.Item>
           <Link href="">
             <a>About</a>
           </Link>
@@ -61,14 +64,14 @@ function MobileContainer(props: MobileContainerProps) {
           <Link href="">
             <a>Contact</a>
           </Link>
-        </Menu.Item>
-        <Menu.Item>
-          <Link href="">
+        </Menu.Item> */}
+        <Menu.Item active={router.pathname === '/login'}>
+          <Link href="/login">
             <a>Log in</a>
           </Link>
         </Menu.Item>
-        <Menu.Item>
-          <Link href="">
+        <Menu.Item active={router.pathname === '/signup'}>
+          <Link href="/signup">
             <a>Sign Up</a>
           </Link>
         </Menu.Item>
@@ -86,7 +89,7 @@ function MobileContainer(props: MobileContainerProps) {
               <GridColumn>
                 <Icon onClick={handleToggle} name="angle double left" />
               </GridColumn>
-              <GridColumn as="h3">Login</GridColumn>
+              <GridColumn as="h3">{props.title}</GridColumn>
               <GridColumn></GridColumn>
             </Grid.Row>
           </Grid>
@@ -195,7 +198,7 @@ const LoginLayout: React.FC<PageProps> = ({ signup }) => {
   }
 
   return (
-    <MobileContainer>
+    <MobileContainer title={authAction === 'signup' ? 'Sign-Up' : 'Login'}>
       <Segment
         basic
         textAlign="center"
