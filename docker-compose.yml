@@ -36,6 +36,7 @@ services:
       - ./web/public:/web/public
       - ./web/next-env.d.ts:/web/next-env.d.ts
       - ./web/tsconfig.json:/web/tsconfig.json
+      - ./web/next.config.js:/web/next.config.js
     environment:
       - FIREBASE_API_KEY=${FIREBASE_API_KEY}
       - FIREBASE_AUTH_DOMAIN=${FIREBASE_AUTH_DOMAIN}
