@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { NextPage } from 'next';
+import { useRouter } from 'next/router';
 import Link from 'next/link';
 import {
   Button,
@@ -112,6 +113,8 @@ const LoginLayout: NextPage<PageProps> = () => {
   const [error, setError] = useState<{ message: string } | null>(null);
   const [success, setSuccess] = useState<{ message: string } | null>(null);
 
+  const router = useRouter();
+
   function handleTabClick(e, { name }) {
     setError(null);
     setSuccess(null);
@@ -178,12 +181,13 @@ const LoginLayout: NextPage<PageProps> = () => {
       .then((response) => {
         setSuccess({ message: 'Successfully logged in. Redirecting.' });
         saveMe(response.data.token, response.data.user);
+        router.push('/dashboard');
       })
       .catch((err) => {
         if (err.response) {
           setError({ message: 'Wrong credentials. Please try again.' });
         } else {
-          setError({ message: error.message });
+          setError({ message: JSON.stringify(error) });
         }
       });
   }
