@@ -106,18 +106,24 @@ type PageProps = {
 
 const LoginLayout: NextPage<PageProps> = () => {
   const [authAction, setAuthAction] = useState<'login' | 'signup'>('login');
-  const [email, setEmail] = useState<string | null>(null);
-  const [password, setPassword] = useState<string | null>(null);
-  const [passwordCheck, setPasswordCheck] = useState<string | null>(null);
+
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [passwordCheck, setPasswordCheck] = useState<string>('');
+  const [name, setName] = useState<string>('');
+
   const [error, setError] = useState<{ message: string } | null>(null);
-  const [name, setName] = useState<string | null>(null);
+  const [success, setSuccess] = useState<{ message: string } | null>(null);
 
   function handleTabClick(e, { name }) {
+    setError(null);
+    setSuccess(null);
     setAuthAction(name);
   }
 
-  async function signUp() {
+  function signUp() {
     setError(null);
+    setSuccess(null);
 
     if (!name || !email || !password || !passwordCheck) {
       setError({ message: 'Please fill all fields' });
@@ -135,15 +141,49 @@ const LoginLayout: NextPage<PageProps> = () => {
       return;
     }
 
-    await makeBackendRequest('post', 'v1/user/register', {
+    makeBackendRequest('post', 'v1/user/register', {
       name: name,
       email: email,
       password: password,
     })
-      .then((response) => console.log(response.data))
+      .then(() => {
+        setAuthAction('login');
+        setSuccess({ message: 'Successfully registered, please login.' });
+      })
       .catch((err) => {
         if (err.response && err.response.status === 406) {
           setError({ message: 'Account already exists' });
+        } else {
+          setError({ message: error.message });
+        }
+      });
+  }
+
+  function login() {
+    setError(null);
+    setSuccess(null);
+
+    if (!email || !password) {
+      setError({ message: 'Please fill all fields' });
+      return;
+    }
+
+    if (!email.includes('@')) {
+      // TODO: more robust email detection pls
+      setError({ message: 'Invalid email' });
+      return;
+    }
+
+    makeBackendRequest('post', 'v1/user/login', {
+      email: email,
+      password: password,
+    })
+      .then(() => {
+        setSuccess({ message: 'Successfully logged in. Redirecting.' });
+      })
+      .catch((err) => {
+        if (err.response) {
+          setError({ message: 'Wrong credentials. Please try again.' });
         } else {
           setError({ message: error.message });
         }
@@ -155,7 +195,7 @@ const LoginLayout: NextPage<PageProps> = () => {
       <Segment
         basic
         textAlign="center"
-        style={{ margin: '2em 0px', marginLeft: '0!important', padding: '0' }}
+        style={{ margin: '2em 0', padding: '0' }}
       >
         <div>
           <Image
@@ -205,7 +245,17 @@ const LoginLayout: NextPage<PageProps> = () => {
                 {error.message}
               </Message>
             )}
-            <Button primary style={{ margin: '1em 0.5em' }} size="huge">
+            {success && (
+              <Message positive style={{ width: '70%', margin: '0 auto' }}>
+                {success.message}
+              </Message>
+            )}
+            <Button
+              primary
+              style={{ margin: '1em 0.5em' }}
+              size="huge"
+              onClick={login}
+            >
               Login
             </Button>
             <p onClick={() => alert('Not implemented yet')}>Forgot Password?</p>
