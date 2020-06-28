@@ -16,6 +16,7 @@ import {
   Message,
 } from 'semantic-ui-react';
 import { makeBackendRequest } from '../lib/backend';
+import { saveMe } from '../data/me';
 
 type MobileContainerProps = {
   getWidth?: () => number;
@@ -32,11 +33,7 @@ function MobileContainer(props: MobileContainerProps) {
   }
 
   return (
-    <Responsive
-      as={Sidebar.Pushable}
-      getWidth={props.getWidth}
-      maxWidth={Responsive.onlyMobile.maxWidth}
-    >
+    <Sidebar.Pushable>
       <Sidebar
         as={Menu}
         animation="push"
@@ -96,7 +93,7 @@ function MobileContainer(props: MobileContainerProps) {
         </Segment>
         {props.children}
       </Sidebar.Pusher>
-    </Responsive>
+    </Sidebar.Pushable>
   );
 }
 
@@ -178,8 +175,9 @@ const LoginLayout: NextPage<PageProps> = () => {
       email: email,
       password: password,
     })
-      .then(() => {
+      .then((response) => {
         setSuccess({ message: 'Successfully logged in. Redirecting.' });
+        saveMe(response.data.token, response.data.user);
       })
       .catch((err) => {
         if (err.response) {
