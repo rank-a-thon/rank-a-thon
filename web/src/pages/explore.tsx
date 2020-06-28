@@ -15,9 +15,8 @@ const DashboardLayout: NextPage<PageProps> = () => {
         textAlign="left"
         style={{ padding: '1.5em 2em 0.8em 2em' }}
       >
-        <p style={{ fontSize: '1.4em', margin: '0' }}>We are located at:</p>
-        <p style={{ fontSize: '1.4em', fontWeight: 'bolder' }}>
-          Cinnamon-Tembusu Dining Hall
+        <p style={{ fontSize: '1.4em', margin: '0' }}>
+          View other team's projects:
         </p>
       </Segment>
     </MobilePostAuthContainer>

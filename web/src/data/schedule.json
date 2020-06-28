@@ -1,0 +1,70 @@
+[
+  {
+    "time": "0900",
+    "activity": "Registration",
+    "over": true
+  },
+  {
+    "time": "1000",
+    "activity": "Opening Ceremony",
+    "over": true
+  },
+  {
+    "time": "1020",
+    "activity": "Start Hacking!",
+    "over": true
+  },
+  {
+    "time": "1200",
+    "activity": "Lunch",
+    "over": true
+  },
+  {
+    "time": "1330",
+    "activity": "Mini-Game: Werewolf"
+  },
+  {
+    "time": "1400",
+    "activity": "Swag Giveaway"
+  },
+  {
+    "time": "1500",
+    "activity": "Afternoon Tea"
+  },
+  {
+    "time": "1630",
+    "activity": "Swag Giveaway"
+  },
+  {
+    "time": "1700",
+    "activity": "Games"
+  },
+  {
+    "time": "1800",
+    "activity": "Dinner"
+  },
+  {
+    "time": "2000",
+    "activity": "Mini-Game: CTFs"
+  },
+  {
+    "time": "2100",
+    "activity": "Swag Giveaway"
+  },
+  {
+    "time": "2300",
+    "activity": "Supper Time"
+  },
+  {
+    "time": "0200",
+    "activity": "Midnight Swag Giveaway"
+  },
+  {
+    "time": "0700",
+    "activity": "Breakfast"
+  },
+  {
+    "time": "0900",
+    "activity": "Hacking stops!"
+  }
+]
