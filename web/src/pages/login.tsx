@@ -12,6 +12,7 @@ import {
   Sidebar,
   GridColumn,
   Input,
+  Form,
 } from 'semantic-ui-react';
 
 type MobileContainerProps = {
@@ -110,98 +111,97 @@ const LoginLayout: NextPage<PageProps> = () => {
 
   return (
     <MobileContainer>
-      <Segment vertical style={{ marginTop: '2em' }}>
-        <Grid textAlign="center" verticalAlign="middle">
-          <Grid.Row>
-            <Grid.Column>
-              <p>
-                <Image
-                  rounded
-                  size="small"
-                  src="img/icon.svg"
-                  style={{ margin: '0 auto' }}
-                />
-              </p>
-              <Menu tabular widths={2}>
-                <Menu.Item
-                  name="login"
-                  active={authAction === 'login'}
-                  onClick={handleTabClick}
-                />
-                <Menu.Item
-                  name="signup"
-                  active={authAction === 'signup'}
-                  onClick={handleTabClick}
-                />
-              </Menu>
+      <Segment
+        basic
+        textAlign="center"
+        style={{ margin: '2em 0px', marginLeft: '0!important', padding: '0' }}
+      >
+        <div>
+          <Image
+            rounded
+            size="small"
+            src="img/icon.svg"
+            style={{ margin: '0 auto' }}
+          />
+        </div>
+        <Menu tabular widths={2}>
+          <Menu.Item
+            name="login"
+            active={authAction === 'login'}
+            onClick={handleTabClick}
+          />
+          <Menu.Item
+            name="signup"
+            active={authAction === 'signup'}
+            onClick={handleTabClick}
+          />
+        </Menu>
 
-              {authAction === 'login' && (
-                <>
-                  <p>
-                    <Input
-                      size="large"
-                      style={{ margin: '0.5em auto', width: '70%' }}
-                      placeholder="Email"
-                    />
-                  </p>
-                  <p>
-                    <Input
-                      size="large"
-                      style={{ margin: '0.5em auto', width: '70%' }}
-                      placeholder="Password"
-                    />
-                  </p>
-                  <Button primary style={{ margin: '1em 0.5em' }} size="huge">
-                    Login
-                  </Button>
-                  <p>Forgot Password?</p>
-                </>
-              )}
+        {authAction === 'login' && (
+          <Form>
+            <Form.Field>
+              <Input
+                size="large"
+                style={{ margin: '0.5em auto', width: '70%' }}
+                placeholder="Email"
+                type="email"
+              />
+            </Form.Field>
+            <Form.Field>
+              <Input
+                size="large"
+                style={{ margin: '0.5em auto', width: '70%' }}
+                placeholder="Password"
+                type="password"
+              />
+            </Form.Field>
+            <Button primary style={{ margin: '1em 0.5em' }} size="huge">
+              Login
+            </Button>
+            <p onClick={() => alert('Not implemented yet')}>Forgot Password?</p>
+          </Form>
+        )}
 
-              {authAction === 'signup' && (
-                <>
-                  <p>
-                    <Input
-                      size="large"
-                      style={{ margin: '0.2em auto', width: '70%' }}
-                      placeholder="Name"
-                    />
-                  </p>
-                  <p>
-                    <Input
-                      size="large"
-                      style={{ margin: '0.2em auto', width: '70%' }}
-                      placeholder="Email"
-                    />
-                  </p>
-                  <p>
-                    <Input
-                      size="large"
-                      style={{ margin: '0.2em auto', width: '70%' }}
-                      placeholder="Password"
-                    />
-                  </p>
-                  <p>
-                    <Input
-                      size="large"
-                      style={{ margin: '0.2em auto', width: '70%' }}
-                      placeholder="Repeat Password"
-                    />
-                  </p>
-                  <p>
-                    <Button
-                      secondary
-                      style={{ margin: '1em 0.5em' }}
-                      size="huge"
-                    >
-                      Sign-Up
-                    </Button>
-                  </p>
-                </>
-              )}
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
+        {authAction === 'signup' && (
+          <Form>
+            <Form.Field>
+              <Input
+                size="large"
+                style={{ margin: '0.2em auto', width: '70%' }}
+                placeholder="Name"
+              />
+            </Form.Field>
+            <Form.Field>
+              <Input
+                size="large"
+                style={{ margin: '0.2em auto', width: '70%' }}
+                placeholder="Email"
+                type="email"
+              />
+            </Form.Field>
+            <Form.Field>
+              <Input
+                size="large"
+                style={{ margin: '0.2em auto', width: '70%' }}
+                placeholder="Password"
+                type="password"
+              />
+            </Form.Field>
+            <Form.Field>
+              <Input
+                size="large"
+                style={{ margin: '0.2em auto', width: '70%' }}
+                placeholder="Repeat Password"
+                type="password"
+              />
+            </Form.Field>
+            <Form.Field>
+              <Button secondary style={{ margin: '1em 0.5em' }} size="huge">
+                Sign-Up
+              </Button>
+            </Form.Field>
+          </Form>
+        )}
       </Segment>
     </MobileContainer>
   );
