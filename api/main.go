@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/rank-a-thon/rank-a-thon/api/models"
 	"log"
 	"net/http"
 	"os"
@@ -10,8 +9,10 @@ import (
 
 	"github.com/gin-contrib/gzip"
 	"github.com/joho/godotenv"
+
 	"github.com/rank-a-thon/rank-a-thon/api/controllers"
 	"github.com/rank-a-thon/rank-a-thon/api/database"
+	"github.com/rank-a-thon/rank-a-thon/api/models"
 	uuid "github.com/twinj/uuid"
 
 	"github.com/gin-gonic/gin"
@@ -114,20 +115,24 @@ func main() {
 	{
 		/*** START USER ***/
 		user := new(controllers.UserController)
-
 		v1.POST("/user/login", user.Login)
 		v1.POST("/user/register", user.Register)
 		v1.GET("/user/logout", user.Logout)
 
+		/*** START Team ***/
+		team := new(controllers.TeamController)
+		v1.POST("/team", TokenAuthMiddleware(), team.Create)
+		v1.GET("/team", TokenAuthMiddleware(), team.One)
+		v1.PUT("/team", TokenAuthMiddleware(), team.Update)
+		v1.DELETE("/team", TokenAuthMiddleware(), team.Delete)
+
 		/*** START AUTH ***/
 		auth := new(controllers.AuthController)
-
 		// Refresh the token when needed to generate new access_token and refresh_token for the user
 		v1.POST("/token/refresh", auth.Refresh)
 
 		/*** START Submission ***/
 		submission := new(controllers.SubmissionController)
-
 		v1.POST("/submission", TokenAuthMiddleware(), submission.Create)
 		v1.GET("/submissions", TokenAuthMiddleware(), submission.All)
 		v1.GET("/submission/:id", TokenAuthMiddleware(), submission.One)
@@ -136,7 +141,6 @@ func main() {
 
 		/*** START Evaluation ***/
 		evaluation := new(controllers.EvaluationController)
-
 		v1.GET("/evaluations", TokenAuthMiddleware(), evaluation.All)
 		v1.GET("/evaluation/:id", TokenAuthMiddleware(), evaluation.One)
 		v1.PUT("/evaluation/:id", TokenAuthMiddleware(), evaluation.Update)

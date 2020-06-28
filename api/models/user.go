@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/jinzhu/gorm"
@@ -96,4 +97,18 @@ func (m UserModel) One(userID uint) (user User, err error) {
 	err = database.GetDB().Table("public.users").
 		Where("id = ?", userID).Take(&user).Error
 	return user, err
+}
+
+func (m UserModel) UpdateTeamForUser(userID, teamID uint) (err error) {
+	_, err = m.One(userID)
+
+	if err != nil {
+		return errors.New(fmt.Sprintf("user %d not found", userID))
+	}
+	err = database.GetDB().Table("public.users").Model(&User{}).
+		Where("id = ?", userID).
+		Updates(map[string]interface{}{
+			"team_id": teamID,
+		}).Error
+	return err
 }

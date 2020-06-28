@@ -2,10 +2,11 @@ package models
 
 import (
 	"errors"
+	"strings"
+
 	"github.com/jinzhu/gorm"
 	"github.com/rank-a-thon/rank-a-thon/api/database"
 	"github.com/rank-a-thon/rank-a-thon/api/forms"
-	"strings"
 )
 
 // Submission ...

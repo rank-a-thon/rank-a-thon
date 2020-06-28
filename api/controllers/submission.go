@@ -1,14 +1,13 @@
 package controllers
 
 import (
+	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 
 	"github.com/rank-a-thon/rank-a-thon/api/forms"
 	"github.com/rank-a-thon/rank-a-thon/api/models"
-
-	"net/http"
-
-	"github.com/gin-gonic/gin"
 )
 
 type SubmissionController struct{}

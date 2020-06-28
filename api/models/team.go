@@ -13,7 +13,7 @@ import (
 type Team struct {
 	gorm.Model
 	TeamName				string	  `gorm:"column:team_name;not_null" json:"team_name"`
-	UserIDs 				[]uint    `gorm:"column:user_ids;not_null" json:"user_ids"`
+	UserIDs 				string    `gorm:"column:user_ids;not_null" json:"user_ids"`
 	IsFreshmanTeam          bool      `gorm:"column:is_freshman_team;default:false" json:"is_freshman_team"`
 	IsPreUniversityTeam     bool      `gorm:"column:is_pre_university_team;default:false" json:"is_pre_university_team"`
 	IsBeginnerTeam          bool      `gorm:"column:is_beginner_team;default:false" json:"is_beginner_team"`
@@ -32,12 +32,13 @@ func (m TeamModel) Create(userID uint, form forms.TeamForm) (TeamID uint, err er
 	}
 	team := Team{
 		TeamName: form.TeamName,
-		UserIDs: []uint{userID},
+		UserIDs: UintSliceToString([]uint{userID}),
 		IsFreshmanTeam: form.IsFreshmanTeam,
 		IsPreUniversityTeam: form.IsPreUniversityTeam,
 		IsBeginnerTeam: form.IsBeginnerTeam,
 	}
 	err = database.GetDB().Table("public.teams").Create(&team).Error
+	err = userModel.UpdateTeamForUser(userID, team.ID)
 	return team.ID, err
 }
 
@@ -73,11 +74,13 @@ func (m TeamModel) AddTeamMember(userID uint, teamID uint) (err error) {
 	if err != nil {
 		return errors.New(fmt.Sprintf("team %d not found", teamID))
 	}
+	teamUserIDs := StringToUintSlice(team.UserIDs)
 	err = database.GetDB().Table("public.teams").Model(&Team{}).
 		Where("id = ?", teamID).
 		Updates(map[string]interface{}{
-			"user_ids": append(team.UserIDs, userID),
+			"user_ids": append(teamUserIDs, userID),
 		}).Error
+	err = userModel.UpdateTeamForUser(userID, teamID)
 	return err
 }
 
@@ -89,7 +92,8 @@ func (m TeamModel) RemoveTeamMember(userID uint, teamID uint) (err error) {
 	}
 
 	indexToRemove := -1
-	for i, v := range team.UserIDs {
+	teamUserIDs := StringToUintSlice(team.UserIDs)
+	for i, v := range teamUserIDs {
 		if v == userID {
 			indexToRemove = i
 		}
@@ -101,17 +105,21 @@ func (m TeamModel) RemoveTeamMember(userID uint, teamID uint) (err error) {
 	err = database.GetDB().Table("public.teams").Model(&Team{}).
 		Where("id = ?", teamID).
 		Updates(map[string]interface{}{
-			"user_ids": append(team.UserIDs[:indexToRemove], team.UserIDs[indexToRemove+1:]...),
+			"user_ids": append(teamUserIDs[:indexToRemove], teamUserIDs[indexToRemove+1:]...),
 		}).Error
+	err = userModel.UpdateTeamForUser(userID, 0)
 	return err
 }
 
 // Delete ...
 func (m TeamModel) Delete(teamID uint) (err error) {
-	_, err = m.One(teamID)
-
+	team, err := m.One(teamID)
 	if err != nil {
 		return errors.New(fmt.Sprintf("team %d not found", teamID))
+	}
+	teamUserIDs := StringToUintSlice(team.UserIDs)
+	for _, id := range teamUserIDs {
+		err = userModel.UpdateTeamForUser(id, 0)
 	}
 	err = database.GetDB().Table("public.teams").Where("id = ?", teamID).Delete(Team{}).Error
 

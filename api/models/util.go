@@ -57,3 +57,20 @@ func ConvertToInt64(number interface{}) int64 {
 	}
 	return number.(int64)
 }
+
+func UintSliceToString(slice []uint) string {
+	sliceJson, err := json.Marshal(slice)
+	if err != nil {
+		panic(err)
+	}
+	return string(sliceJson)
+}
+
+func StringToUintSlice(str string) (slice []uint) {
+	byteSlice := []byte(str)
+	var data []uint
+	if err := json.Unmarshal(byteSlice, &data); err != nil {
+		panic(err)
+	}
+	return data
+}
