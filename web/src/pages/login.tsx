@@ -13,7 +13,9 @@ import {
   GridColumn,
   Input,
   Form,
+  Message,
 } from 'semantic-ui-react';
+import { makeBackendRequest } from '../lib/backend';
 
 type MobileContainerProps = {
   getWidth?: () => number;
@@ -104,9 +106,48 @@ type PageProps = {
 
 const LoginLayout: NextPage<PageProps> = () => {
   const [authAction, setAuthAction] = useState<'login' | 'signup'>('login');
+  const [email, setEmail] = useState<string | null>(null);
+  const [password, setPassword] = useState<string | null>(null);
+  const [passwordCheck, setPasswordCheck] = useState<string | null>(null);
+  const [error, setError] = useState<{ message: string } | null>(null);
+  const [name, setName] = useState<string | null>(null);
 
   function handleTabClick(e, { name }) {
     setAuthAction(name);
+  }
+
+  async function signUp() {
+    setError(null);
+
+    if (!name || !email || !password || !passwordCheck) {
+      setError({ message: 'Please fill all fields' });
+      return;
+    }
+
+    if (password !== passwordCheck) {
+      setError({ message: 'Passwords do not match' });
+      return;
+    }
+
+    if (!email.includes('@')) {
+      // TODO: more robust email detection pls
+      setError({ message: 'Invalid email' });
+      return;
+    }
+
+    await makeBackendRequest('post', 'v1/user/register', {
+      name: name,
+      email: email,
+      password: password,
+    })
+      .then((response) => console.log(response.data))
+      .catch((err) => {
+        if (err.response && err.response.status === 406) {
+          setError({ message: 'Account already exists' });
+        } else {
+          setError({ message: error.message });
+        }
+      });
   }
 
   return (
@@ -145,6 +186,8 @@ const LoginLayout: NextPage<PageProps> = () => {
                 style={{ margin: '0.5em auto', width: '70%' }}
                 placeholder="Email"
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </Form.Field>
             <Form.Field>
@@ -153,8 +196,15 @@ const LoginLayout: NextPage<PageProps> = () => {
                 style={{ margin: '0.5em auto', width: '70%' }}
                 placeholder="Password"
                 type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </Form.Field>
+            {error && (
+              <Message negative style={{ width: '70%', margin: '0 auto' }}>
+                {error.message}
+              </Message>
+            )}
             <Button primary style={{ margin: '1em 0.5em' }} size="huge">
               Login
             </Button>
@@ -169,6 +219,8 @@ const LoginLayout: NextPage<PageProps> = () => {
                 size="large"
                 style={{ margin: '0.2em auto', width: '70%' }}
                 placeholder="Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
               />
             </Form.Field>
             <Form.Field>
@@ -177,6 +229,8 @@ const LoginLayout: NextPage<PageProps> = () => {
                 style={{ margin: '0.2em auto', width: '70%' }}
                 placeholder="Email"
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </Form.Field>
             <Form.Field>
@@ -185,6 +239,8 @@ const LoginLayout: NextPage<PageProps> = () => {
                 style={{ margin: '0.2em auto', width: '70%' }}
                 placeholder="Password"
                 type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </Form.Field>
             <Form.Field>
@@ -193,10 +249,22 @@ const LoginLayout: NextPage<PageProps> = () => {
                 style={{ margin: '0.2em auto', width: '70%' }}
                 placeholder="Repeat Password"
                 type="password"
+                value={passwordCheck}
+                onChange={(e) => setPasswordCheck(e.target.value)}
               />
             </Form.Field>
+            {error && (
+              <Message negative style={{ width: '70%', margin: '0 auto' }}>
+                {error.message}
+              </Message>
+            )}
             <Form.Field>
-              <Button secondary style={{ margin: '1em 0.5em' }} size="huge">
+              <Button
+                secondary
+                style={{ margin: '1em 0.5em' }}
+                size="huge"
+                onClick={signUp}
+              >
                 Sign-Up
               </Button>
             </Form.Field>
