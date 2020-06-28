@@ -10,6 +10,8 @@ import {
   GridColumn,
 } from 'semantic-ui-react';
 
+import { clearMe } from '../data/me';
+
 type MobileContainerProps = {
   getWidth?: () => number;
   children: React.ReactNode;
@@ -18,11 +20,17 @@ type MobileContainerProps = {
 
 function MobilePostAuthContainer(props: MobileContainerProps) {
   const [sidebarOpened, setSidebarOpened] = useState<boolean>(false);
+  const router = useRouter();
   function handleSidebarHide() {
     setSidebarOpened(false);
   }
   function handleToggle() {
     setSidebarOpened(true);
+  }
+
+  function logOut() {
+    clearMe();
+    router.push('/login');
   }
 
   return (
@@ -67,9 +75,7 @@ function MobilePostAuthContainer(props: MobileContainerProps) {
             </Link>
           </Menu.Item>
           <Menu.Item>
-            <Link href="/login">
-              <a>Log Out</a>
-            </Link>
+            <a onClick={logOut}>Log Out</a>
           </Menu.Item>
         </Sidebar>
 

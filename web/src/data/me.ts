@@ -33,3 +33,7 @@ export function getMe(): Me | null {
     };
   }
 }
+
+export function clearMe() {
+  window.localStorage.clear();
+}
