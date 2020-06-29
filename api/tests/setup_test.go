@@ -2,6 +2,7 @@ package tests
 
 import (
 	"log"
+	"os"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -18,9 +19,18 @@ var testPassword = "123456"
 var accessToken string
 var refreshToken string
 
-func main() {
-	r := SetupRouter()
-	r.Run()
+func TestMain(m *testing.M) {
+	InitDbAndAutoMigrate()
+	exitVal := m.Run()
+	db := database.GetDB()
+	db.DropTableIfExists(
+		&models.User{},
+		&models.Team{},
+		&models.TeamInvite{},
+		&models.Submission{},
+		&models.Evaluation{},
+	)
+	os.Exit(exitVal)
 }
 
 func SetupRouter() *gin.Engine {
@@ -92,14 +102,4 @@ func InitDbAndAutoMigrate() *gorm.DB {
 		&models.Evaluation{},
 	)
 	return db
-}
-
-/**
-* TestIntDB
-* It tests the connection to the database and init the db for this test
-*
-* Must pass
- */
-func TestIntDB(t *testing.T) {
-	InitDbAndAutoMigrate()
 }
