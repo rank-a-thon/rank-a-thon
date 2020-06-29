@@ -149,7 +149,7 @@ func (ctrl UserController) Register(context *gin.Context) {
 	if user.ID > 0 {
 		context.JSON(http.StatusOK, gin.H{"message": "Successfully registered", "user": user})
 	} else {
-		context.JSON(http.StatusNotAcceptable, gin.H{"message": "Could not register this user", "error": err.Error()})
+		context.JSON(http.StatusNotAcceptable, gin.H{"message": "Could not register this user"})
 	}
 
 }

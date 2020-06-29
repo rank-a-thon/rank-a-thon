@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/jinzhu/gorm"
@@ -12,58 +13,70 @@ import (
 // Submission ...
 type Submission struct {
 	gorm.Model
-	//TODO change UserID and User to TeamID and Team
-	UserID      uint      `gorm:"column:user_id;not null" json:"-"`
-	ProjectName string    `gorm:"column:project_name" json:"project_name"`
-	Description string    `gorm:"column:description" json:"description"`
-	Images      string    `gorm:"column:images" json:"images"` // comma separated list of image ids
-	User        User      `gorm:"column:user;foreignkey:UserID" json:"user"`
+	TeamID      uint   `gorm:"column:team_id;not null" json:"-"`
+	ProjectName string `gorm:"column:project_name" json:"project_name"`
+	Description string `gorm:"column:description" json:"description"`
+	Images      string `gorm:"column:images" json:"images"` // comma separated list of image ids
+	Team        Team   `gorm:"column:team" json:"team"`
 }
 
 // SubmissionModel ...
 type SubmissionModel struct{}
 
 // Create ...
-func (m SubmissionModel) Create(userID uint, form forms.SubmissionForm) (submissionID uint, err error) {
+func (m SubmissionModel) Create(teamID uint, form forms.SubmissionForm) (submissionID uint, err error) {
+	submission, err := m.OneByTeamID(teamID)
+	if err == nil {
+		return submission.ID, errors.New("team submission already exists")
+	}
 
-	submission := Submission{
-		UserID: userID,
+	submission = Submission{
+		TeamID:      teamID,
 		ProjectName: form.ProjectName,
 		Description: form.Description,
-		Images: strings.Join(form.Images, ","),
+		Images:      strings.Join(form.Images, ","),
 	}
 	err = database.GetDB().Table("public.submissions").Create(&submission).Error
 	return submission.ID, err
 }
 
 // One ...
-func (m SubmissionModel) One(userID, id uint) (submission Submission, err error) {
-	err = database.GetDB().Preload("User").Table("public.submissions").
-		Where("submissions.user_id = ? AND submissions.id = ?", userID, id).
-		Joins("left join public.users on submissions.user_id = users.id").
+func (m SubmissionModel) OneByTeamID(teamID uint) (submission Submission, err error) {
+	fmt.Println(teamID)
+	err = database.GetDB().Preload("Team").Table("public.submissions").
+		Where("submissions.team_id = ?", teamID).
+		Joins("left join public.teams on submissions.team_id = teams.id").
 		Take(&submission).Error
+	fmt.Println(submission)
 	return submission, err
 }
 
 // All ...
-func (m SubmissionModel) All(userID uint) (submissions []Submission, err error) {
-	err = database.GetDB().Preload("User").Table("public.submissions").
-		Where("submissions.user_id = ?", userID).
-		Joins("left join public.users on submissions.user_id = users.id").
-		Order("submissions.id desc").
-		Find(&submissions).Error
+func (m SubmissionModel) AllForUserID(userID uint) (submissions []Submission, err error) {
+	user, err := userModel.One(userID)
+	if err != nil {
+		return nil, err
+	}
+	teamIDForEvent := JsonStringToStringUintMap(user.TeamIDForEvent)
+	for _, teamID := range teamIDForEvent {
+		submission, err := m.OneByTeamID(teamID)
+		if err != nil {
+			return submissions, err
+		}
+		submissions = append(submissions, submission)
+	}
 	return submissions, err
 }
 
 // Update ...
-func (m SubmissionModel) Update(userID uint, id uint, form forms.SubmissionForm) (err error) {
-	_, err = m.One(userID, id)
+func (m SubmissionModel) Update(teamID uint, form forms.SubmissionForm) (err error) {
+	_, err = m.OneByTeamID(teamID)
 
 	if err != nil {
 		return errors.New("submission not found")
 	}
 	err = database.GetDB().Table("public.submissions").Model(&Submission{}).
-		Where("id = ?", id).
+		Where("team_id = ?", teamID).
 		Updates(map[string]interface{}{
 			"project_name": form.ProjectName,
 			"description": form.Description,
@@ -73,13 +86,13 @@ func (m SubmissionModel) Update(userID uint, id uint, form forms.SubmissionForm)
 }
 
 // Delete ...
-func (m SubmissionModel) Delete(userID, id uint) (err error) {
-	_, err = m.One(userID, id)
+func (m SubmissionModel) Delete(teamID uint) (err error) {
+	_, err = m.OneByTeamID(teamID)
 
 	if err != nil {
 		return errors.New("submission not found")
 	}
-	err = database.GetDB().Table("public.submissions").Where("id = ?", id).Delete(Submission{}).Error
+	err = database.GetDB().Table("public.submissions").Where("team_id = ?", teamID).Delete(Submission{}).Error
 
 	return err
 }

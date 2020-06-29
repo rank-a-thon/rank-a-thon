@@ -12,7 +12,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// User ...
+// Team ...
 type User struct {
 	gorm.Model
 	Email    		   string    `gorm:"column:email;not null;unique" json:"email"`
@@ -65,7 +65,7 @@ func (m UserModel) Login(form forms.LoginForm) (user User, token Token, err erro
 func (m UserModel) Register(form forms.RegisterForm) (user User, err error) {
 	db := database.GetDB()
 
-	// Check if the user exists in database
+	// Check if the user exists in database NOTE this will fail if user is deleted and marked with deleted at column
 
 	var count int
 	err = db.Table("public.users").
@@ -121,4 +121,8 @@ func (m UserModel) UpdateTeamForUser(userID, teamID uint, event Event) (err erro
 			"team_id_for_event": StringUintMapToJsonString(teamIDForEvent),
 		}).Error
 	return err
+}
+
+func (m UserModel) GetTeamIDForEventMap(user User) map[string]uint {
+	return JsonStringToStringUintMap(user.TeamIDForEvent)
 }

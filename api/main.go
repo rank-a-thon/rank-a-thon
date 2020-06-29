@@ -141,11 +141,11 @@ func main() {
 
 		/*** START Submission ***/
 		submission := new(controllers.SubmissionController)
-		v1.POST("/submission", TokenAuthMiddleware(), submission.Create)
+		v1.POST("/submission/:event", TokenAuthMiddleware(), submission.Create)
 		v1.GET("/submissions", TokenAuthMiddleware(), submission.All)
-		v1.GET("/submission/:id", TokenAuthMiddleware(), submission.One)
-		v1.PUT("/submission/:id", TokenAuthMiddleware(), submission.Update)
-		v1.DELETE("/submission/:id", TokenAuthMiddleware(), submission.Delete)
+		v1.GET("/submission/:event", TokenAuthMiddleware(), submission.One)
+		v1.PUT("/submission/:event", TokenAuthMiddleware(), submission.Update)
+		v1.DELETE("/submission/:event", TokenAuthMiddleware(), submission.Delete)
 
 		/*** START Evaluation ***/
 		evaluation := new(controllers.EvaluationController)

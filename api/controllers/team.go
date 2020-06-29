@@ -19,8 +19,8 @@ func (ctrl TeamController) Create(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 		var teamForm forms.TeamForm
 
-		event := context.Param("event")
-		if !models.Events[event] {
+		event, err := fetchAndValidateEvent(context)
+		if err != nil {
 			context.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid event name"})
 			context.Abort()
 			return
@@ -55,7 +55,12 @@ func (ctrl TeamController) Create(context *gin.Context) {
 
 func (ctrl TeamController) One(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
-		event := context.Param("event")
+		event, err := fetchAndValidateEvent(context)
+		if err != nil {
+			context.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid event name"})
+			context.Abort()
+			return
+		}
 		user, err := userModel.One(userID)
 		if err != nil {
 			context.JSON(http.StatusInternalServerError, gin.H{"message": "Error fetching user", "error": err.Error()})
@@ -65,7 +70,7 @@ func (ctrl TeamController) One(context *gin.Context) {
 
 		teamID := models.JsonStringToStringUintMap(user.TeamIDForEvent)[event]
 		if teamID == 0 {
-			context.JSON(http.StatusNotAcceptable, gin.H{"message": "User does not have team"})
+			context.JSON(http.StatusNotAcceptable, gin.H{"message": "Team does not have team"})
 			context.Abort()
 			return
 		}
@@ -94,7 +99,13 @@ func (ctrl TeamController) All(context *gin.Context) {
 
 func (ctrl TeamController) Update(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
-		event := context.Param("event")
+		event, err := fetchAndValidateEvent(context)
+		if err != nil {
+			context.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid event name"})
+			context.Abort()
+			return
+		}
+
 		user, err := userModel.One(userID)
 		if err != nil {
 			context.JSON(http.StatusInternalServerError, gin.H{"message": "Error fetching user", "error": err.Error()})
@@ -103,7 +114,7 @@ func (ctrl TeamController) Update(context *gin.Context) {
 		}
 		teamID := models.JsonStringToStringUintMap(user.TeamIDForEvent)[event]
 		if teamID == 0 {
-			context.JSON(http.StatusNotAcceptable, gin.H{"message": "User does not have team"})
+			context.JSON(http.StatusNotAcceptable, gin.H{"message": "Team does not have team"})
 			context.Abort()
 			return
 		}
@@ -150,7 +161,7 @@ func (ctrl TeamController) SendInvite(context *gin.Context) {
 
 		teamID := models.JsonStringToStringUintMap(user.TeamIDForEvent)[teamInviteForm.Event]
 		if teamID == 0 {
-			context.JSON(http.StatusNotAcceptable, gin.H{"message": "User does not have team"})
+			context.JSON(http.StatusNotAcceptable, gin.H{"message": "Team does not have team"})
 			context.Abort()
 			return
 		}
@@ -232,7 +243,12 @@ func (ctrl TeamController) DeclineInvite(context *gin.Context) {
 func (ctrl TeamController) RemoveTeamMember(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 		if deleteUserID, err := strconv.ParseUint(context.Query("delete-user-id"), 10, 64); err == nil {
-			event := context.Param("event")
+			event, err := fetchAndValidateEvent(context)
+			if err != nil {
+				context.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid event name"})
+				context.Abort()
+				return
+			}
 			user, err := userModel.One(userID)
 			if err != nil {
 				context.JSON(http.StatusInternalServerError, gin.H{"message": "Error fetching user", "error": err.Error()})
@@ -241,7 +257,7 @@ func (ctrl TeamController) RemoveTeamMember(context *gin.Context) {
 			}
 			teamID := models.JsonStringToStringUintMap(user.TeamIDForEvent)[event]
 			if teamID == 0 {
-				context.JSON(http.StatusNotAcceptable, gin.H{"message": "User does not have team"})
+				context.JSON(http.StatusNotAcceptable, gin.H{"message": "Team does not have team"})
 				context.Abort()
 				return
 			}
@@ -260,7 +276,12 @@ func (ctrl TeamController) RemoveTeamMember(context *gin.Context) {
 
 func (ctrl TeamController) Delete(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
-		event := context.Param("event")
+		event, err := fetchAndValidateEvent(context)
+		if err != nil {
+			context.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid event name"})
+			context.Abort()
+			return
+		}
 		user, err := userModel.One(userID)
 		if err != nil {
 			context.JSON(http.StatusInternalServerError, gin.H{"message": "Error fetching user", "error": err.Error()})
@@ -269,7 +290,7 @@ func (ctrl TeamController) Delete(context *gin.Context) {
 		}
 		teamID := models.JsonStringToStringUintMap(user.TeamIDForEvent)[event]
 		if teamID == 0 {
-			context.JSON(http.StatusNotAcceptable, gin.H{"message": "User does not have team"})
+			context.JSON(http.StatusNotAcceptable, gin.H{"message": "Team does not have team"})
 			context.Abort()
 			return
 		}
