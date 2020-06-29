@@ -118,6 +118,7 @@ func main() {
 		v1.POST("/user/login", user.Login)
 		v1.POST("/user/register", user.Register)
 		v1.GET("/user/logout", user.Logout)
+		v1.GET("/user", user.One)
 
 		/*** START Team ***/
 		team := new(controllers.TeamController)
@@ -142,10 +143,12 @@ func main() {
 		/*** START Submission ***/
 		submission := new(controllers.SubmissionController)
 		v1.POST("/submission/:event", TokenAuthMiddleware(), submission.Create)
-		v1.GET("/submissions", TokenAuthMiddleware(), submission.All)
+		v1.GET("/submissions", TokenAuthMiddleware(), submission.AllForUserID)
+		v1.GET("/submissions/:event", TokenAuthMiddleware(), submission.AllForEvent)
 		v1.GET("/submission/:event", TokenAuthMiddleware(), submission.One)
 		v1.PUT("/submission/:event", TokenAuthMiddleware(), submission.Update)
 		v1.DELETE("/submission/:event", TokenAuthMiddleware(), submission.Delete)
+		//TODO get ALL submissions
 
 		/*** START Evaluation ***/
 		evaluation := new(controllers.EvaluationController)

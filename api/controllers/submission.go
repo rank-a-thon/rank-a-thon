@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
 
@@ -22,7 +21,7 @@ func (ctrl SubmissionController) Create(context *gin.Context) {
 			context.Abort()
 			return
 		}
-		teamID, err := ctrl.getTeamIDForEvent(context, userID)
+		teamID, err := getTeamIDForEvent(context, userID)
 		if err != nil {
 			context.JSON(http.StatusNotAcceptable, gin.H{"message": "Could not fetch team ID", "error": err.Error()})
 			context.Abort()
@@ -40,9 +39,28 @@ func (ctrl SubmissionController) Create(context *gin.Context) {
 	}
 }
 
-func (ctrl SubmissionController) All(context *gin.Context) {
+func (ctrl SubmissionController) AllForUserID(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 		data, err := submissionModel.AllForUserID(userID)
+		if err != nil {
+			context.JSON(http.StatusNotAcceptable, gin.H{"Message": "Could not get submissions", "error": err.Error()})
+			context.Abort()
+			return
+		}
+		context.JSON(http.StatusOK, gin.H{"data": data})
+	}
+}
+
+func (ctrl SubmissionController) AllForEvent(context *gin.Context) {
+	if userID := getUserID(context); userID != 0 {
+		event, err := fetchAndValidateEvent(context)
+		if err != nil {
+			context.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid event name"})
+			context.Abort()
+			return
+		}
+
+		data, err := submissionModel.AllForEvent(models.Event(event))
 		if err != nil {
 			context.JSON(http.StatusNotAcceptable, gin.H{"Message": "Could not get submissions", "error": err.Error()})
 			context.Abort()
@@ -55,7 +73,7 @@ func (ctrl SubmissionController) All(context *gin.Context) {
 func (ctrl SubmissionController) One(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 
-		teamID, err := ctrl.getTeamIDForEvent(context, userID)
+		teamID, err := getTeamIDForEvent(context, userID)
 		if err != nil {
 			context.JSON(http.StatusNotAcceptable, gin.H{"message": "Could not fetch team ID", "error": err.Error()})
 			context.Abort()
@@ -74,7 +92,7 @@ func (ctrl SubmissionController) One(context *gin.Context) {
 
 func (ctrl SubmissionController) Update(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
-		teamID, err := ctrl.getTeamIDForEvent(context, userID)
+		teamID, err := getTeamIDForEvent(context, userID)
 		if err != nil {
 			context.JSON(http.StatusNotAcceptable, gin.H{"message": "Could not fetch team ID", "error": err.Error()})
 			context.Abort()
@@ -101,7 +119,7 @@ func (ctrl SubmissionController) Update(context *gin.Context) {
 
 func (ctrl SubmissionController) Delete(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
-		teamID, err := ctrl.getTeamIDForEvent(context, userID)
+		teamID, err := getTeamIDForEvent(context, userID)
 		if err != nil {
 			context.JSON(http.StatusNotAcceptable, gin.H{"message": "Could not fetch team ID", "error": err.Error()})
 			context.Abort()
@@ -116,18 +134,4 @@ func (ctrl SubmissionController) Delete(context *gin.Context) {
 
 		context.JSON(http.StatusOK, gin.H{"message": "Submission deleted"})
 	}
-}
-
-func (ctrl SubmissionController) getTeamIDForEvent(context *gin.Context, userID uint) (teamID uint, err error){
-	event, err := fetchAndValidateEvent(context)
-	if err != nil {
-		return 0, errors.New("invalid event name")
-	}
-
-	user, err := userModel.One(userID)
-	if err != nil {
-		return 0, errors.New("unable to fetch user")
-	}
-	teamIDForEvent := userModel.GetTeamIDForEventMap(user)
-	return teamIDForEvent[event], nil
 }

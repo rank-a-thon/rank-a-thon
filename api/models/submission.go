@@ -2,7 +2,6 @@ package models
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 
 	"github.com/jinzhu/gorm"
@@ -42,12 +41,10 @@ func (m SubmissionModel) Create(teamID uint, form forms.SubmissionForm) (submiss
 
 // One ...
 func (m SubmissionModel) OneByTeamID(teamID uint) (submission Submission, err error) {
-	fmt.Println(teamID)
 	err = database.GetDB().Preload("Team").Table("public.submissions").
 		Where("submissions.team_id = ?", teamID).
 		Joins("left join public.teams on submissions.team_id = teams.id").
 		Take(&submission).Error
-	fmt.Println(submission)
 	return submission, err
 }
 
@@ -65,6 +62,15 @@ func (m SubmissionModel) AllForUserID(userID uint) (submissions []Submission, er
 		}
 		submissions = append(submissions, submission)
 	}
+	return submissions, err
+}
+
+func (m SubmissionModel) AllForEvent(event Event) (submissions []Submission, err error) {
+	err = database.GetDB().Preload("Team").Table("public.submissions").
+		Joins("left join public.teams on submissions.team_id = teams.id").
+		Where("teams.event = ?", event).
+		Order("submissions.id desc").
+		Find(&submissions).Error
 	return submissions, err
 }
 

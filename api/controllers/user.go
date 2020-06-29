@@ -170,6 +170,26 @@ func (ctrl UserController) Logout(context *gin.Context) {
 	context.JSON(http.StatusOK, gin.H{"message": "Successfully logged out"})
 }
 
+func (ctrl UserController) One(context *gin.Context) {
+
+	_, err := authModel.ExtractTokenMetadata(context.Request)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message": "User not logged in"})
+		context.Abort()
+		return
+	}
+	if userID := getUserID(context); userID != 0 {
+		user, err := userModel.One(userID)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, gin.H{"message": "Error fetching user", "error": err.Error()})
+			context.Abort()
+			return
+		}
+
+		context.JSON(http.StatusOK, gin.H{"user": user})
+	}
+}
+
 func isJudgeForUserID(id uint) (bool, error) {
 	user, err := userModel.One(id)
 	if err != nil {

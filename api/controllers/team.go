@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -303,4 +304,18 @@ func (ctrl TeamController) Delete(context *gin.Context) {
 		}
 		context.JSON(http.StatusOK, gin.H{"message": "Team deleted"})
 	}
+}
+
+func getTeamIDForEvent(context *gin.Context, userID uint) (teamID uint, err error){
+	event, err := fetchAndValidateEvent(context)
+	if err != nil {
+		return 0, errors.New("invalid event name")
+	}
+
+	user, err := userModel.One(userID)
+	if err != nil {
+		return 0, errors.New("unable to fetch user")
+	}
+	teamIDForEvent := userModel.GetTeamIDForEventMap(user)
+	return teamIDForEvent[event], nil
 }
