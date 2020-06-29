@@ -1,0 +1,908 @@
+{
+	"info": {
+		"_postman_id": "2bc8aac7-e2d4-43e8-8548-a3d42b1b0abe",
+		"name": "rankathon",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2b182979-995b-49c9-8bf2-2b8d4001848c",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    //pm.response.to.have.status(200);",
+									"    ",
+									"    var jsonData = JSON.parse(responseBody);",
+									"    pm.globals.set(\"token\", jsonData.token.access_token);",
+									"    pm.globals.set(\"refresh_token\", jsonData.token.refresh_token);",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"test@test.com\",\n    \"password\": \"123456\"\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5555/api/v1/user/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5555",
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"testing\",\n    \"email\": \"test@test.com\",\n    \"password\": \"123456\"\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5555/api/v1/user/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5555",
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5555/api/v1/user/logout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5555",
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5555/api/v1/user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5555",
+							"path": [
+								"api",
+								"v1",
+								"user"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Team",
+			"item": [
+				{
+					"name": "Invite",
+					"item": [
+						{
+							"name": "Send Invite",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"event\": \"testevent\",\n    \"email\": \"test2@test.com\"\n}",
+									"options": {
+										"raw": {}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5555/api/v1/team-invite",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5555",
+									"path": [
+										"api",
+										"v1",
+										"team-invite"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Invites",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5555/api/v1/team-invites",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5555",
+									"path": [
+										"api",
+										"v1",
+										"team-invites"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Accept Invite",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [],
+									"options": {
+										"formdata": {}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5555/api/v1/team-invite/accept?teamid=9",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5555",
+									"path": [
+										"api",
+										"v1",
+										"team-invite",
+										"accept"
+									],
+									"query": [
+										{
+											"key": "teamid",
+											"value": "9"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Decline Invite",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [],
+									"options": {
+										"formdata": {}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5555/api/v1/team-invite/decline?teamid=8",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5555",
+									"path": [
+										"api",
+										"v1",
+										"team-invite",
+										"decline"
+									],
+									"query": [
+										{
+											"key": "teamid",
+											"value": "8"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Create Team",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"team_name\": \"Bulbasaur\",\n    \"is_freshman_team\": true,\n    \"is_pre_university_team\": false,\n    \"is_beginner_team\": false\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5555/api/v1/team/testevent",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5555",
+							"path": [
+								"api",
+								"v1",
+								"team",
+								"testevent"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Team",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5555/api/v1/team/testevent",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5555",
+							"path": [
+								"api",
+								"v1",
+								"team",
+								"testevent"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Teams",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5555/api/v1/teams",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5555",
+							"path": [
+								"api",
+								"v1",
+								"teams"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Team",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"team_name\": \"Charmander\",\n    \"is_freshman_team\": false,\n    \"is_pre_university_team\": true,\n    \"is_beginner_team\": false\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5555/api/v1/team/hacknroll2021",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5555",
+							"path": [
+								"api",
+								"v1",
+								"team",
+								"hacknroll2021"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Team",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [],
+							"options": {
+								"formdata": {}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5555/api/v1/team/testevent",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5555",
+							"path": [
+								"api",
+								"v1",
+								"team",
+								"testevent"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Team Member",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [],
+							"options": {
+								"formdata": {}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5555/api/v1/remove-team-member/testevent?delete-user-id=2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5555",
+							"path": [
+								"api",
+								"v1",
+								"remove-team-member",
+								"testevent"
+							],
+							"query": [
+								{
+									"key": "delete-user-id",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Submission",
+			"item": [
+				{
+					"name": "Create Submission",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"project_name\": \"Article Title\",\n    \"description\": \"Hello world!\",\n    \"images\": [\"id1\", \"id2\"]\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5555/api/v1/submission/testevent",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5555",
+							"path": [
+								"api",
+								"v1",
+								"submission",
+								"testevent"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Submission",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5555/api/v1/submission/testevent",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5555",
+							"path": [
+								"api",
+								"v1",
+								"submission",
+								"testevent"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Submissions For User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5555/api/v1/submissions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5555",
+							"path": [
+								"api",
+								"v1",
+								"submissions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Submissions For Event",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5555/api/v1/submissions/testevent",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5555",
+							"path": [
+								"api",
+								"v1",
+								"submissions",
+								"testevent"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Submission",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"project_name\": \"New Title\",\n    \"description\": \"New description\",\n    \"images\": [\"id1\", \"id2\"]\n}",
+							"options": {
+								"raw": {}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5555/api/v1/submission/testevent",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5555",
+							"path": [
+								"api",
+								"v1",
+								"submission",
+								"testevent"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Submission",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [],
+							"options": {
+								"formdata": {}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5555/api/v1/submission/testevent",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5555",
+							"path": [
+								"api",
+								"v1",
+								"submission",
+								"testevent"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Refresh Token",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{refresh_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"refresh_token\": {{refresh_token}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5555/api/v1/token/refresh",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5555",
+							"path": [
+								"api",
+								"v1",
+								"token",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

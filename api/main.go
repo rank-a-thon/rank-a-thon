@@ -148,7 +148,6 @@ func main() {
 		v1.GET("/submission/:event", TokenAuthMiddleware(), submission.One)
 		v1.PUT("/submission/:event", TokenAuthMiddleware(), submission.Update)
 		v1.DELETE("/submission/:event", TokenAuthMiddleware(), submission.Delete)
-		//TODO get ALL submissions
 
 		/*** START Evaluation ***/
 		evaluation := new(controllers.EvaluationController)
