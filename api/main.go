@@ -8,6 +8,8 @@ import (
 	"runtime"
 
 	"github.com/gin-contrib/gzip"
+	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 	"github.com/joho/godotenv"
 
 	"github.com/rank-a-thon/rank-a-thon/api/controllers"
@@ -15,12 +17,9 @@ import (
 	"github.com/rank-a-thon/rank-a-thon/api/models"
 	uuid "github.com/twinj/uuid"
 
-	"github.com/gin-gonic/gin"
-
 	"golang.org/x/net/context"
 
 	firebase "firebase.google.com/go"
-
 	"google.golang.org/api/option"
 )
 
@@ -65,8 +64,7 @@ func TokenAuthMiddleware() gin.HandlerFunc {
 	}
 }
 
-func autoMigrateDB() {
-	db := database.GetDB()
+func autoMigrateDB(db *gorm.DB) {
 	err := db.AutoMigrate(
 		&models.User{},
 		&models.Team{},
@@ -103,8 +101,8 @@ func main() {
 	// Start PostgreSQL database
 	// Example: db.GetDB() - More info in the models folder
 	database.Init()
-	autoMigrateDB()
 	db := database.GetDB()
+	autoMigrateDB(db)
 	defer db.Close()
 
 	// Start Redis on database 1 - it's used to store the JWT but you can use it for anythig else

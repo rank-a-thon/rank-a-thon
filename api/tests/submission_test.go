@@ -14,7 +14,6 @@ import (
 	"github.com/rank-a-thon/rank-a-thon/api/database"
 	"github.com/rank-a-thon/rank-a-thon/api/forms"
 	"github.com/rank-a-thon/rank-a-thon/api/models"
-
 	"github.com/stretchr/testify/assert"
 )
 
