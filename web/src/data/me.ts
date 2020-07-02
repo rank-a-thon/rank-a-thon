@@ -13,13 +13,17 @@ type User = {
   email: string;
   name: string;
   user_type: number;
-  team_id: number;
+  team_id_for_event: any;
 };
 
 export type Me = JWTToken & User;
 
 export function saveMe(token: JWTToken, user: User) {
   window.localStorage.setItem('token', JSON.stringify(token));
+  window.localStorage.setItem('user', JSON.stringify(user));
+}
+
+export function updateMe(user: User) {
   window.localStorage.setItem('user', JSON.stringify(user));
 }
 
