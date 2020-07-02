@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getMe } from '../../data/me';
 
 let API_URL = process.env.API_URL;
 
@@ -17,6 +18,20 @@ export async function makeBackendRequest(
 ) {
   return await axios({
     method: method,
+    url: getFullEndpoint(endpoint),
+    data: data,
+  });
+}
+
+export async function makeAuthedBackendRequest(
+  method: 'post' | 'get' | 'put' | 'patch' | 'delete',
+  endpoint: string,
+  data?: any,
+) {
+  const access_token = getMe().access_token;
+  return await axios({
+    method: method,
+    headers: { Authorization: `Bearer ${access_token}` },
     url: getFullEndpoint(endpoint),
     data: data,
   });
