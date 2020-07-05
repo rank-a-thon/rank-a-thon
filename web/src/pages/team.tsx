@@ -27,6 +27,9 @@ const DashboardLayout: NextPage<PageProps> = () => {
       return null;
     }
     const teamId = parseInt(allTeamIds.testevent);
+    if (teamId === 0) {
+      return null;
+    }
 
     try {
       response = await makeAuthedBackendRequest('get', 'v1/team/testevent');
@@ -53,18 +56,16 @@ const DashboardLayout: NextPage<PageProps> = () => {
   }
 
   async function leaveTeam() {
-    // const me = getMe();
-    // try {
-    //   const response = await makeAuthedBackendRequest(
-    //     'delete',
-    //     `v1/remove-team-member/testevent?delete-user-id=${me.ID}`,
-    //   );
-    //   setTeamName(null);
-    // } catch (err) {
-    //   console.log(err);
-    // }
-    // TODO: backend is broken booo yitao
-    setTeamName(null);
+    const me = getMe();
+    try {
+      const response = await makeAuthedBackendRequest(
+        'delete',
+        `v1/remove-team-member/testevent?delete-user-id=${me.ID}`,
+      );
+      setTeamName(null);
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   useEffect(() => {
@@ -125,7 +126,7 @@ const DashboardLayout: NextPage<PageProps> = () => {
               primary
               size="medium"
               floated="right"
-              onClick={sendMakeTeam}
+              onClick={() => alert('Not supported yet. Sorry!')}
               style={{ margin: '0.8em 0 0 0' }}
             >
               Invite
