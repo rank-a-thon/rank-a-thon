@@ -264,7 +264,7 @@ func (ctrl TeamController) RemoveTeamMember(context *gin.Context) {
 			}
 
 			err = teamModel.RemoveTeamMember(uint(deleteUserID), teamID)
-			err = userModel.UpdateTeamForUser(uint(deleteUserID), teamID, models.Event(event))
+			err = userModel.UpdateTeamForUser(uint(deleteUserID), 0, models.Event(event))
 			if err != nil {
 				context.JSON(http.StatusNotAcceptable, gin.H{"Message": "Team member could not be removed", "error": err.Error()})
 				context.Abort()
@@ -291,7 +291,7 @@ func (ctrl TeamController) Delete(context *gin.Context) {
 		}
 		teamID := models.JsonStringToStringUintMap(user.TeamIDForEvent)[event]
 		if teamID == 0 {
-			context.JSON(http.StatusNotAcceptable, gin.H{"message": "Team does not have team"})
+			context.JSON(http.StatusNotAcceptable, gin.H{"message": "User does not have team"})
 			context.Abort()
 			return
 		}

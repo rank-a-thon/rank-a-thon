@@ -4,6 +4,7 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
+	"log"
 	"reflect"
 )
 
@@ -61,7 +62,7 @@ func ConvertToInt64(number interface{}) int64 {
 func UintSliceToJsonString(slice []uint) string {
 	sliceJson, err := json.Marshal(slice)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	return string(sliceJson)
 }
@@ -77,7 +78,7 @@ func JsonStringToUintSlice(str string) (slice []uint) {
 func StringUintMapToJsonString(dict map[string]uint) string {
 	jsonMap, err := json.Marshal(dict)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	return string(jsonMap)
 }
