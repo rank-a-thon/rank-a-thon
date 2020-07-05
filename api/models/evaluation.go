@@ -14,7 +14,7 @@ type Evaluation struct {
     gorm.Model
     JudgeID    	      	    uint  `gorm:"column:judge_id;not null" json:"judge_id"`
     SubmissionID            uint  `gorm:"column:submission_id;not null" json:"submission_id"`
-    // Rankings are integers 1-10 when set
+    // Ratings are integers 1-10 when set
     MainRating              uint  `gorm:"column:main_rating;default:0" json:"main_rating"`
     AnnoyingRating          uint  `gorm:"column:annoying_rating;default:0" json:"annoying_rating"`
     EntertainRating         uint  `gorm:"column:entertaining_rating;default:0" json:"entertaining_rating"`

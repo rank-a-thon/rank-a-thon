@@ -71,6 +71,7 @@ func autoMigrateDB(db *gorm.DB) {
 		&models.TeamInvite{},
 		&models.Submission{},
 		&models.Evaluation{},
+		&models.SubmissionRanking{},
 	).Error
 	if err != nil {
 		log.Fatal(err)
