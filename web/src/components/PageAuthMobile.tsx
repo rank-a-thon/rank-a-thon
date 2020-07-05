@@ -44,36 +44,9 @@ function MobileContainer(props: MobileContainerProps) {
         vertical
         visible={sidebarOpened}
       >
-        <Menu.Item active={router.pathname === '/'}>
-          <Link href="/">
-            <a>Home</a>
-          </Link>
-        </Menu.Item>
-        {/* <Menu.Item>
-          <Link href="">
-            <a>About</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item>
-          <Link href="">
-            <a>Try</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item>
-          <Link href="">
-            <a>Contact</a>
-          </Link>
-        </Menu.Item> */}
-        <Menu.Item active={router.pathname === '/login'}>
-          <Link href="/login">
-            <a>Log in</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item active={router.pathname === '/signup'}>
-          <Link href="/signup">
-            <a>Sign Up</a>
-          </Link>
-        </Menu.Item>
+        <SidebarItem name="Home" href="/" />
+        <SidebarItem name="Log in" href="/login" />
+        <SidebarItem name="Sign Up" href="/signup" />
       </Sidebar>
 
       <Sidebar.Pusher dimmed={sidebarOpened}>
@@ -86,7 +59,14 @@ function MobileContainer(props: MobileContainerProps) {
           <Grid columns="equal">
             <Grid.Row>
               <GridColumn>
-                <Icon onClick={handleToggle} name="angle double left" />
+                <Icon
+                  onClick={handleToggle}
+                  style={{
+                    padding: '1em',
+                    margin: '-1em',
+                  }}
+                  name="sidebar"
+                />
               </GridColumn>
               <GridColumn as="h3">{props.title}</GridColumn>
               <GridColumn></GridColumn>
@@ -330,5 +310,26 @@ const LoginLayout: React.FC<PageProps> = ({ signup }) => {
     </MobileContainer>
   );
 };
+
+type SidebarItemProps = {
+  href?: string;
+  name: string;
+  onClick?: any;
+};
+function SidebarItem(props: SidebarItemProps): JSX.Element {
+  const router = useRouter();
+  const isActive = router.pathname === props.href;
+  if (props.href && props.onClick) {
+    throw "Can't have both href and onClick";
+  }
+  if (props.onClick) {
+    return <Menu.Item onClick={props.onClick}>{props.name}</Menu.Item>;
+  }
+  return (
+    <Link href={props.href}>
+      <Menu.Item active={isActive}>{props.name}</Menu.Item>
+    </Link>
+  );
+}
 
 export default LoginLayout;

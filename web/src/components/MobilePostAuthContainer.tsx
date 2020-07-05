@@ -75,7 +75,14 @@ function MobilePostAuthContainer(props: MobileContainerProps) {
             <Grid columns="equal">
               <Grid.Row>
                 <GridColumn>
-                  <Icon onClick={handleToggle} name="angle double left" />
+                  <Icon
+                    onClick={handleToggle}
+                    style={{
+                      padding: '1em',
+                      margin: '-1em',
+                    }}
+                    name="sidebar"
+                  />
                 </GridColumn>
                 <GridColumn as="h3">{props.title}</GridColumn>
                 <GridColumn></GridColumn>

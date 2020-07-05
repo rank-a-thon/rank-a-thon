@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { NextPage } from 'next';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import MobileDetect from 'mobile-detect';
 import {
   Button,
@@ -169,36 +170,9 @@ function MobileContainer(props: MobileContainerProps) {
         vertical
         visible={sidebarOpened}
       >
-        <Menu.Item active>
-          <Link href="">
-            <a>Home</a>
-          </Link>
-        </Menu.Item>
-        {/* <Menu.Item>
-          <Link href="">
-            <a>About</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item>
-          <Link href="">
-            <a>Try</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item>
-          <Link href="">
-            <a>Contact</a>
-          </Link>
-        </Menu.Item> */}
-        <Menu.Item>
-          <Link href="/login">
-            <a>Log in</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item>
-          <Link href="/signup">
-            <a>Sign Up</a>
-          </Link>
-        </Menu.Item>
+        <SidebarItem name="Home" href="/" />
+        <SidebarItem name="Log in" href="/login" />
+        <SidebarItem name="Sign Up" href="/signup" />
       </Sidebar>
 
       <Sidebar.Pusher dimmed={sidebarOpened}>
@@ -395,5 +369,26 @@ HomepageLayout.getInitialProps = async ({ req }) => {
   const isMobile: boolean = !!result.mobile();
   return { getWidth: getWidthFactory(isMobile) };
 };
+
+type SidebarItemProps = {
+  href?: string;
+  name: string;
+  onClick?: any;
+};
+function SidebarItem(props: SidebarItemProps): JSX.Element {
+  const router = useRouter();
+  const isActive = router.pathname === props.href;
+  if (props.href && props.onClick) {
+    throw "Can't have both href and onClick";
+  }
+  if (props.onClick) {
+    return <Menu.Item onClick={props.onClick}>{props.name}</Menu.Item>;
+  }
+  return (
+    <Link href={props.href}>
+      <Menu.Item active={isActive}>{props.name}</Menu.Item>
+    </Link>
+  );
+}
 
 export default HomepageLayout;
