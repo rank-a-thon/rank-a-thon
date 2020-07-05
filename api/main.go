@@ -116,7 +116,7 @@ func main() {
 		v1.POST("/user/login", user.Login)
 		v1.POST("/user/register", user.Register)
 		v1.GET("/user/logout", user.Logout)
-		v1.GET("/user", user.One)
+		v1.GET("/user", user.GetByUserID)
 
 		/*** START Team ***/
 		team := new(controllers.TeamController)

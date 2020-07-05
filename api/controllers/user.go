@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"strconv"
 
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/auth"
@@ -189,6 +190,35 @@ func (ctrl UserController) One(context *gin.Context) {
 		context.JSON(http.StatusOK, gin.H{"user": user})
 	}
 }
+
+func (ctrl UserController) GetByUserID(context *gin.Context) {
+
+	_, err := authModel.ExtractTokenMetadata(context.Request)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message": "User not logged in"})
+		context.Abort()
+		return
+	}
+	var userID uint
+	userID64, err := strconv.ParseUint(context.Query("userid"), 10, 64);
+	if err == nil {
+		userID = uint(userID64)
+	} else {
+		userID = getUserID(context)
+	}
+
+	if userID != 0 {
+		user, err := userModel.One(userID)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, gin.H{"message": "Error fetching user", "error": err.Error()})
+			context.Abort()
+			return
+		}
+		context.JSON(http.StatusOK, gin.H{"user": user})
+	}
+}
+
+
 
 func isJudgeForUserID(id uint) (bool, error) {
 	user, err := userModel.One(id)
