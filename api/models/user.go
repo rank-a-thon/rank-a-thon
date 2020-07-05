@@ -147,6 +147,24 @@ func (m UserModel) IsJudgeForUserID(id uint) (bool, error) {
 	}
 }
 
+func (m UserModel) GetAllJudges() (judges []User, err error) {
+	var users []User
+	err = database.GetDB().Table("public.users").
+		Find(&users).Error
+	if err != nil {
+		return nil, err
+	}
+	judges = make([]User, 100)
+	var idx int
+	for _, user := range users {
+		if m.isEmailFromJudge(user.Email) {
+			judges[idx] = user
+			idx++
+		}
+	}
+	return judges, err
+}
+
 func (m UserModel) isEmailFromJudge(email string) bool {
 	return judgeEmails[email]
 }

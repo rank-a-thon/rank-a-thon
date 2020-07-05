@@ -153,6 +153,11 @@ func main() {
 		v1.GET("/evaluation/:id", TokenAuthMiddleware(), evaluation.One)
 		v1.PUT("/evaluation/:id", TokenAuthMiddleware(), evaluation.Update)
 
+		/*** START Ranker ***/
+		ranker := new(controllers.RankerController)
+		v1.GET("/ranker/start-evaluations", TokenAuthMiddleware(), ranker.CreateEvaluations)
+		v1.GET("/ranker/get-team-rankings", TokenAuthMiddleware(), ranker.GetTeamRankings)
+
 	}
 
 	r.LoadHTMLGlob("./public/html/*")

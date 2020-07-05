@@ -29,7 +29,7 @@ func (ctrl EvaluationController) All(context *gin.Context) {
 			return
 		}
 
-		data, err := evaluationModel.All(userID)
+		data, err := evaluationModel.AllForJudge(userID)
 
 		if err != nil {
 			context.JSON(http.StatusNotAcceptable, gin.H{"Message": "Could not get evaluations", "error": err.Error()})
