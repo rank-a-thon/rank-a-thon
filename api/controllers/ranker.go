@@ -73,7 +73,7 @@ func (ctrl RankerController) CalculateTeamRankings(context *gin.Context) {
 	For each team in event
 	get all evaluations assigned to submission
 	calculate mean of normalised mean for each category
-	S
+	Save into psql
 	 */
 }
 

@@ -12,16 +12,16 @@ import (
 // Evaluation ...
 type Evaluation struct {
     gorm.Model
-    JudgeID    	      	    uint    `gorm:"column:judge_id;not null" json:"judge_id"`
-    SubmissionID            uint    `gorm:"column:submission_id;not null" json:"submission_id"`
+    JudgeID    	      	    uint  `gorm:"column:judge_id;not null" json:"judge_id"`
+    SubmissionID            uint  `gorm:"column:submission_id;not null" json:"submission_id"`
     // Rankings are integers 1-10 when set
-    MainRanking		        uint    `gorm:"column:main_ranking;default:0" json:"main_ranking"`
-    AnnoyingRanking         uint    `gorm:"column:annoying_ranking;default:0" json:"annoying_ranking"`
-    EntertainRanking        uint	`gorm:"column:entertaining_ranking;default:0" json:"entertaining_ranking"`
-    BeautifulRanking        uint	`gorm:"column:beautiful_ranking;default:0" json:"beautiful_ranking"`
-    SociallyUsefulRanking   uint    `gorm:"column:socially_useful_ranking;default:0" json:"socially_useful_ranking"`
-    HardwareRanking    	    uint    `gorm:"column:hardware_ranking;default:0" json:"hardware_ranking"`
-    AwesomelyUselessRanking uint    `gorm:"column:awesomely_useless_ranking;default:0" json:"awesomely_useless_ranking"`
+    MainRating              uint  `gorm:"column:main_rating;default:0" json:"main_rating"`
+    AnnoyingRating          uint  `gorm:"column:annoying_rating;default:0" json:"annoying_rating"`
+    EntertainRating         uint  `gorm:"column:entertaining_rating;default:0" json:"entertaining_rating"`
+    BeautifulRating         uint  `gorm:"column:beautiful_rating;default:0" json:"beautiful_rating"`
+    SociallyUsefulRating    uint  `gorm:"column:socially_useful_rating;default:0" json:"socially_useful_rating"`
+    HardwareRating          uint  `gorm:"column:hardware_rating;default:0" json:"hardware_rating"`
+    AwesomelyUselessRating  uint  `gorm:"column:awesomely_useless_rating;default:0" json:"awesomely_useless_rating"`
 }
 
 // EvaluationModel ...
@@ -70,13 +70,13 @@ func (m EvaluationModel) Update(id uint, form forms.EvaluationForm) (err error) 
     err = database.GetDB().Table("public.evaluations").Model(&Evaluation{}).
         Where("id = ?", id).
         Updates(map[string]interface{}{
-            "MainRanking": form.MainRanking,
-            "AnnoyingRanking": form.AnnoyingRanking,
-            "EntertainRanking": form.EntertainRanking,
-            "BeautifulRanking": form.BeautifulRanking,
-            "SociallyUsefulRanking": form.SociallyUsefulRanking,
-            "HardwareRanking": form.HardwareRanking,
-            "AwesomelyUselessRanking": form.AwesomelyUselessRanking}).Error
+            "MainRating": form.MainRating,
+            "AnnoyingRating": form.AnnoyingRating,
+            "EntertainRating": form.EntertainRating,
+            "BeautifulRating": form.BeautifulRating,
+            "SociallyUsefulRating": form.SociallyUsefulRating,
+            "HardwareRating": form.HardwareRating,
+            "AwesomelyUselessRating": form.AwesomelyUselessRating}).Error
     return err
 }
 
