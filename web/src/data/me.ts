@@ -18,9 +18,11 @@ type User = {
 
 export type Me = JWTToken & User;
 
-export function saveMe(token: JWTToken, user: User) {
+export function saveMe(token: JWTToken, user?: User) {
   window.localStorage.setItem('token', JSON.stringify(token));
-  window.localStorage.setItem('user', JSON.stringify(user));
+  if (user) {
+    window.localStorage.setItem('user', JSON.stringify(user));
+  }
 }
 
 export function updateMe(user: User) {

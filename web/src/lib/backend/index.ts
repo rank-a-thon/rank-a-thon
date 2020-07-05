@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { getMe } from '../../data/me';
+import { getMe, saveMe } from '../../data/me';
+import Router from 'next/router';
 
 let API_URL = process.env.API_URL;
 
@@ -28,11 +29,36 @@ export async function makeAuthedBackendRequest(
   endpoint: string,
   data?: any,
 ) {
-  const access_token = getMe().access_token;
-  return await axios({
-    method: method,
-    headers: { Authorization: `Bearer ${access_token}` },
-    url: getFullEndpoint(endpoint),
-    data: data,
-  });
+  const me = getMe();
+  const access_token = me.access_token;
+  try {
+    const response = await axios({
+      method: method,
+      headers: { Authorization: `Bearer ${access_token}` },
+      url: getFullEndpoint(endpoint),
+      data: data,
+    });
+    return response;
+  } catch (err) {
+    if (err.response.status === 400) {
+      // Auth expiry - refresh token
+      const refresh_token = me.refresh_token;
+      try {
+        const response = await axios({
+          method: 'post',
+          headers: { Authorization: `Bearer ${refresh_token}` },
+          url: getFullEndpoint('v1/token/refresh'),
+          data: { refresh_token: refresh_token },
+        });
+        console.log(response);
+        saveMe(response.data);
+        // TODO: we can do better
+        return makeAuthedBackendRequest(method, endpoint, data);
+      } catch {
+        throw 'Unable to refresh JWT token';
+      }
+    } else if (err.response.status === 401) {
+      Router.push('/login');
+    }
+  }
 }
