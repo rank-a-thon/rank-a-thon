@@ -1,0 +1,71 @@
+version: "3.8"
+services:
+  api:
+    container_name: api
+    restart: always
+    build:
+      dockerfile: Dockerfile.dev
+      context: "./api"
+    environment:
+      - ENV=LOCAL
+      - SSL=${API_SSL}
+      - PORT=${API_PORT}
+      - DB_USER=${DB_USER}
+      - DB_HOST=${DB_HOST}
+      - DB_PASS=${DB_PASS}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - ACCESS_SECRET=${DB_ACCESS_SECRET}
+      - REFRESH_SECRET=${DB_REFRESH_SECRET}
+      - REDIS_HOST=${REDIS_HOST}
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./api:/api
+  web:
+    container_name: web
+    build:
+      dockerfile: Dockerfile.prod
+      context: "./web"
+    environment:
+      - FIREBASE_API_KEY=${FIREBASE_API_KEY}
+      - FIREBASE_AUTH_DOMAIN=${FIREBASE_AUTH_DOMAIN}
+      - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+  postgres:
+    container_name: postgres
+    image: "postgres:12.3-alpine"
+    ports:
+      - "5432:5432"
+    environment:
+      - PGUSER=${DB_USER}
+      - PGHOST=${DB_HOST}
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - PGDATABASE=${PGDATABASE}
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+      - ./api/db:/db
+  redis:
+    container_name: redis
+    image: redis:6.0.5-alpine
+    volumes:
+      - ./redis-data:/data
+    ports:
+      - 6379:6379
+  nginx:
+    container_name: nginx
+    restart: always
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./proxy
+    depends_on:
+      - api
+      - web
+    ports:
+      - "80:80"
+    logging:
+      driver: none
+
+volumes:
+  postgres-data:
+    external: true
