@@ -52,6 +52,21 @@ const DashboardLayout: NextPage<PageProps> = () => {
     }
   }
 
+  async function leaveTeam() {
+    // const me = getMe();
+    // try {
+    //   const response = await makeAuthedBackendRequest(
+    //     'delete',
+    //     `v1/remove-team-member/testevent?delete-user-id=${me.ID}`,
+    //   );
+    //   setTeamName(null);
+    // } catch (err) {
+    //   console.log(err);
+    // }
+    // TODO: backend is broken booo yitao
+    setTeamName(null);
+  }
+
   useEffect(() => {
     getTeamNameAndMembers().then((teamName) => setTeamName(teamName));
   }, []);
@@ -138,6 +153,7 @@ const DashboardLayout: NextPage<PageProps> = () => {
           <Button
             size="medium"
             style={{ display: 'block', margin: '1em auto', width: '100%' }}
+            onClick={leaveTeam}
             negative
           >
             Leave Team
