@@ -72,6 +72,8 @@ services:
       - web
     ports:
       - "5555:80"
+    logging:
+      driver: none
 
 volumes:
   postgres-data:
