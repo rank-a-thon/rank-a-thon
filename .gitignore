@@ -141,3 +141,4 @@ redis-data/
 postgres-data/
 
 secrets/
+/api/secrets/

@@ -2,9 +2,11 @@ package models
 
 import (
 	"database/sql/driver"
+	"encoding/csv"
 	"encoding/json"
 	"errors"
 	"log"
+	"os"
 	"reflect"
 )
 
@@ -89,4 +91,21 @@ func JsonStringToStringUintMap(strMap string) (mp map[string]uint) {
 		panic(err)
 	}
 	return mp
+}
+
+func readJudgesFromCsv() (judgeEmails map[string]bool) {
+	file := "secrets/judges.csv"
+	f, err := os.Open(file)
+	if err != nil {
+		log.Fatal("could not read judges csv file")
+	}
+	defer f.Close()
+	lines, err := csv.NewReader(f).ReadAll()
+
+	judgeEmails = make(map[string]bool)
+	for _, line := range lines {
+		judgeEmails[line[0]] = true
+	}
+
+	return judgeEmails
 }

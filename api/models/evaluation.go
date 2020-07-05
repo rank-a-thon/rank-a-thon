@@ -82,3 +82,7 @@ func (m EvaluationModel) Delete(id uint) (err error) {
 
     return err
 }
+
+func (m EvaluationModel) HaveAllEvaluationsCompleted() (result bool, err error) {
+    return false, nil
+}

@@ -217,17 +217,3 @@ func (ctrl UserController) GetByUserID(context *gin.Context) {
 		context.JSON(http.StatusOK, gin.H{"user": user})
 	}
 }
-
-
-
-func isJudgeForUserID(id uint) (bool, error) {
-	user, err := userModel.One(id)
-	if err != nil {
-		return false, err
-	}
-	if user.UserType == models.Judge {
-		return true, nil
-	} else {
-		return false, nil
-	}
-}

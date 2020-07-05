@@ -27,6 +27,8 @@ type UserModel struct{}
 
 var authModel = new(AuthModel)
 
+var judgeEmails = readJudgesFromCsv()
+
 // Login ...
 func (m UserModel) Login(form forms.LoginForm) (user User, token Token, err error) {
 	err = database.GetDB().
@@ -86,7 +88,13 @@ func (m UserModel) Register(form forms.RegisterForm) (user User, err error) {
 	}
 
 	//Create the user and return back the user ID
-	user = User{Email: form.Email, Password: string(hashedPassword), Name: form.Name}
+	var userType UserType
+	if m.isEmailFromJudge(form.Email) {
+		userType = 2
+	} else {
+		userType = 0
+	}
+	user = User{Email: form.Email, Password: string(hashedPassword), Name: form.Name, UserType: userType}
 	err = db.Table("public.users").Create(&user).Scan(&user).Error
 
 	return user, err
@@ -125,4 +133,20 @@ func (m UserModel) UpdateTeamForUser(userID, teamID uint, event Event) (err erro
 
 func (m UserModel) GetTeamIDForEventMap(user User) map[string]uint {
 	return JsonStringToStringUintMap(user.TeamIDForEvent)
+}
+
+func (m UserModel) IsJudgeForUserID(id uint) (bool, error) {
+	user, err := userModel.One(id)
+	if err != nil {
+		return false, err
+	}
+	if user.UserType == Judge {
+		return true, nil
+	} else {
+		return false, nil
+	}
+}
+
+func (m UserModel) isEmailFromJudge(email string) bool {
+	return judgeEmails[email]
 }

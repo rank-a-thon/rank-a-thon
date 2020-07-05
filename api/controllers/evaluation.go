@@ -17,7 +17,7 @@ var evaluationModel = new(models.EvaluationModel)
 func (ctrl EvaluationController) All(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 
-		isJudge, err := isJudgeForUserID(userID)
+		isJudge, err := userModel.IsJudgeForUserID(userID)
 		if err != nil {
 			context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not get evaluations", "error": err.Error()})
 			context.Abort()
@@ -44,7 +44,7 @@ func (ctrl EvaluationController) All(context *gin.Context) {
 func (ctrl EvaluationController) One(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 
-		isJudge, err := isJudgeForUserID(userID)
+		isJudge, err := userModel.IsJudgeForUserID(userID)
 		if err != nil {
 			context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not get evaluation", "error": err.Error()})
 			context.Abort()
@@ -78,7 +78,7 @@ func (ctrl EvaluationController) One(context *gin.Context) {
 func (ctrl EvaluationController) Update(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 
-		isJudge, err := isJudgeForUserID(userID)
+		isJudge, err := userModel.IsJudgeForUserID(userID)
 		if err != nil {
 			context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not get evaluation", "error": err.Error()})
 			context.Abort()
