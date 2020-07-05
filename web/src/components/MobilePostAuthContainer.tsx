@@ -53,39 +53,13 @@ function MobilePostAuthContainer(props: MobileContainerProps) {
           vertical
           visible={sidebarOpened}
         >
-          <Menu.Item active>
-            <Link href="/dashboard">
-              <a>Dashboard</a>
-            </Link>
-          </Menu.Item>
-          <Menu.Item>
-            <Link href="/announcements">
-              <a>Announcements</a>
-            </Link>
-          </Menu.Item>
-          <Menu.Item>
-            <Link href="/team">
-              <a>Manage Team</a>
-            </Link>
-          </Menu.Item>
-          <Menu.Item>
-            <Link href="/explore">
-              <a>View Projects</a>
-            </Link>
-          </Menu.Item>
-          <Menu.Item>
-            <Link href="/map">
-              <a>Map</a>
-            </Link>
-          </Menu.Item>
-          <Menu.Item>
-            <Link href="/schedule">
-              <a>Schedule</a>
-            </Link>
-          </Menu.Item>
-          <Menu.Item>
-            <a onClick={logOut}>Log Out</a>
-          </Menu.Item>
+          <SidebarItem name="Dashboard" href="/dashboard" />
+          <SidebarItem name="Announcements" href="/announcements" />
+          <SidebarItem name="Manage Team" href="/team" />
+          <SidebarItem name="View Projects" href="/explore" />
+          <SidebarItem name="Map" href="/map" />
+          <SidebarItem name="Schedule" href="/schedule" />
+          <SidebarItem name="Log Out" onClick={logOut} />
         </Sidebar>
 
         <Sidebar.Pusher dimmed={sidebarOpened}>
@@ -140,6 +114,28 @@ function MobilePostAuthContainer(props: MobileContainerProps) {
         </Link>
       </Menu>
     </>
+  );
+}
+
+type SidebarItemProps = {
+  href?: string;
+  name: string;
+  onClick?: any;
+};
+
+function SidebarItem(props: SidebarItemProps): JSX.Element {
+  const router = useRouter();
+  const isActive = router.pathname === props.href;
+  if (props.href && props.onClick) {
+    throw "Can't have both href and onClick";
+  }
+  if (props.onClick) {
+    return <Menu.Item onClick={props.onClick}>{props.name}</Menu.Item>;
+  }
+  return (
+    <Link href={props.href}>
+      <Menu.Item active={isActive}>{props.name}</Menu.Item>
+    </Link>
   );
 }
 
