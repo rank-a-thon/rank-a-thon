@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { NextPage } from 'next';
 import Link from 'next/link';
 import MobileDetect from 'mobile-detect';
@@ -67,6 +67,16 @@ const HomepageHeading = ({ mobile }: HomepageHeadingProps) => (
  * It can be more complicated, but you can create really flexible markup.
  */
 
+function useMobilePlease() {
+  if (
+    window !== undefined &&
+    window.innerWidth >= Responsive.onlyMobile.maxWidth
+  ) {
+    alert(
+      'Sorry, but this app is only available in mobile for now! Please view this app on your phone OR use your browser developer tools to set a mobile device emulation!',
+    );
+  }
+}
 function DesktopContainer({ getWidth, children }) {
   const [fixed, setFixed] = useState<boolean>(false);
 
@@ -77,6 +87,8 @@ function DesktopContainer({ getWidth, children }) {
   function showFixedMenu() {
     setFixed(true);
   }
+
+  useEffect(useMobilePlease, []);
 
   return (
     <Responsive getWidth={getWidth} minWidth={Responsive.onlyTablet.minWidth}>
@@ -98,13 +110,11 @@ function DesktopContainer({ getWidth, children }) {
             secondary={!fixed}
             size="large"
           >
-            <Container>
+            <Container onClick={useMobilePlease}>
               <Menu.Item as="a" active>
                 Home
               </Menu.Item>
-              <Menu.Item as="a" href="about">
-                About
-              </Menu.Item>
+              <Menu.Item as="a">About</Menu.Item>
               <Menu.Item as="a">Try</Menu.Item>
               <Menu.Item as="a">Contact</Menu.Item>
               <Menu.Item position="right">
