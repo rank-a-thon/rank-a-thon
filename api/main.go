@@ -150,7 +150,7 @@ func main() {
 
 		/*** START Evaluation ***/
 		evaluation := new(controllers.EvaluationController)
-		v1.GET("/evaluations", TokenAuthMiddleware(), evaluation.All)
+		v1.GET("/evaluations", TokenAuthMiddleware(), evaluation.AllForJudge)
 		v1.GET("/evaluation/:id", TokenAuthMiddleware(), evaluation.One)
 		v1.PUT("/evaluation/:id", TokenAuthMiddleware(), evaluation.Update)
 

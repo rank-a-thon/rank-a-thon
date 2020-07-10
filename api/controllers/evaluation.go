@@ -14,7 +14,7 @@ type EvaluationController struct{}
 
 var evaluationModel = new(models.EvaluationModel)
 
-func (ctrl EvaluationController) All(context *gin.Context) {
+func (ctrl EvaluationController) AllForJudge(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 
 		isJudge, err := userModel.IsJudgeForUserID(userID)
