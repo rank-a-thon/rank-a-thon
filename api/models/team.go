@@ -59,8 +59,10 @@ func (m TeamModel) All(userID uint) (teams []Team, err error) {
 		return nil, errors.New(fmt.Sprintf("user %d not found", userID))
 	}
 	for _, teamID := range JsonStringToStringUintMap(user.TeamIDForEvent) {
-		team, _ := m.One(teamID)
-		teams = append(teams, team)
+		if teamID != 0 {
+			team, _ := m.One(teamID)
+			teams = append(teams, team)
+		}
 	}
 	return teams, err
 }
