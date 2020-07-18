@@ -211,7 +211,7 @@ func calculateStatisticsForEvaluations(evaluations []models.Evaluation) (mean []
 	return mean, std
 }
 
-func (ctrl RankerController) GetTeamRankings(context *gin.Context) {
+func (ctrl RankerController) GetTeamRankingsByRange(context *gin.Context) {
 	// check if all judges have finished evaluation, if true return teams in sorted ranking
 	userID := getUserID(context);
 	if userID != 3 {
@@ -226,5 +226,64 @@ func (ctrl RankerController) GetTeamRankings(context *gin.Context) {
 		return
 	}
 
+	var rankerForm forms.RankerForm
+	if context.ShouldBindJSON(&rankerForm) != nil {
+		context.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid form"})
+		context.Abort()
+		return
+	}
+
+	submissionRankings, err := submissionRankingModel.AllByCategory(rankerForm.Category)
+	if err != nil {
+		context.JSON(http.StatusNotFound, gin.H{"Message": "Error fetching submission rankings", "error": err.Error()})
+		context.Abort()
+		return
+	}
+
+	selectedRankings := submissionRankings[rankerForm.StartIndex:rankerForm.EndIndex]
+	submissions := make([]models.Submission, len(selectedRankings))
+	for _, ranking := range selectedRankings {
+		submission, err := submissionModel.One(ranking.SubmissionID)
+		if err != nil {
+			context.JSON(http.StatusNotFound, gin.H{"Message": "Error fetching submission", "error": err.Error()})
+			context.Abort()
+			return
+		}
+		submissions = append(submissions, submission)
+	}
+
+	context.JSON(http.StatusOK, gin.H{"data": submissions})
 }
 
+func (ctrl RankerController) GetTeamRankingsBySubmissionID(context *gin.Context) {
+
+	_, err := fetchAndValidateEvent(context)
+	if err != nil {
+		context.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid event name"})
+		context.Abort()
+		return
+	}
+
+	var rankerFormByID forms.RankerFormByID
+	if context.ShouldBindJSON(&rankerFormByID) != nil {
+		context.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid form"})
+		context.Abort()
+		return
+	}
+
+	submissionRanking, err := submissionRankingModel.OneBySubmissionID(rankerFormByID.SubmissionID)
+	if err != nil {
+		context.JSON(http.StatusNotFound, gin.H{"Message": "Error fetching submission ranking", "error": err.Error()})
+		context.Abort()
+		return
+	}
+
+	submission, err := submissionModel.One(submissionRanking.SubmissionID)
+	if err != nil {
+		context.JSON(http.StatusNotFound, gin.H{"Message": "Error fetching submission", "error": err.Error()})
+		context.Abort()
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"data": submission})
+}

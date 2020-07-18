@@ -48,6 +48,15 @@ func (m SubmissionModel) OneByTeamID(teamID uint) (submission Submission, err er
 	return submission, err
 }
 
+// One ...
+func (m SubmissionModel) One(submissionID uint) (submission Submission, err error) {
+	err = database.GetDB().Preload("Team").Table("public.submissions").
+		Where("submissions.id = ?", submissionID).
+		Joins("left join public.teams on submissions.team_id = teams.id").
+		Take(&submission).Error
+	return submission, err
+}
+
 // All ...
 func (m SubmissionModel) AllForUserID(userID uint) (submissions []Submission, err error) {
 	user, err := userModel.One(userID)
