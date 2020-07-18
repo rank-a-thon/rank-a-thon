@@ -148,8 +148,8 @@ func (ctrl RankerController) CalculateTeamRankings(context *gin.Context) {
 			log.Println(err)
 		}
 
-		for ranking, submission := range rankedSubmissions {
-			err = submissionRankingModel.Update(submission.ID, map[string]uint{
+		for ranking, submissionRanking := range rankedSubmissions {
+			err = submissionRankingModel.Update(submissionRanking.SubmissionID, map[string]uint{
 				fmt.Sprintf("%s_ranking", category): uint(ranking),
 			})
 			if err != nil {
@@ -183,7 +183,11 @@ func normaliseJudgeScores(context *gin.Context, event string) {
 		for _, evaluation := range evaluations {
 			standardisedRatingArray := evaluation.ReadRatingsIntoArray()
 			for i := 0; i < models.NumberOfRatings; i++ {
-				standardisedRatingArray[i] = (standardisedRatingArray[i] - mean[i]) / std[i]
+				if std[i] != 0 {
+					standardisedRatingArray[i] = (standardisedRatingArray[i] - mean[i]) / std[i]
+				} else {
+					standardisedRatingArray[i] = standardisedRatingArray[i] - mean[i]
+				}
 			}
 
 			form := forms.EvaluationFormFloat{
@@ -273,18 +277,7 @@ func (ctrl RankerController) GetTeamRankingsByRange(context *gin.Context) {
 	}
 
 	selectedRankings := submissionRankings[rankerForm.StartIndex:rankerForm.EndIndex]
-	submissions := make([]models.Submission, len(selectedRankings))
-	for _, ranking := range selectedRankings {
-		submission, err := submissionModel.One(ranking.SubmissionID)
-		if err != nil {
-			context.JSON(http.StatusNotFound, gin.H{"Message": "Error fetching submission", "error": err.Error()})
-			context.Abort()
-			return
-		}
-		submissions = append(submissions, submission)
-	}
-
-	context.JSON(http.StatusOK, gin.H{"data": submissions})
+	context.JSON(http.StatusOK, gin.H{"data": selectedRankings})
 }
 
 func (ctrl RankerController) GetTeamRankingsBySubmissionID(context *gin.Context) {

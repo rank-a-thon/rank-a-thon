@@ -67,10 +67,11 @@ func (m SubmissionRankingModel) Update(submissionID uint, form map[string]uint) 
 }
 
 // One ...
-func (m SubmissionRankingModel) OneBySubmissionID(submissionID uint) (submissionRanking Evaluation, err error) {
+func (m SubmissionRankingModel) OneBySubmissionID(submissionID uint) (submissionRanking SubmissionRanking, err error) {
     err = database.GetDB().Table("public.submission_rankings").
         Where("submission_rankings.submission_id = ?", submissionID).
         Take(&submissionRanking).Error
+    fmt.Println(submissionRanking)
     return submissionRanking, err
 }
 
