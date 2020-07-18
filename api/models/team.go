@@ -123,6 +123,13 @@ func (m TeamModel) RemoveTeamMember(userID uint, teamID uint) (err error) {
 
 	indexToRemove := -1
 	teamUserIDs := JsonStringToUintSlice(team.UserIDs)
+
+	// if there is only 1 team member left, delete entire team
+	if len(teamUserIDs) == 1 {
+		err = m.Delete(teamID)
+		return err
+	}
+
 	for i, v := range teamUserIDs {
 		if v == userID {
 			indexToRemove = i
@@ -142,6 +149,7 @@ func (m TeamModel) RemoveTeamMember(userID uint, teamID uint) (err error) {
 }
 
 // Delete ...
+// Note this does not delete the team's submission
 func (m TeamModel) Delete(teamID uint) (err error) {
 	team, err := m.One(teamID)
 	if err != nil {

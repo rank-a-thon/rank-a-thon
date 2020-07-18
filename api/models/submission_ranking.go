@@ -19,6 +19,14 @@ type SubmissionRanking struct {
     SociallyUsefulRanking   uint    `gorm:"column:socially_useful_ranking;default:0" json:"socially_useful_ranking"`
     HardwareRanking    	    uint    `gorm:"column:hardware_ranking;default:0" json:"hardware_ranking"`
     AwesomelyUselessRanking uint    `gorm:"column:awesomely_useless_ranking;default:0" json:"awesomely_useless_ranking"`
+
+    MainScore		        float64    `gorm:"column:main_score" json:"main_score"`
+    AnnoyingScore           float64    `gorm:"column:annoying_score" json:"annoying_score"`
+    EntertainScore          float64	   `gorm:"column:entertaining_score" json:"entertaining_score"`
+    BeautifulScore          float64    `gorm:"column:beautiful_score" json:"beautiful_score"`
+    SociallyUsefulScore     float64    `gorm:"column:socially_useful_score" json:"socially_useful_score"`
+    HardwareScore    	    float64    `gorm:"column:hardware_score" json:"hardware_score"`
+    AwesomelyUselessScore   float64    `gorm:"column:awesomely_useless_score" json:"awesomely_useless_score"`
 }
 
 type SubmissionRankingModel struct{}
@@ -26,21 +34,36 @@ type SubmissionRankingModel struct{}
 // Create ...
 // When this is created, the rankings are not assigned yet and are 0
 func (m SubmissionRankingModel) Create(
-    submissionID uint, mainRanking uint, annoyingRanking uint, entertainRanking uint, beautifulRanking uint,
-    sociallyUsefulRanking uint, hardwareRanking uint, awesomelyUselessRanking uint) (submissionRankingID uint, err error) {
+    submissionID uint, scoresArray []float64) (submissionRankingID uint, err error) {
+    if len(scoresArray) != NumberOfRatings {
+        return 0, errors.New("scores array length mismatch")
+    }
 
     submissionRanking := SubmissionRanking{
-        SubmissionID:            submissionID,
-        MainRanking:             mainRanking,
-        AnnoyingRanking:         annoyingRanking,
-        EntertainRanking:        entertainRanking,
-        BeautifulRanking:        beautifulRanking,
-        SociallyUsefulRanking:   sociallyUsefulRanking,
-        HardwareRanking:         hardwareRanking,
-        AwesomelyUselessRanking: awesomelyUselessRanking,
+        SubmissionID:          submissionID,
+        MainScore:             scoresArray[0],
+        AnnoyingScore:         scoresArray[1],
+        EntertainScore:        scoresArray[2],
+        BeautifulScore:        scoresArray[3],
+        SociallyUsefulScore:   scoresArray[4],
+        HardwareScore:         scoresArray[5],
+        AwesomelyUselessScore: scoresArray[6],
     }
     err = database.GetDB().Table("public.submission_rankings").Create(&submissionRanking).Error
     return submissionRanking.ID, err
+}
+
+// Update ...
+func (m SubmissionRankingModel) Update(submissionID uint, form map[string]uint) (err error) {
+    _, err = m.OneBySubmissionID(submissionID)
+
+    if err != nil {
+        return errors.New(fmt.Sprintf("submission %d not found", submissionID))
+    }
+    err = database.GetDB().Table("public.submission_rankings").Model(&Team{}).
+        Where("id = ?", submissionID).
+        Updates(form).Error
+    return err
 }
 
 // One ...
@@ -51,10 +74,18 @@ func (m SubmissionRankingModel) OneBySubmissionID(submissionID uint) (submission
     return submissionRanking, err
 }
 
-// Get all evaluations assigned to a judge
+// All ...
 func (m SubmissionRankingModel) All() (submissionRankings []SubmissionRanking, err error) {
     err = database.GetDB().Table("public.submission_rankings").
         Order("submission_rankings.id desc").
+        Find(&submissionRankings).Error
+    return submissionRankings, err
+}
+
+// Sorted by category score descending order
+func (m SubmissionRankingModel) AllByCategory(category string) (submissionRankings []SubmissionRanking, err error) {
+    err = database.GetDB().Table("public.submission_rankings").
+        Order(fmt.Sprintf("submission_rankings.%s_score desc", category)).
         Find(&submissionRankings).Error
     return submissionRankings, err
 }

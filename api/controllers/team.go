@@ -258,7 +258,7 @@ func (ctrl TeamController) RemoveTeamMember(context *gin.Context) {
 			}
 			teamID := models.JsonStringToStringUintMap(user.TeamIDForEvent)[event]
 			if teamID == 0 {
-				context.JSON(http.StatusNotAcceptable, gin.H{"message": "Team does not have team"})
+				context.JSON(http.StatusNotAcceptable, gin.H{"message": "User does not have team"})
 				context.Abort()
 				return
 			}

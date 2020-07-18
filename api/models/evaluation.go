@@ -74,9 +74,9 @@ func (m EvaluationModel) AllForJudge(judgeID uint) (evaluations []Evaluation, er
 }
 
 // Get all evaluations assigned to a submission
-func (m EvaluationModel) AllForSubmission(judgeID uint) (evaluations []Evaluation, err error) {
+func (m EvaluationModel) AllForSubmission(submissionID uint) (evaluations []Evaluation, err error) {
     err = database.GetDB().Table("public.evaluations").
-        Where("evaluations.judge_id = ?", judgeID).
+        Where("evaluations.submission_id = ?", submissionID).
         Order("evaluations.id desc").
         Find(&evaluations).Error
     return evaluations, err

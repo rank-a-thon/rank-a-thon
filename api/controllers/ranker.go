@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"log"
 	"math"
 	"math/rand"
@@ -13,6 +14,8 @@ import (
 )
 
 type RankerController struct{}
+
+var submissionRankingModel = new(models.SubmissionRankingModel)
 
 func (ctrl RankerController) CreateEvaluations(context *gin.Context) {
 	// get list of judges, submissions and create evaluations
@@ -86,8 +89,54 @@ func (ctrl RankerController) CalculateTeamRankings(context *gin.Context) {
 	}
 
 	normaliseJudgeScores(context, event)
-	// get all normalised scores for each submission and take mean
-	// rank submissions by each category and persist
+	// get all normalised scores for each submission, take mean and persist to submissionRankings
+	allSubmissions, err := submissionModel.AllForEvent(models.Event(event))
+	for _, submission := range allSubmissions {
+		evaluationsForSubmission, err := evaluationModel.AllForSubmission(submission.ID)
+		if err != nil {
+			log.Println(err.Error())
+		}
+		var mean = make([]float64, models.NumberOfRatings)
+		var count int = 0
+		for _, evaluation := range evaluationsForSubmission {
+			if evaluation.Normalised {
+				ratingArray := evaluation.ReadRatingsIntoArray()
+				for i := 0; i < models.NumberOfRatings; i++ {
+					mean[i] += ratingArray[i]
+				}
+				count++
+			}
+		}
+
+		for i := 0; i < models.NumberOfRatings; i++ {
+			mean[i] /= float64(count)
+		}
+
+		_, err = submissionRankingModel.Create(submission.ID, mean)
+		if err != nil {
+			log.Println(err)
+		}
+	}
+	// for each ranking type, sort by that value and persist each of the rankings
+	categories := []string{"main", "annoying", "entertaining", "beautiful", "socially_useful", "hardware", "awesomely_useless"}
+
+	for _, category := range categories {
+		rankedSubmissions, err := submissionRankingModel.AllByCategory(category)
+		if err != nil {
+			log.Println(err)
+		}
+
+		for ranking, submission := range rankedSubmissions {
+			err = submissionRankingModel.Update(submission.ID, map[string]uint{
+				fmt.Sprintf("%s_ranking", category): uint(ranking),
+			})
+			if err != nil {
+				log.Println(err)
+			}
+		}
+	}
+	context.JSON(http.StatusOK, gin.H{"message": "Teams ranked successfully"})
+
 }
 
 func normaliseJudgeScores(context *gin.Context, event string) {
