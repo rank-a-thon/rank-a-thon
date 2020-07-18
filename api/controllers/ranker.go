@@ -19,8 +19,16 @@ var submissionRankingModel = new(models.SubmissionRankingModel)
 
 func (ctrl RankerController) CreateEvaluations(context *gin.Context) {
 	// get list of judges, submissions and create evaluations
-	userID := getUserID(context);
-	if userID != 3 {
+	userID := getUserID(context)
+	user, err := userModel.One(userID)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message": "Error fetching user", "error": err.Error()})
+		context.Abort()
+		return
+	}
+
+	if user.UserType != 3 {
+		fmt.Println(user.UserType)
 		context.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid authorization"})
 		context.Abort()
 		return
@@ -29,13 +37,19 @@ func (ctrl RankerController) CreateEvaluations(context *gin.Context) {
 	judges, err := userModel.GetAllJudges()
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"message": "Error fetching judges", "error": err.Error()})
+		context.Abort()
+		return
 	}
+
 	event, err := fetchAndValidateEvent(context)
 	submissions, err := submissionModel.AllForEvent(models.Event(event))
 
 	rand.Seed(time.Now().UnixNano())
 	rand.Shuffle(len(submissions), func(i, j int) { submissions[i], submissions[j] = submissions[j], submissions[i] })
+
 	submissionsPerJudge := int(math.Floor(float64(len(submissions)) / float64(len(judges))))
+	fmt.Println(float64(len(submissions)))
+	fmt.Println(float64(len(judges)))
 	startIdx, endIdx := 0, 0
 	for _, judge := range judges {
 		endIdx = startIdx + submissionsPerJudge
@@ -75,12 +89,20 @@ func (ctrl RankerController) CalculateTeamRankings(context *gin.Context) {
 	calculate mean of normalised mean for each category
 	Save into psql
 	 */
-	userID := getUserID(context);
-	if userID != 3 {
+	userID := getUserID(context)
+	user, err := userModel.One(userID)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message": "Error fetching user", "error": err.Error()})
+		context.Abort()
+		return
+	}
+
+	if user.UserType != 3 {
 		context.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid authorization"})
 		context.Abort()
 		return
 	}
+
 	event, err := fetchAndValidateEvent(context)
 	if err != nil {
 		context.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid event name"})
@@ -163,7 +185,8 @@ func normaliseJudgeScores(context *gin.Context, event string) {
 			for i := 0; i < models.NumberOfRatings; i++ {
 				standardisedRatingArray[i] = (standardisedRatingArray[i] - mean[i]) / std[i]
 			}
-			form := forms.EvaluationForm{
+
+			form := forms.EvaluationFormFloat{
 				MainRating:             standardisedRatingArray[0],
 				AnnoyingRating:         standardisedRatingArray[1],
 				EntertainRating:        standardisedRatingArray[2],
@@ -214,12 +237,20 @@ func calculateStatisticsForEvaluations(evaluations []models.Evaluation) (mean []
 func (ctrl RankerController) GetTeamRankingsByRange(context *gin.Context) {
 	// check if all judges have finished evaluation, if true return teams in sorted ranking
 	userID := getUserID(context);
-	if userID != 3 {
+	user, err := userModel.One(userID)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message": "Error fetching user", "error": err.Error()})
+		context.Abort()
+		return
+	}
+
+	if user.UserType != 3 {
 		context.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid authorization"})
 		context.Abort()
 		return
 	}
-	_, err := fetchAndValidateEvent(context)
+
+	_, err = fetchAndValidateEvent(context)
 	if err != nil {
 		context.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid event name"})
 		context.Abort()
@@ -227,8 +258,9 @@ func (ctrl RankerController) GetTeamRankingsByRange(context *gin.Context) {
 	}
 
 	var rankerForm forms.RankerForm
-	if context.ShouldBindJSON(&rankerForm) != nil {
-		context.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid form"})
+	err = context.ShouldBindJSON(&rankerForm)
+	if err != nil {
+		context.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid form", "error": err.Error()})
 		context.Abort()
 		return
 	}
@@ -278,12 +310,5 @@ func (ctrl RankerController) GetTeamRankingsBySubmissionID(context *gin.Context)
 		return
 	}
 
-	submission, err := submissionModel.One(submissionRanking.SubmissionID)
-	if err != nil {
-		context.JSON(http.StatusNotFound, gin.H{"Message": "Error fetching submission", "error": err.Error()})
-		context.Abort()
-		return
-	}
-
-	context.JSON(http.StatusOK, gin.H{"data": submission})
+	context.JSON(http.StatusOK, gin.H{"data": submissionRanking})
 }

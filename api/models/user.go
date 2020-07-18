@@ -27,7 +27,8 @@ type UserModel struct{}
 
 var authModel = new(AuthModel)
 
-var judgeEmails = readJudgesFromCsv()
+var judgeEmails = readEmailsFromCsv("secrets/judges.csv")
+var superUserEmails = readEmailsFromCsv("secrets/superusers.csv")
 
 // Login ...
 func (m UserModel) Login(form forms.LoginForm) (user User, token Token, err error) {
@@ -89,7 +90,9 @@ func (m UserModel) Register(form forms.RegisterForm) (user User, err error) {
 
 	//Create the user and return back the user ID
 	var userType UserType
-	if m.isEmailFromJudge(form.Email) {
+	if m.isEmailFromSuperUser(form.Email) {
+		userType = 3
+	} else if m.isEmailFromJudge(form.Email) {
 		userType = 2
 	} else {
 		userType = 0
@@ -154,12 +157,10 @@ func (m UserModel) GetAllJudges() (judges []User, err error) {
 	if err != nil {
 		return nil, err
 	}
-	judges = make([]User, 100)
-	var idx int
+	judges = make([]User, 0, 100)
 	for _, user := range users {
 		if m.isEmailFromJudge(user.Email) {
-			judges[idx] = user
-			idx++
+			judges = append(judges, user)
 		}
 	}
 	return judges, err
@@ -167,4 +168,8 @@ func (m UserModel) GetAllJudges() (judges []User, err error) {
 
 func (m UserModel) isEmailFromJudge(email string) bool {
 	return judgeEmails[email]
+}
+
+func (m UserModel) isEmailFromSuperUser(email string) bool {
+	return superUserEmails[email]
 }

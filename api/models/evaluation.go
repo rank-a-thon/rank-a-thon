@@ -39,18 +39,18 @@ func (m EvaluationModel) Create(judgeID uint, submissionID uint) (evaluationID u
 }
 
 // CreateStandardised
-func (m EvaluationModel) CreateStandardised(judgeID uint, submissionID uint, form forms.EvaluationForm) (evaluationID uint, err error) {
+func (m EvaluationModel) CreateStandardised(judgeID uint, submissionID uint, form forms.EvaluationFormFloat) (evaluationID uint, err error) {
     evaluation := Evaluation{
-        JudgeID: judgeID,
-        SubmissionID: submissionID,
-        MainRating: form.MainRating,
-        AnnoyingRating: form.AnnoyingRating,
-        EntertainRating: form.EntertainRating,
-        BeautifulRating: form.BeautifulRating,
-        SociallyUsefulRating: form.SociallyUsefulRating,
-        HardwareRating: form.HardwareRating,
+        JudgeID:                judgeID,
+        SubmissionID:           submissionID,
+        MainRating:             form.MainRating,
+        AnnoyingRating:         form.AnnoyingRating,
+        EntertainRating:        form.EntertainRating,
+        BeautifulRating:        form.BeautifulRating,
+        SociallyUsefulRating:   form.SociallyUsefulRating,
+        HardwareRating:         form.HardwareRating,
         AwesomelyUselessRating: form.AwesomelyUselessRating,
-        Normalised: true,
+        Normalised:             true,
     }
     err = database.GetDB().Table("public.evaluations").Create(&evaluation).Error
     return evaluation.ID, err

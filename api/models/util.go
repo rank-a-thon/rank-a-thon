@@ -93,19 +93,18 @@ func JsonStringToStringUintMap(strMap string) (mp map[string]uint) {
 	return mp
 }
 
-func readJudgesFromCsv() (judgeEmails map[string]bool) {
-	file := "secrets/judges.csv"
-	f, err := os.Open(file)
+func readEmailsFromCsv(path string) (emails map[string]bool) {
+	f, err := os.Open(path)
 	if err != nil {
 		log.Fatal("could not read judges csv file")
 	}
 	defer f.Close()
 	lines, err := csv.NewReader(f).ReadAll()
 
-	judgeEmails = make(map[string]bool)
+	emails = make(map[string]bool)
 	for _, line := range lines {
-		judgeEmails[line[0]] = true
+		emails[line[0]] = true
 	}
 
-	return judgeEmails
+	return emails
 }

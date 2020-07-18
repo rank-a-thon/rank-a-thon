@@ -10,23 +10,23 @@ import (
 
 type SubmissionRanking struct {
     gorm.Model
-    SubmissionID            uint    `gorm:"column:submission_id;not null" json:"submission_id"`
+    SubmissionID            uint       `gorm:"column:submission_id;not null" json:"submission_id"`
     // Rankings are position from 1 to num_submissions
-    MainRanking		        uint    `gorm:"column:main_ranking;default:0" json:"main_ranking"`
-    AnnoyingRanking         uint    `gorm:"column:annoying_ranking;default:0" json:"annoying_ranking"`
-    EntertainRanking        uint	`gorm:"column:entertaining_ranking;default:0" json:"entertaining_ranking"`
-    BeautifulRanking        uint	`gorm:"column:beautiful_ranking;default:0" json:"beautiful_ranking"`
-    SociallyUsefulRanking   uint    `gorm:"column:socially_useful_ranking;default:0" json:"socially_useful_ranking"`
-    HardwareRanking    	    uint    `gorm:"column:hardware_ranking;default:0" json:"hardware_ranking"`
-    AwesomelyUselessRanking uint    `gorm:"column:awesomely_useless_ranking;default:0" json:"awesomely_useless_ranking"`
+    MainRanking		        uint       `gorm:"column:main_ranking;default:0" json:"main_ranking"`
+    AnnoyingRanking         uint       `gorm:"column:annoying_ranking;default:0" json:"annoying_ranking"`
+    EntertainRanking        uint	   `gorm:"column:entertaining_ranking;default:0" json:"entertaining_ranking"`
+    BeautifulRanking        uint       `gorm:"column:beautiful_ranking;default:0" json:"beautiful_ranking"`
+    SociallyUsefulRanking   uint       `gorm:"column:socially_useful_ranking;default:0" json:"socially_useful_ranking"`
+    HardwareRanking    	    uint       `gorm:"column:hardware_ranking;default:0" json:"hardware_ranking"`
+    AwesomelyUselessRanking uint       `gorm:"column:awesomely_useless_ranking;default:0" json:"awesomely_useless_ranking"`
 
-    MainScore		        float64    `gorm:"column:main_score" json:"main_score"`
-    AnnoyingScore           float64    `gorm:"column:annoying_score" json:"annoying_score"`
-    EntertainScore          float64	   `gorm:"column:entertaining_score" json:"entertaining_score"`
-    BeautifulScore          float64    `gorm:"column:beautiful_score" json:"beautiful_score"`
-    SociallyUsefulScore     float64    `gorm:"column:socially_useful_score" json:"socially_useful_score"`
-    HardwareScore    	    float64    `gorm:"column:hardware_score" json:"hardware_score"`
-    AwesomelyUselessScore   float64    `gorm:"column:awesomely_useless_score" json:"awesomely_useless_score"`
+    MainScore		        float64    `gorm:"column:main_score;default:0" json:"main_score"`
+    AnnoyingScore           float64    `gorm:"column:annoying_score;default:0" json:"annoying_score"`
+    EntertainScore          float64	   `gorm:"column:entertaining_score;default:0" json:"entertaining_score"`
+    BeautifulScore          float64    `gorm:"column:beautiful_score;default:0" json:"beautiful_score"`
+    SociallyUsefulScore     float64    `gorm:"column:socially_useful_score;default:0" json:"socially_useful_score"`
+    HardwareScore    	    float64    `gorm:"column:hardware_score;default:0" json:"hardware_score"`
+    AwesomelyUselessScore   float64    `gorm:"column:awesomely_useless_score;default:0" json:"awesomely_useless_score"`
 }
 
 type SubmissionRankingModel struct{}

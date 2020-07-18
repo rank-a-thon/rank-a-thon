@@ -156,8 +156,8 @@ func main() {
 
 		/*** START Ranker ***/
 		ranker := new(controllers.RankerController)
-		v1.GET("/ranker/start-evaluations/:event", TokenAuthMiddleware(), ranker.CreateEvaluations)
-		v1.GET("/ranker/calculate-team-rankings/:event", TokenAuthMiddleware(), ranker.CalculateTeamRankings)
+		v1.PUT("/ranker/start-evaluations/:event", TokenAuthMiddleware(), ranker.CreateEvaluations)
+		v1.PUT("/ranker/calculate-team-rankings/:event", TokenAuthMiddleware(), ranker.CalculateTeamRankings)
 		v1.GET("/ranker/team-rankings-by-range/:event", TokenAuthMiddleware(), ranker.GetTeamRankingsByRange)
 		v1.GET("/ranker/team-rankings-by-submission-id/:event", TokenAuthMiddleware(), ranker.GetTeamRankingsBySubmissionID)
 	}
