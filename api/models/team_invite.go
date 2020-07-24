@@ -19,7 +19,12 @@ type TeamInviteModel struct{}
 
 // Create ...
 func (m TeamInviteModel) Create(userID uint, teamID uint) (teamInviteID uint, err error) {
-	teamInvite := TeamInvite{TeamID: teamID, UserID: userID}
+	teamInvite, err := m.One(userID, teamID)
+	if err == nil { // team invite exists
+		return 0, errors.New("team invite exists")
+	}
+
+	teamInvite = TeamInvite{TeamID: teamID, UserID: userID}
 	err = database.GetDB().Table("public.team_invites").Create(&teamInvite).Error
 	return teamInvite.ID, err
 }
