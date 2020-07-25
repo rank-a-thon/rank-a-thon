@@ -160,9 +160,9 @@ func (ctrl TeamController) SendInvite(context *gin.Context) {
 			return
 		}
 
-		teamID := models.JsonStringToStringUintMap(user.TeamIDForEvent)[teamInviteForm.Event]
+		teamID := userModel.GetTeamIDForEventMap(user)[teamInviteForm.Event]
 		if teamID == 0 {
-			context.JSON(http.StatusNotAcceptable, gin.H{"message": "Team does not have team"})
+			context.JSON(http.StatusNotAcceptable, gin.H{"message": "User does not have team"})
 			context.Abort()
 			return
 		}
@@ -170,6 +170,13 @@ func (ctrl TeamController) SendInvite(context *gin.Context) {
 		invitedUser, err := userModel.GetUserByEmail(teamInviteForm.Email)
 		if err != nil {
 			context.JSON(http.StatusInternalServerError, gin.H{"message": "Error fetching user", "error": err.Error()})
+			context.Abort()
+			return
+		}
+
+		invitedUserTeamID := userModel.GetTeamIDForEventMap(invitedUser)[teamInviteForm.Event]
+		if invitedUserTeamID == teamID {
+			context.JSON(http.StatusInternalServerError, gin.H{"message": "Invited user already belongs to team"})
 			context.Abort()
 			return
 		}
