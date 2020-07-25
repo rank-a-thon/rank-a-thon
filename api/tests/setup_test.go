@@ -18,6 +18,8 @@ var testPassword = "123456"
 
 var accessToken string
 var refreshToken string
+var r *gin.Engine
+var auth = new(controllers.AuthController)
 
 func TestMain(m *testing.M) {
 	InitDbAndAutoMigrate()
@@ -29,12 +31,22 @@ func TestMain(m *testing.M) {
 		&models.TeamInvite{},
 		&models.Submission{},
 		&models.Evaluation{},
+		&models.SubmissionRanking{},
 	)
 	os.Exit(exitVal)
 }
 
+// TokenAuthMiddleware ...
+// JWT Authentication middleware attached to each request that needs to be authenticated to validate the access_token in the header
+func TokenAuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		auth.TokenValid(c)
+		c.Next()
+	}
+}
+
 func SetupRouter() *gin.Engine {
-	r := gin.Default()
+	r = gin.Default()
 	gin.SetMode(gin.TestMode)
 
 	v1 := r.Group("/v1")
@@ -44,22 +56,22 @@ func SetupRouter() *gin.Engine {
 		v1.POST("/user/login", user.Login)
 		v1.POST("/user/register", user.Register)
 		v1.GET("/user/logout", user.Logout)
-		v1.GET("/user", user.One)
+		v1.GET("/user", user.GetByUserID)
 
 		/*** START Team ***/
 		team := new(controllers.TeamController)
-		v1.POST("/team/:event", team.Create)
-		v1.GET("/teams", team.All)
-		v1.GET("/team/:event", team.One)
-		v1.PUT("/team/:event", team.Update)
-		v1.DELETE("/team/:event", team.Delete)
-		v1.DELETE("/remove-team-member/:event", team.RemoveTeamMember)
+		v1.POST("/team/:event", TokenAuthMiddleware(), team.Create)
+		v1.GET("/teams", TokenAuthMiddleware(), team.All)
+		v1.GET("/team/:event", TokenAuthMiddleware(), team.One)
+		v1.PUT("/team/:event", TokenAuthMiddleware(), team.Update)
+		v1.DELETE("/team/:event", TokenAuthMiddleware(), team.Delete)
+		v1.DELETE("/remove-team-member/:event", TokenAuthMiddleware(), team.RemoveTeamMember)
 
 		/*** Team Invites ***/
-		v1.POST("/team-invite", team.SendInvite)
-		v1.GET("/team-invites", team.GetInvites)
-		v1.DELETE("/team-invite/accept", team.AcceptInvite)
-		v1.DELETE("/team-invite/decline", team.DeclineInvite)
+		v1.POST("/team-invite", TokenAuthMiddleware(), team.SendInvite)
+		v1.GET("/team-invites", TokenAuthMiddleware(), team.GetInvites)
+		v1.DELETE("/team-invite/accept", TokenAuthMiddleware(), team.AcceptInvite)
+		v1.DELETE("/team-invite/decline", TokenAuthMiddleware(), team.DeclineInvite)
 
 		/*** START AUTH ***/
 		auth := new(controllers.AuthController)
@@ -68,18 +80,25 @@ func SetupRouter() *gin.Engine {
 
 		/*** START Submission ***/
 		submission := new(controllers.SubmissionController)
-		v1.POST("/submission/:event", submission.Create)
-		v1.GET("/submissions", submission.AllForUserID)
-		v1.GET("/submissions/:event", submission.AllForEvent)
-		v1.GET("/submission/:event", submission.One)
-		v1.PUT("/submission/:event", submission.Update)
-		v1.DELETE("/submission/:event", submission.Delete)
+		v1.POST("/submission/:event", TokenAuthMiddleware(), submission.Create)
+		v1.GET("/submissions", TokenAuthMiddleware(), submission.AllForUserID)
+		v1.GET("/submissions/:event", TokenAuthMiddleware(), submission.AllForEvent)
+		v1.GET("/submission/:event", TokenAuthMiddleware(), submission.One)
+		v1.PUT("/submission/:event", TokenAuthMiddleware(), submission.Update)
+		v1.DELETE("/submission/:event", TokenAuthMiddleware(), submission.Delete)
 
 		/*** START Evaluation ***/
 		evaluation := new(controllers.EvaluationController)
-		v1.GET("/evaluations", evaluation.All)
-		v1.GET("/evaluation/:id", evaluation.One)
-		v1.PUT("/evaluation/:id", evaluation.Update)
+		v1.GET("/evaluations", TokenAuthMiddleware(), evaluation.AllForJudge)
+		v1.GET("/evaluation/:id", TokenAuthMiddleware(), evaluation.One)
+		v1.PUT("/evaluation/:id", TokenAuthMiddleware(), evaluation.Update)
+
+		/*** START Ranker ***/
+		ranker := new(controllers.RankerController)
+		v1.PUT("/ranker/start-evaluations/:event", TokenAuthMiddleware(), ranker.CreateEvaluations)
+		v1.PUT("/ranker/calculate-team-rankings/:event", TokenAuthMiddleware(), ranker.CalculateTeamRankings)
+		v1.GET("/ranker/team-rankings-by-range/:event", TokenAuthMiddleware(), ranker.GetTeamRankingsByRange)
+		v1.GET("/ranker/team-rankings-by-submission-id/:event", TokenAuthMiddleware(), ranker.GetTeamRankingsBySubmissionID)
 	}
 	return r
 }

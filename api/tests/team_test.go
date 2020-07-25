@@ -23,10 +23,6 @@ var teamID uint
 * Must return response code 200
  */
 func TestCreateTeam(t *testing.T) {
-	testRouter := SetupRouter()
-	Register(testRouter)
-	Login(testRouter)
-
 	var teamForm forms.TeamForm
 
 	teamForm.TeamName = "Test Team"
@@ -45,7 +41,7 @@ func TestCreateTeam(t *testing.T) {
 	}
 
 	resp := httptest.NewRecorder()
-	testRouter.ServeHTTP(resp, req)
+	r.ServeHTTP(resp, req)
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -54,12 +50,13 @@ func TestCreateTeam(t *testing.T) {
 
 	res := struct {
 		Message string
-		ID      uint
+		ID      int
 	}{}
 
 	json.Unmarshal(body, &res)
 
-	teamID = res.ID
+	teamID = uint(res.ID)
 
-	assert.Equal(t, resp.Code, http.StatusOK)
+	assert.Equal(t, 1, res.ID)
+	assert.Equal(t, http.StatusOK, resp.Code)
 }
