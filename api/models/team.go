@@ -139,10 +139,12 @@ func (m TeamModel) RemoveTeamMember(userID uint, teamID uint) (err error) {
 		return errors.New(fmt.Sprintf("user %d does not belong in team %d", userID, teamID))
 	}
 
+	newTeamIds := append(teamUserIDs[:indexToRemove], teamUserIDs[indexToRemove+1:]...)
+
 	err = database.GetDB().Table("public.teams").Model(&Team{}).
 		Where("id = ?", teamID).
 		Updates(map[string]interface{}{
-			"user_ids": append(teamUserIDs[:indexToRemove], teamUserIDs[indexToRemove+1:]...),
+			"user_ids": UintSliceToJsonString(newTeamIds),
 		}).Error
 	err = userModel.UpdateTeamForUser(userID, 0, team.Event)
 	return err
