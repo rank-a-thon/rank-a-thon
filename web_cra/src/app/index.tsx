@@ -15,6 +15,9 @@ import { GlobalStyle } from 'styles/global-styles';
 import { HomePage } from './containers/HomePage/Loadable';
 import { NotFoundPage } from './components/NotFoundPage/Loadable';
 
+import 'semantic-ui-css/semantic.min.css';
+import { PagePublicHome } from './components/PagePublicHome/Loadable';
+
 export function App() {
   return (
     <BrowserRouter>
@@ -26,7 +29,7 @@ export function App() {
       </Helmet>
 
       <Switch>
-        <Route exact path="/" component={HomePage} />
+        <Route exact path="/" component={PagePublicHome} />
         <Route component={NotFoundPage} />
       </Switch>
       <GlobalStyle />
