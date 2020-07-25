@@ -1,9 +1,12 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/rank-a-thon/rank-a-thon/api/forms"
 	"github.com/rank-a-thon/rank-a-thon/api/models"
@@ -197,5 +200,53 @@ func (ctrl SubmissionController) UnlikeSubmission(context *gin.Context) {
 		}
 
 		context.JSON(http.StatusOK, gin.H{"message": "Submission unliked"})
+	}
+}
+
+// Upload file
+func (ctrl SubmissionController) UploadFile(context *gin.Context) {
+	if userID := getUserID(context); userID != 0 {
+		teamID, err := getTeamIDForEvent(context, userID)
+		submission, err := submissionModel.OneByTeamID(teamID)
+		if err != nil {
+			context.JSON(http.StatusNotAcceptable, gin.H{"Message": "Could not fetch submission", "error": err.Error()})
+			context.Abort()
+			return
+		}
+
+		event, err := fetchAndValidateEvent(context)
+		if err != nil {
+			context.JSON(http.StatusNotAcceptable, gin.H{"message": "Invalid event name"})
+			context.Abort()
+			return
+		}
+
+		file, err := context.FormFile("file")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		imagePath := fmt.Sprintf("submission_files/%s/%d/%s", event, submission.ID, file.Filename)
+
+		err = context.SaveUploadedFile(file, imagePath)
+		if err != nil {
+			context.JSON(http.StatusNotAcceptable, gin.H{"message": "Error uploading Image", "error": err.Error()})
+			context.Abort()
+			return
+		}
+
+		submissionForm := forms.SubmissionForm{
+			ProjectName: submission.ProjectName,
+			Description: submission.Description,
+			Images:      append(strings.Split(submission.Images, ","), imagePath),
+		}
+		err = submissionModel.Update(submission.TeamID, submissionForm)
+		if err != nil {
+			context.JSON(http.StatusNotAcceptable, gin.H{"message": "Error uploading Image", "error": err.Error()})
+			context.Abort()
+			return
+		}
+
+		context.String(http.StatusOK, fmt.Sprintf("'%s' uploaded", file.Filename))
 	}
 }

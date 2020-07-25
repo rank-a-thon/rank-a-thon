@@ -152,6 +152,10 @@ func main() {
 		v1.POST("/submission-like", TokenAuthMiddleware(), submission.LikeSubmission)
 		v1.DELETE("/submission-like", TokenAuthMiddleware(), submission.UnlikeSubmission)
 
+		/** Submission Images **/
+		v1.Static("/submission-file", "submission_files")
+		v1.POST("/submission-file-upload/:event", TokenAuthMiddleware(), submission.UploadFile)
+
 		/*** START Evaluation ***/
 		evaluation := new(controllers.EvaluationController)
 		v1.GET("/evaluations", TokenAuthMiddleware(), evaluation.AllForJudge)
