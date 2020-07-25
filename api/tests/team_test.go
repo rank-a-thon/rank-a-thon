@@ -132,7 +132,6 @@ func TestUpdateTeam(t *testing.T) {
 const user2Email string = "test2@test.com"
 const user2Password string = "123456"
 
-
 func TestSendTeamInvite(t *testing.T) {
 	Register(r, "user2", user2Email, user2Password)
 	Login(r, testEmail, testPassword)
@@ -161,7 +160,7 @@ func TestSendTeamInvite(t *testing.T) {
 	}
 
 	res := struct {
-		Message   string
+		Message string
 	}{}
 
 	json.Unmarshal(body, &res)
@@ -189,7 +188,7 @@ func TestGetTeamInvite(t *testing.T) {
 	}
 
 	res := struct {
-		Data   []models.TeamInvite
+		Data []models.TeamInvite
 	}{}
 
 	json.Unmarshal(body, &res)

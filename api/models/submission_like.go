@@ -10,8 +10,8 @@ import (
 // Submission ...
 type SubmissionLike struct {
 	gorm.Model
-	UserID         uint   `gorm:"column:user_id;not null" json:"-"`
-	SubmissionID   uint   `gorm:"column:submission_id;not null" json:"-"`
+	UserID       uint `gorm:"column:user_id;not null" json:"-"`
+	SubmissionID uint `gorm:"column:submission_id;not null" json:"-"`
 }
 
 // SubmissionModel ...
@@ -25,7 +25,7 @@ func (m SubmissionLikeModel) Create(submissionID uint, userID uint) (likeID uint
 	}
 
 	submissionLike := SubmissionLike{
-		UserID: userID,
+		UserID:       userID,
 		SubmissionID: submissionID,
 	}
 	err = database.GetDB().Table("public.submission_likes").Create(&submissionLike).Error

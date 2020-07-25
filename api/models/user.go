@@ -15,11 +15,11 @@ import (
 // Team ...
 type User struct {
 	gorm.Model
-	Email    		   string    `gorm:"column:email;not null;unique" json:"email"`
-	Password 		   string    `gorm:"column:password" json:"-"`
-	Name    		   string    `gorm:"column:name" json:"name"`
-	UserType 		   UserType  `gorm:"column:user_type;default:0" json:"user_type"`
-	TeamIDForEvent	   string    `gorm:"column:team_id_for_event;default:'{}'" json:"team_id_for_event"`
+	Email          string   `gorm:"column:email;not null;unique" json:"email"`
+	Password       string   `gorm:"column:password" json:"-"`
+	Name           string   `gorm:"column:name" json:"name"`
+	UserType       UserType `gorm:"column:user_type;default:0" json:"user_type"`
+	TeamIDForEvent string   `gorm:"column:team_id_for_event;default:'{}'" json:"team_id_for_event"`
 }
 
 // UserModel ...

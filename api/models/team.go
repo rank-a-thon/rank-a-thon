@@ -12,16 +12,16 @@ import (
 // Team
 type Team struct {
 	gorm.Model
-	TeamName				string	  `gorm:"column:team_name;not_null" json:"team_name"`
-	Event					Event	  `gorm:"column:event;not_null" json:"event"`
-	UserIDs 				string    `gorm:"column:user_ids;not_null" json:"user_ids"`
-	IsFreshmanTeam          bool      `gorm:"column:is_freshman_team;default:false" json:"is_freshman_team"`
-	IsPreUniversityTeam     bool      `gorm:"column:is_pre_university_team;default:false" json:"is_pre_university_team"`
-	IsBeginnerTeam          bool      `gorm:"column:is_beginner_team;default:false" json:"is_beginner_team"`
+	TeamName            string `gorm:"column:team_name;not_null" json:"team_name"`
+	Event               Event  `gorm:"column:event;not_null" json:"event"`
+	UserIDs             string `gorm:"column:user_ids;not_null" json:"user_ids"`
+	IsFreshmanTeam      bool   `gorm:"column:is_freshman_team;default:false" json:"is_freshman_team"`
+	IsPreUniversityTeam bool   `gorm:"column:is_pre_university_team;default:false" json:"is_pre_university_team"`
+	IsBeginnerTeam      bool   `gorm:"column:is_beginner_team;default:false" json:"is_beginner_team"`
 }
 
 // TeamModel
-type TeamModel struct {}
+type TeamModel struct{}
 
 // Create ...
 func (m TeamModel) Create(userID uint, form forms.TeamForm, event Event) (TeamID uint, err error) {
@@ -33,7 +33,7 @@ func (m TeamModel) Create(userID uint, form forms.TeamForm, event Event) (TeamID
 	}
 	team := Team{
 		TeamName:            form.TeamName,
-		Event:				 event,
+		Event:               event,
 		UserIDs:             UintSliceToJsonString([]uint{userID}),
 		IsFreshmanTeam:      form.IsFreshmanTeam,
 		IsPreUniversityTeam: form.IsPreUniversityTeam,
@@ -77,10 +77,10 @@ func (m TeamModel) Update(teamID uint, form forms.TeamForm) (err error) {
 	err = database.GetDB().Table("public.teams").Model(&Team{}).
 		Where("id = ?", teamID).
 		Updates(map[string]interface{}{
-			"team_name": form.TeamName,
-			"is_freshman_team": form.IsFreshmanTeam,
+			"team_name":              form.TeamName,
+			"is_freshman_team":       form.IsFreshmanTeam,
 			"is_pre_university_team": form.IsPreUniversityTeam,
-			"is_beginner_team": form.IsBeginnerTeam,
+			"is_beginner_team":       form.IsBeginnerTeam,
 		}).Error
 	return err
 }

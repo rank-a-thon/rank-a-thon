@@ -83,12 +83,12 @@ func (ctrl RankerController) CreateEvaluations(context *gin.Context) {
 
 func (ctrl RankerController) CalculateTeamRankings(context *gin.Context) {
 	/*
-	normaliseJudgeScores(context, event)
-	For each team in event
-	get all evaluations assigned to submission
-	calculate mean of normalised mean for each category
-	Save into psql
-	 */
+		normaliseJudgeScores(context, event)
+		For each team in event
+		get all evaluations assigned to submission
+		calculate mean of normalised mean for each category
+		Save into psql
+	*/
 	userID := getUserID(context)
 	user, err := userModel.One(userID)
 	if err != nil {
@@ -168,7 +168,7 @@ func normaliseJudgeScores(context *gin.Context, event string) {
 		Normalise by each category
 		Save a new copy with normalised = true
 	*/
-	judges, err := userModel.GetAllJudges()	// TODO in future need to get all judges for event
+	judges, err := userModel.GetAllJudges() // TODO in future need to get all judges for event
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"message": "Error fetching judges", "error": err.Error()})
 	}
@@ -228,7 +228,7 @@ func calculateStatisticsForEvaluations(evaluations []models.Evaluation) (mean []
 	for _, evaluation := range evaluations {
 		ratingArray := evaluation.ReadRatingsIntoArray()
 		for i := 0; i < models.NumberOfRatings; i++ {
-			std[i] += math.Pow(ratingArray[i] - mean[i], 2)
+			std[i] += math.Pow(ratingArray[i]-mean[i], 2)
 		}
 	}
 
@@ -240,7 +240,7 @@ func calculateStatisticsForEvaluations(evaluations []models.Evaluation) (mean []
 
 func (ctrl RankerController) GetTeamRankingsByRange(context *gin.Context) {
 	// check if all judges have finished evaluation, if true return teams in sorted ranking
-	userID := getUserID(context);
+	userID := getUserID(context)
 	user, err := userModel.One(userID)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"message": "Error fetching user", "error": err.Error()})

@@ -95,8 +95,8 @@ func (m SubmissionModel) Update(teamID uint, form forms.SubmissionForm) (err err
 		Where("team_id = ?", teamID).
 		Updates(map[string]interface{}{
 			"project_name": form.ProjectName,
-			"description": form.Description,
-			"images": strings.Join(form.Images, ","),
+			"description":  form.Description,
+			"images":       strings.Join(form.Images, ","),
 		}).Error
 	return err
 }

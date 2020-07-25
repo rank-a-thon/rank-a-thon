@@ -17,7 +17,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-
 /**
 * TestCreateSubmission
 * Test submission creation
@@ -50,7 +49,7 @@ func TestCreateSubmission(t *testing.T) {
 	}
 
 	res := struct {
-		ID     int
+		ID      int
 		Message string
 	}{}
 
@@ -86,7 +85,7 @@ func TestCreateSubmissionInvalidAuth(t *testing.T) {
 	}
 
 	res := struct {
-		ID     int
+		ID      int
 		Message string
 	}{}
 
@@ -126,7 +125,7 @@ func TestGetSubmission(t *testing.T) {
 	assert.Equal(t, uint(1), res.Data.ID)
 	assert.Equal(t, "Testing submission project name", res.Data.ProjectName)
 	assert.Equal(t, "Testing submission description", res.Data.Description)
-	assert.Equal(t, []string{"image1url", "image2url"}, strings.Split(res.Data.Images ,",") )
+	assert.Equal(t, []string{"image1url", "image2url"}, strings.Split(res.Data.Images, ","))
 }
 
 func TestUpdateSubmission(t *testing.T) {

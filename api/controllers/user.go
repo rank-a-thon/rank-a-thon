@@ -200,7 +200,7 @@ func (ctrl UserController) GetByUserID(context *gin.Context) {
 		return
 	}
 	var userID uint
-	userID64, err := strconv.ParseUint(context.Query("userid"), 10, 64);
+	userID64, err := strconv.ParseUint(context.Query("userid"), 10, 64)
 	if err == nil {
 		userID = uint(userID64)
 	} else {

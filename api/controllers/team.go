@@ -313,7 +313,7 @@ func (ctrl TeamController) Delete(context *gin.Context) {
 	}
 }
 
-func getTeamIDForEvent(context *gin.Context, userID uint) (teamID uint, err error){
+func getTeamIDForEvent(context *gin.Context, userID uint) (teamID uint, err error) {
 	event, err := fetchAndValidateEvent(context)
 	if err != nil {
 		return 0, errors.New("invalid event name")

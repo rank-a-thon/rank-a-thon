@@ -21,6 +21,7 @@ type AuthController struct{}
 
 var authModel = new(models.AuthModel)
 
+//
 func (ctl AuthController) TokenValid(context *gin.Context) {
 	err := authModel.TokenValid(context.Request)
 	if err != nil {

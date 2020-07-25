@@ -10,8 +10,8 @@ import (
 // TeamInvite ...
 type TeamInvite struct {
 	gorm.Model
-	TeamID      uint      `gorm:"column:team_id;not null" json:"team_id"`
-	UserID      uint      `gorm:"column:user_id;not null" json:"user_id"`
+	TeamID uint `gorm:"column:team_id;not null" json:"team_id"`
+	UserID uint `gorm:"column:user_id;not null" json:"user_id"`
 }
 
 // TeamInviteModel ...
@@ -57,4 +57,3 @@ func (m TeamInviteModel) Delete(userID, teamID uint) (err error) {
 
 	return err
 }
-

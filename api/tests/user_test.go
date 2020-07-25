@@ -62,8 +62,8 @@ func Login(testRouter *gin.Engine, email string, password string) *httptest.Resp
 	}
 
 	var res = &struct {
-		Message string `json:"message"`
-		models.User `json:"user"`
+		Message      string `json:"message"`
+		models.User  `json:"user"`
 		models.Token `json:"token"`
 	}{}
 
