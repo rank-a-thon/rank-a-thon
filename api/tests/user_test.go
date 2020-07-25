@@ -16,12 +16,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Register(testRouter *gin.Engine) *httptest.ResponseRecorder {
+func Register(testRouter *gin.Engine, name string, email string, password string) *httptest.ResponseRecorder {
 	var registerForm forms.RegisterForm
 
-	registerForm.Name = "testing"
-	registerForm.Email = testEmail
-	registerForm.Password = testPassword
+	registerForm.Name = name
+	registerForm.Email = email
+	registerForm.Password = password
 
 	data, _ := json.Marshal(registerForm)
 
@@ -39,10 +39,10 @@ func Register(testRouter *gin.Engine) *httptest.ResponseRecorder {
 	return resp
 }
 
-func Login(testRouter *gin.Engine) *httptest.ResponseRecorder {
+func Login(testRouter *gin.Engine, email string, password string) *httptest.ResponseRecorder {
 	var loginForm forms.LoginForm
-	loginForm.Email = testEmail
-	loginForm.Password = testPassword
+	loginForm.Email = email
+	loginForm.Password = password
 	data, _ := json.Marshal(loginForm)
 
 	req, err := http.NewRequest("POST", "/v1/user/login", bytes.NewBufferString(string(data)))
@@ -83,7 +83,7 @@ func Login(testRouter *gin.Engine) *httptest.ResponseRecorder {
  */
 func TestRegister(t *testing.T) {
 	testRouter := SetupRouter()
-	resp := Register(testRouter)
+	resp := Register(testRouter, "testing", testEmail, testPassword)
 	assert.Equal(t, resp.Code, http.StatusOK)
 }
 
@@ -126,7 +126,7 @@ func TestRegisterInvalidEmail(t *testing.T) {
  */
 func TestLogin(t *testing.T) {
 	testRouter := SetupRouter()
-	resp := Login(testRouter)
+	resp := Login(testRouter, testEmail, testPassword)
 	assert.Equal(t, resp.Code, http.StatusOK)
 }
 
