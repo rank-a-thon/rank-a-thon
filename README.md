@@ -95,6 +95,11 @@ make will (mostly) be hot-reloaded in a few seconds.
 
 Note that this creates a production build of Rankathon and is not suitable for development purposes.
 
+## Golang Backend Documentation
+
+1. Run `godoc -http=:6060`
+2. Navigate to `http://localhost:6060/pkg/github.com/rank-a-thon/rank-a-thon/api/`
+
 ## Editor Setup for VS Code
 
 1. Obtain the following extensions:
