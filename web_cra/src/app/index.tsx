@@ -17,6 +17,7 @@ import { NotFoundPage } from './components/NotFoundPage/Loadable';
 
 import 'semantic-ui-css/semantic.min.css';
 import { PagePublicHome } from './components/PagePublicHome/Loadable';
+import { PagePublicAuthMobile } from './containers/PagePublicAuthMobile/Loadable';
 
 export function App() {
   return (
@@ -30,6 +31,10 @@ export function App() {
 
       <Switch>
         <Route exact path="/" component={PagePublicHome} />
+        <Route component={NotFoundPage} />
+      </Switch>
+      <Switch>
+        <Route exact path="/login" component={PagePublicAuthMobile} />
         <Route component={NotFoundPage} />
       </Switch>
       <GlobalStyle />
