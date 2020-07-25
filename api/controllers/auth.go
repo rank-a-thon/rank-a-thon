@@ -21,7 +21,7 @@ type AuthController struct{}
 
 var authModel = new(models.AuthModel)
 
-//
+// Check if token if valid
 func (ctl AuthController) TokenValid(context *gin.Context) {
 	err := authModel.TokenValid(context.Request)
 	if err != nil {
@@ -44,6 +44,7 @@ func verifyIDToken(ctx context.Context, app *firebase.App, idToken string) *auth
 	return token
 }
 
+// Refresh auth token using refresh token
 func (ctl AuthController) Refresh(context *gin.Context) {
 	var tokenForm forms.Token
 

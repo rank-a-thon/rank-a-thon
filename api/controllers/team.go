@@ -16,6 +16,7 @@ type TeamController struct{}
 var teamModel = new(models.TeamModel)
 var teamInviteModel = new(models.TeamInviteModel)
 
+// Create team
 func (ctrl TeamController) Create(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 		var teamForm forms.TeamForm
@@ -54,6 +55,7 @@ func (ctrl TeamController) Create(context *gin.Context) {
 	}
 }
 
+// Get team belonging to user for event
 func (ctrl TeamController) One(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 		event, err := fetchAndValidateEvent(context)
@@ -86,6 +88,27 @@ func (ctrl TeamController) One(context *gin.Context) {
 	}
 }
 
+// Get team by team ID
+func (ctrl TeamController) OneByTeamID(context *gin.Context) {
+	if userID := getUserID(context); userID != 0 {
+		teamID, err := strconv.ParseUint(context.Query("teamid"), 10, 64)
+		if err != nil {
+			context.JSON(http.StatusNotFound, gin.H{"Message": "Invalid parameter"})
+			context.Abort()
+			return
+		}
+
+		data, err := teamModel.One(uint(teamID))
+		if err != nil {
+			context.JSON(http.StatusNotFound, gin.H{"Message": "Team not found", "error": err.Error()})
+			context.Abort()
+			return
+		}
+		context.JSON(http.StatusOK, gin.H{"data": data})
+	}
+}
+
+// Get all teams belonging to user
 func (ctrl TeamController) All(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 		data, err := teamModel.All(userID)
@@ -98,6 +121,7 @@ func (ctrl TeamController) All(context *gin.Context) {
 	}
 }
 
+// Update team
 func (ctrl TeamController) Update(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 		event, err := fetchAndValidateEvent(context)
@@ -137,6 +161,7 @@ func (ctrl TeamController) Update(context *gin.Context) {
 	}
 }
 
+// Send invite to invited user for user's team for event
 func (ctrl TeamController) SendInvite(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 
@@ -191,6 +216,7 @@ func (ctrl TeamController) SendInvite(context *gin.Context) {
 	}
 }
 
+// Get all invites sent to user
 func (ctrl TeamController) GetInvites(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 		data, err := teamInviteModel.All(userID)
@@ -203,6 +229,7 @@ func (ctrl TeamController) GetInvites(context *gin.Context) {
 	}
 }
 
+// Accept invite by team ID
 func (ctrl TeamController) AcceptInvite(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 		if teamID, err := strconv.ParseUint(context.Query("teamid"), 10, 64); err == nil {
@@ -230,6 +257,7 @@ func (ctrl TeamController) AcceptInvite(context *gin.Context) {
 	}
 }
 
+// Decline invite by team ID
 func (ctrl TeamController) DeclineInvite(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 		if teamID, err := strconv.ParseUint(context.Query("teamid"), 10, 64); err == nil {
@@ -248,6 +276,7 @@ func (ctrl TeamController) DeclineInvite(context *gin.Context) {
 	}
 }
 
+// Remove team member for user's team for event by userID
 func (ctrl TeamController) RemoveTeamMember(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 		if deleteUserID, err := strconv.ParseUint(context.Query("delete-user-id"), 10, 64); err == nil {
@@ -282,6 +311,7 @@ func (ctrl TeamController) RemoveTeamMember(context *gin.Context) {
 	}
 }
 
+// Delete team for event
 func (ctrl TeamController) Delete(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 		event, err := fetchAndValidateEvent(context)
@@ -313,6 +343,7 @@ func (ctrl TeamController) Delete(context *gin.Context) {
 	}
 }
 
+// Get team ID for user for event
 func getTeamIDForEvent(context *gin.Context, userID uint) (teamID uint, err error) {
 	event, err := fetchAndValidateEvent(context)
 	if err != nil {

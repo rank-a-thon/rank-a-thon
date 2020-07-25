@@ -19,8 +19,8 @@ type UserController struct{}
 
 var userModel = new(models.UserModel)
 
+// Get User ID from auth token
 func getUserID(context *gin.Context) (userID uint) {
-
 	tokenAuth, err := authModel.ExtractTokenMetadata(context.Request)
 	if err != nil {
 		context.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Please login first."})
@@ -112,6 +112,7 @@ func deleteUser(ctx context.Context, client *auth.Client) {
 	// [END delete_user_golang]
 }
 
+// Login with email and password
 func (ctrl UserController) Login(context *gin.Context) {
 	var loginForm forms.LoginForm
 
@@ -130,6 +131,7 @@ func (ctrl UserController) Login(context *gin.Context) {
 
 }
 
+// Register with name, email and password
 func (ctrl UserController) Register(context *gin.Context) {
 	var registerForm forms.RegisterForm
 
@@ -155,6 +157,7 @@ func (ctrl UserController) Register(context *gin.Context) {
 
 }
 
+// Logout
 func (ctrl UserController) Logout(context *gin.Context) {
 
 	au, err := authModel.ExtractTokenMetadata(context.Request)
@@ -171,6 +174,7 @@ func (ctrl UserController) Logout(context *gin.Context) {
 	context.JSON(http.StatusOK, gin.H{"message": "Successfully logged out"})
 }
 
+// Get user details for logged in user
 func (ctrl UserController) One(context *gin.Context) {
 
 	_, err := authModel.ExtractTokenMetadata(context.Request)
@@ -191,6 +195,7 @@ func (ctrl UserController) One(context *gin.Context) {
 	}
 }
 
+// Get user details by user ID
 func (ctrl UserController) GetByUserID(context *gin.Context) {
 
 	_, err := authModel.ExtractTokenMetadata(context.Request)

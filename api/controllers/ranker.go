@@ -17,6 +17,7 @@ type RankerController struct{}
 
 var submissionRankingModel = new(models.SubmissionRankingModel)
 
+// Once all the teams have made their submissions, create evaluations for each judge-submission pair
 func (ctrl RankerController) CreateEvaluations(context *gin.Context) {
 	// get list of judges, submissions and create evaluations
 	userID := getUserID(context)
@@ -81,6 +82,7 @@ func (ctrl RankerController) CreateEvaluations(context *gin.Context) {
 
 }
 
+// Calculate team rankings and persist
 func (ctrl RankerController) CalculateTeamRankings(context *gin.Context) {
 	/*
 		normaliseJudgeScores(context, event)
@@ -161,6 +163,7 @@ func (ctrl RankerController) CalculateTeamRankings(context *gin.Context) {
 
 }
 
+// Normalise a judge's scores based on each judging category
 func normaliseJudgeScores(context *gin.Context, event string) {
 	/*
 		For each judge
@@ -210,6 +213,7 @@ func normaliseJudgeScores(context *gin.Context, event string) {
 
 }
 
+// Calculate mean and std of scores
 func calculateStatisticsForEvaluations(evaluations []models.Evaluation) (mean []float64, std []float64) {
 	sum := make([]float64, models.NumberOfRatings)
 	for _, evaluation := range evaluations {
@@ -238,6 +242,7 @@ func calculateStatisticsForEvaluations(evaluations []models.Evaluation) (mean []
 	return mean, std
 }
 
+// Get team rankings by range from inclusive to exclusive
 func (ctrl RankerController) GetTeamRankingsByRange(context *gin.Context) {
 	// check if all judges have finished evaluation, if true return teams in sorted ranking
 	userID := getUserID(context)
@@ -280,6 +285,7 @@ func (ctrl RankerController) GetTeamRankingsByRange(context *gin.Context) {
 	context.JSON(http.StatusOK, gin.H{"data": selectedRankings})
 }
 
+// Get team ranking by submission id
 func (ctrl RankerController) GetTeamRankingsBySubmissionID(context *gin.Context) {
 
 	_, err := fetchAndValidateEvent(context)

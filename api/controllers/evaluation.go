@@ -14,6 +14,7 @@ type EvaluationController struct{}
 
 var evaluationModel = new(models.EvaluationModel)
 
+// Return all evaluations belonging to a judge
 func (ctrl EvaluationController) AllForJudge(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 
@@ -41,6 +42,7 @@ func (ctrl EvaluationController) AllForJudge(context *gin.Context) {
 	}
 }
 
+// Get evaluation by evaluation ID
 func (ctrl EvaluationController) One(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 
@@ -75,6 +77,7 @@ func (ctrl EvaluationController) One(context *gin.Context) {
 	}
 }
 
+// Update evaluation
 func (ctrl EvaluationController) Update(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 

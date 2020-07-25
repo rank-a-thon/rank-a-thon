@@ -14,6 +14,7 @@ type SubmissionController struct{}
 var submissionModel = new(models.SubmissionModel)
 var submissionLikeModel = new(models.SubmissionLikeModel)
 
+// Create submission
 func (ctrl SubmissionController) Create(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 		var submissionForm forms.SubmissionForm
@@ -41,6 +42,7 @@ func (ctrl SubmissionController) Create(context *gin.Context) {
 	}
 }
 
+// Get all submissions belonging to user ID
 func (ctrl SubmissionController) AllForUserID(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 		data, err := submissionModel.AllForUserID(userID)
@@ -53,6 +55,7 @@ func (ctrl SubmissionController) AllForUserID(context *gin.Context) {
 	}
 }
 
+// Get all submissions belonging to event
 func (ctrl SubmissionController) AllForEvent(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 		event, err := fetchAndValidateEvent(context)
@@ -72,6 +75,7 @@ func (ctrl SubmissionController) AllForEvent(context *gin.Context) {
 	}
 }
 
+// get submission for event from userID
 func (ctrl SubmissionController) One(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 
@@ -92,6 +96,7 @@ func (ctrl SubmissionController) One(context *gin.Context) {
 	}
 }
 
+// Update submission
 func (ctrl SubmissionController) Update(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 		teamID, err := getTeamIDForEvent(context, userID)
@@ -119,6 +124,7 @@ func (ctrl SubmissionController) Update(context *gin.Context) {
 	}
 }
 
+// Delete Submission
 func (ctrl SubmissionController) Delete(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 		teamID, err := getTeamIDForEvent(context, userID)
@@ -138,6 +144,7 @@ func (ctrl SubmissionController) Delete(context *gin.Context) {
 	}
 }
 
+// Like submission
 func (ctrl SubmissionController) LikeSubmission(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 		submissionID, err := strconv.ParseUint(context.Query("submission-id"), 10, 64)
@@ -165,6 +172,7 @@ func (ctrl SubmissionController) LikeSubmission(context *gin.Context) {
 	}
 }
 
+// Unlike submission
 func (ctrl SubmissionController) UnlikeSubmission(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 		submissionID, err := strconv.ParseUint(context.Query("submission-id"), 10, 64)

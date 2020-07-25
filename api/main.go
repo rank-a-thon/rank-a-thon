@@ -125,6 +125,7 @@ func main() {
 		v1.POST("/team/:event", TokenAuthMiddleware(), team.Create)
 		v1.GET("/teams", TokenAuthMiddleware(), team.All)
 		v1.GET("/team/:event", TokenAuthMiddleware(), team.One)
+		v1.GET("/team", TokenAuthMiddleware(), team.OneByTeamID)
 		v1.PUT("/team/:event", TokenAuthMiddleware(), team.Update)
 		v1.DELETE("/team/:event", TokenAuthMiddleware(), team.Delete)
 		v1.DELETE("/remove-team-member/:event", TokenAuthMiddleware(), team.RemoveTeamMember)
