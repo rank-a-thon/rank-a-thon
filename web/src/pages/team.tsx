@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import type { NextPage } from 'next';
 import Router from 'next/router';
-import { Segment, Input, Button, List, Message } from 'semantic-ui-react';
-import { makeAuthedBackendRequest } from '../lib/backend';
+import {
+  Segment,
+  Input,
+  Button,
+  List,
+  Message,
+  Table,
+} from 'semantic-ui-react';
+import { makeAuthedBackendRequest, makeBackendRequest } from '../lib/backend';
 import MobilePostAuthContainer from '../components/MobilePostAuthContainer';
 import { getMe } from '../data/me';
 
@@ -10,11 +17,27 @@ type PageProps = {
   getWidth?: () => number;
 };
 
+type TeamInvite = {
+  teamId: number;
+  teamName: string;
+  inviteSender: string;
+};
+
 const DashboardLayout: NextPage<PageProps> = () => {
   const [teamName, setTeamName] = useState<string | null>(null);
+  const [teamMembers, setTeamMembers] = useState<string[]>(['']);
   const [createTeamName, setCreateTeamName] = useState<string | null>(null);
+  const [inviteEmail, setInviteEmail] = useState<string | null>(null);
+  const [inviteSuccess, setInviteSuccess] = useState<boolean>(false);
+  const [inviteErr, setInviteErr] = useState<string | null>(null);
+  const [routineTask, setRoutineTask] = useState<any>();
+
+  const [teamInvites, setTeamInvites] = useState<TeamInvite[]>(null);
 
   async function getTeamNameAndMembers() {
+    if (!getMe()) {
+      return null;
+    }
     let response;
     try {
       response = await makeAuthedBackendRequest('get', 'v1/user');
@@ -34,12 +57,30 @@ const DashboardLayout: NextPage<PageProps> = () => {
     try {
       response = await makeAuthedBackendRequest('get', 'v1/team/testevent');
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
     const teamName = response.data.data.team_name;
+    console.log(response.data);
     const teamMemberIds = JSON.parse(response.data.data.user_ids);
-    // TODO: make this return team member names as well
-    return response.data.data.team_name;
+
+    const teamMemberNames = await Promise.all(
+      teamMemberIds.map(async (id) => {
+        try {
+          response = await makeAuthedBackendRequest(
+            'get',
+            `v1/user?userid=${id}`,
+          );
+          return response.data.user.name;
+        } catch (err) {
+          console.log(err);
+          return 'A Fun Friend';
+        }
+      }),
+    );
+
+    setTeamName(teamName);
+    setTeamMembers(teamMemberNames as string[]);
+    setTimeout(getTeamNameAndMembers, 5000);
   }
 
   async function sendMakeTeam() {
@@ -68,9 +109,111 @@ const DashboardLayout: NextPage<PageProps> = () => {
     }
   }
 
+  async function sendInvite() {
+    setInviteSuccess(false);
+    setInviteErr(null);
+    const me = getMe();
+    try {
+      const response = await makeAuthedBackendRequest(
+        'post',
+        `v1/team-invite`,
+        {
+          event: 'testevent',
+          email: inviteEmail,
+        },
+      );
+      setInviteEmail(null);
+      setInviteSuccess(true);
+    } catch (err) {
+      setInviteErr(err.response.data.message);
+    }
+  }
+
+  async function getInvites() {
+    if (routineTask) {
+      clearTimeout(routineTask);
+    }
+    try {
+      const response = await makeAuthedBackendRequest('get', 'v1/team-invites');
+      setTeamInvites(
+        await Promise.all(
+          response.data.data.map(async (inviteResponse) => {
+            return {
+              teamId: inviteResponse.team_id,
+              teamName: (
+                await makeAuthedBackendRequest(
+                  'get',
+                  `v1/team?teamid=${inviteResponse.team_id}`,
+                )
+              ).data.data.team_name,
+              inviteSender: (
+                await makeAuthedBackendRequest(
+                  'get',
+                  `v1/user?userid=${inviteResponse.user_id}`,
+                )
+              ).data.user.name,
+            };
+          }),
+        ),
+      );
+    } catch (err) {
+      console.error(err.response);
+    }
+    setRoutineTask(setTimeout(getInvites, 5000));
+  }
+
   useEffect(() => {
-    getTeamNameAndMembers().then((teamName) => setTeamName(teamName));
+    clearTimeout();
+    getTeamNameAndMembers();
+    getInvites();
   }, []);
+
+  const renderTeamInvites = (invite) => {
+    console.log(invite);
+    const { teamId, teamName, inviteSender } = invite;
+    const sendAccept = () => {
+      try {
+        makeAuthedBackendRequest(
+          'delete',
+          `v1/team-invite/accept?teamid=${teamId}`,
+        ).then(() => Router.reload());
+      } catch (err) {
+        console.error(err.response);
+      }
+    };
+
+    const sendDecline = () => {
+      makeAuthedBackendRequest(
+        'delete',
+        `v1/team-invite/decline?teamid=${teamId}`,
+      ).then(getInvites);
+    };
+
+    return (
+      <Table.Row key={inviteSender}>
+        <Table.Cell>
+          <p style={{ fontWeight: 'normal', margin: 0 }}>
+            <span style={{ fontWeight: 'bold' }}>Team Name:</span> {teamName}
+          </p>
+          <p style={{ fontWeight: 'normal', margin: '0 0 1em 0' }}>
+            <span style={{ fontWeight: 'bold' }}>Sent by:</span> {inviteSender}
+          </p>
+          <div style={{ textAlign: 'center' }}>
+            <Button.Group>
+              <Button positive onClick={sendAccept}>
+                Accept
+              </Button>
+              <Button.Or />
+              <Button secondary onClick={sendDecline}>
+                Decline
+              </Button>
+            </Button.Group>
+          </div>
+        </Table.Cell>
+      </Table.Row>
+    );
+  };
+
   return (
     <MobilePostAuthContainer title="Team" requireAuth>
       {teamName && (
@@ -86,18 +229,14 @@ const DashboardLayout: NextPage<PageProps> = () => {
             Members:
           </p>
           <List style={{ fontSize: '1.4em', marginTop: '0.4em' }}>
-            <List.Item>
-              <List.Icon name="user circle" />
-              <List.Content>{getMe().name}</List.Content>
-            </List.Item>
-            <List.Item>
-              <List.Icon name="user circle" />
-              <List.Content>Len Beong</List.Content>
-            </List.Item>
-            <List.Item>
-              <List.Icon name="user circle" />
-              <List.Content>Soo Juen Yien</List.Content>
-            </List.Item>
+            {teamMembers.map((name) => {
+              return (
+                <List.Item key={name}>
+                  <List.Icon name="user circle" />
+                  <List.Content>{name}</List.Content>
+                </List.Item>
+              );
+            })}
           </List>
 
           <Segment color="violet" style={{ overflow: 'hidden' }}>
@@ -115,22 +254,36 @@ const DashboardLayout: NextPage<PageProps> = () => {
                 margin: '0.2em 0em',
               }}
             >
-              You can invite 1 more member.
+              You can invite {4 - teamMembers.length} more member
+              {4 - teamMembers.length === 1 ? '' : 's'}.
             </p>
             <Input
               placeholder="Member Email Address"
               style={{ margin: '0.4em 0', width: '100%' }}
-              onChange={(e) => setCreateTeamName(e.target.value)}
+              onChange={(e) => setInviteEmail(e.target.value)}
             />
             <Button
               primary
+              disabled={4 - teamMembers.length <= 0}
               size="medium"
-              floated="right"
-              onClick={() => alert('Not supported yet. Sorry!')}
-              style={{ margin: '0.8em 0 0 0' }}
+              onClick={sendInvite}
+              style={{
+                alignItems: 'flex-end',
+                margin: '0.8em 0 0 0',
+              }}
             >
               Invite
             </Button>
+            {inviteErr && (
+              <Message negative style={{ margin: '0.8em 0 0 0' }}>
+                {inviteErr}
+              </Message>
+            )}
+            {inviteSuccess && (
+              <Message positive style={{ margin: '0.8em 0 0 0' }}>
+                Successfully sent an invite. Ask your friend to accept it!
+              </Message>
+            )}
           </Segment>
 
           <Message warning>
@@ -206,16 +359,24 @@ const DashboardLayout: NextPage<PageProps> = () => {
             >
               Accept Team Invites
             </p>
-            <p
-              style={{
-                fontSize: '1em',
-                fontWeight: 'lighter',
-                margin: '0.8em 0em',
-              }}
-            >
-              You do not have any invites at the moment. Did your friend send an
-              invite?
-            </p>
+            {teamInvites && teamInvites.length === 0 ? (
+              <p
+                style={{
+                  fontSize: '1em',
+                  fontWeight: 'lighter',
+                  margin: '0.8em 0em',
+                }}
+              >
+                You do not have any invites at the moment. Did your friend send
+                an invite?
+              </p>
+            ) : (
+              <Table celled singleLine>
+                <Table.Body>
+                  {teamInvites && teamInvites.map(renderTeamInvites)}
+                </Table.Body>
+              </Table>
+            )}
           </Segment>
         </Segment>
       )}

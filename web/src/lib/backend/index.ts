@@ -29,8 +29,7 @@ export async function makeAuthedBackendRequest(
   endpoint: string,
   data?: any,
 ) {
-  const me = getMe();
-  const access_token = me.access_token;
+  const { access_token, refresh_token } = getMe();
   try {
     const response = await axios({
       method: method,
@@ -42,13 +41,12 @@ export async function makeAuthedBackendRequest(
   } catch (err) {
     if (err.response.status === 400) {
       // Auth expiry - refresh token
-      const refresh_token = me.refresh_token;
       try {
         const response = await axios({
           method: 'post',
           headers: { Authorization: `Bearer ${refresh_token}` },
           url: getFullEndpoint('v1/token/refresh'),
-          data: { refresh_token: refresh_token },
+          data: { refresh_token },
         });
         console.log(response);
         saveMe(response.data);
@@ -60,5 +58,7 @@ export async function makeAuthedBackendRequest(
     } else if (err.response.status === 401) {
       Router.push('/login');
     }
+    // Rethrow error so that call site can handle
+    throw err;
   }
 }
