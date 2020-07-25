@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 
 	"github.com/rank-a-thon/rank-a-thon/api/forms"
 	"github.com/rank-a-thon/rank-a-thon/api/models"
@@ -11,6 +12,7 @@ import (
 type SubmissionController struct{}
 
 var submissionModel = new(models.SubmissionModel)
+var submissionLikeModel = new(models.SubmissionLikeModel)
 
 func (ctrl SubmissionController) Create(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
@@ -133,5 +135,59 @@ func (ctrl SubmissionController) Delete(context *gin.Context) {
 		}
 
 		context.JSON(http.StatusOK, gin.H{"message": "Submission deleted"})
+	}
+}
+
+func (ctrl SubmissionController) LikeSubmission(context *gin.Context) {
+	if userID := getUserID(context); userID != 0 {
+		submissionID, err := strconv.ParseUint(context.Query("submission-id"), 10, 64)
+		if err != nil {
+			context.JSON(http.StatusNotFound, gin.H{"Message": "Invalid parameter"})
+			context.Abort()
+			return
+		}
+
+		_, err = submissionLikeModel.Create(uint(submissionID), userID)
+		if err != nil {
+			context.JSON(http.StatusNotAcceptable, gin.H{"Message": "Submission could not be liked", "error": err.Error()})
+			context.Abort()
+			return
+		}
+
+		err = submissionModel.IncrementLike(uint(submissionID), 1)
+		if err != nil {
+			context.JSON(http.StatusNotAcceptable, gin.H{"Message": "Submission could not be liked", "error": err.Error()})
+			context.Abort()
+			return
+		}
+
+		context.JSON(http.StatusOK, gin.H{"message": "Submission liked"})
+	}
+}
+
+func (ctrl SubmissionController) UnlikeSubmission(context *gin.Context) {
+	if userID := getUserID(context); userID != 0 {
+		submissionID, err := strconv.ParseUint(context.Query("submission-id"), 10, 64)
+		if err != nil {
+			context.JSON(http.StatusNotFound, gin.H{"Message": "Invalid parameter"})
+			context.Abort()
+			return
+		}
+
+		err = submissionLikeModel.Delete(uint(submissionID), userID)
+		if err != nil {
+			context.JSON(http.StatusNotAcceptable, gin.H{"Message": "Submission could not be unliked", "error": err.Error()})
+			context.Abort()
+			return
+		}
+
+		err = submissionModel.IncrementLike(uint(submissionID), -1)
+		if err != nil {
+			context.JSON(http.StatusNotAcceptable, gin.H{"Message": "Submission could not be unliked", "error": err.Error()})
+			context.Abort()
+			return
+		}
+
+		context.JSON(http.StatusOK, gin.H{"message": "Submission unliked"})
 	}
 }

@@ -72,6 +72,7 @@ func autoMigrateDB(db *gorm.DB) {
 		&models.Submission{},
 		&models.Evaluation{},
 		&models.SubmissionRanking{},
+		&models.SubmissionLike{},
 	).Error
 	if err != nil {
 		log.Fatal(err)
@@ -147,6 +148,8 @@ func main() {
 		v1.GET("/submission/:event", TokenAuthMiddleware(), submission.One)
 		v1.PUT("/submission/:event", TokenAuthMiddleware(), submission.Update)
 		v1.DELETE("/submission/:event", TokenAuthMiddleware(), submission.Delete)
+		v1.POST("/submission-like", TokenAuthMiddleware(), submission.LikeSubmission)
+		v1.DELETE("/submission-like", TokenAuthMiddleware(), submission.UnlikeSubmission)
 
 		/*** START Evaluation ***/
 		evaluation := new(controllers.EvaluationController)

@@ -17,6 +17,7 @@ type Submission struct {
 	Description string `gorm:"column:description" json:"description"`
 	Images      string `gorm:"column:images" json:"images"` // comma separated list of image ids
 	Team        Team   `gorm:"column:team" json:"team"`
+	Likes       int    `gorm:"column:likes" json:"likes"`
 }
 
 // SubmissionModel ...
@@ -96,6 +97,20 @@ func (m SubmissionModel) Update(teamID uint, form forms.SubmissionForm) (err err
 			"project_name": form.ProjectName,
 			"description": form.Description,
 			"images": strings.Join(form.Images, ","),
+		}).Error
+	return err
+}
+
+func (m SubmissionModel) IncrementLike(submissionID uint, increment int) (err error) {
+	submission, err := m.One(submissionID)
+	if err != nil {
+		return errors.New("submission not found")
+	}
+
+	err = database.GetDB().Table("public.submissions").Model(&Submission{}).
+		Where("id = ?", submissionID).
+		Updates(map[string]interface{}{
+			"likes": submission.Likes + increment,
 		}).Error
 	return err
 }
