@@ -219,6 +219,7 @@ func (ctrl UserController) GetByUserID(context *gin.Context) {
 			context.Abort()
 			return
 		}
+		user.Email = ""
 		context.JSON(http.StatusOK, gin.H{"user": user})
 	}
 }
