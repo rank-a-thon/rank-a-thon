@@ -6,6 +6,8 @@ services:
     build:
       dockerfile: Dockerfile.dev
       context: "./api"
+    ports:
+      - "8080:8080"
     environment:
       - ENV=LOCAL
       - SSL=${API_SSL}
@@ -28,6 +30,8 @@ services:
     build:
       dockerfile: Dockerfile.prod
       context: "./web"
+    ports:
+      - "3000:3000"
     environment:
       - FIREBASE_API_KEY=${FIREBASE_API_KEY}
       - FIREBASE_AUTH_DOMAIN=${FIREBASE_AUTH_DOMAIN}
@@ -52,19 +56,6 @@ services:
       - ./redis-data:/data
     ports:
       - 6379:6379
-  nginx:
-    container_name: nginx
-    restart: always
-    build:
-      dockerfile: Dockerfile.dev
-      context: ./proxy
-    depends_on:
-      - api
-      - web
-    ports:
-      - "80:80"
-    logging:
-      driver: none
 
 volumes:
   postgres-data:
