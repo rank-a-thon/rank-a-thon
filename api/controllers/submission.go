@@ -3,14 +3,12 @@ package controllers
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/rank-a-thon/rank-a-thon/api/forms"
+	"github.com/rank-a-thon/rank-a-thon/api/models"
 	"log"
 	"net/http"
 	"os"
 	"strconv"
-	"strings"
-
-	"github.com/rank-a-thon/rank-a-thon/api/forms"
-	"github.com/rank-a-thon/rank-a-thon/api/models"
 )
 
 type SubmissionController struct{}
@@ -208,12 +206,6 @@ func (ctrl SubmissionController) UnlikeSubmission(context *gin.Context) {
 func (ctrl SubmissionController) UploadFile(context *gin.Context) {
 	if userID := getUserID(context); userID != 0 {
 		teamID, err := getTeamIDForEvent(context, userID)
-		submission, err := submissionModel.OneByTeamID(teamID)
-		if err != nil {
-			context.JSON(http.StatusNotAcceptable, gin.H{"Message": "Could not fetch submission", "error": err.Error()})
-			context.Abort()
-			return
-		}
 
 		event, err := fetchAndValidateEvent(context)
 		if err != nil {
@@ -227,8 +219,8 @@ func (ctrl SubmissionController) UploadFile(context *gin.Context) {
 			log.Fatal(err)
 		}
 
-		imageFolder := fmt.Sprintf("submission_files/%s/%d", event, submission.ID)
-		imagePath := fmt.Sprintf("submission_files/%s/%d/%s", event, submission.ID, file.Filename)
+		imageFolder := fmt.Sprintf("submission_files/%s/%d", event, teamID)
+		imagePath := fmt.Sprintf("submission_files/%s/%d/%s", event, teamID, file.Filename)
 		if _, err := os.Stat(imageFolder); os.IsNotExist(err) {
 			err = os.MkdirAll(imageFolder, 0777)
 			if err != nil {
@@ -239,18 +231,6 @@ func (ctrl SubmissionController) UploadFile(context *gin.Context) {
 		}
 
 		err = context.SaveUploadedFile(file, imagePath)
-		if err != nil {
-			context.JSON(http.StatusNotAcceptable, gin.H{"message": "Error uploading Image", "error": err.Error()})
-			context.Abort()
-			return
-		}
-
-		submissionForm := forms.SubmissionForm{
-			ProjectName: submission.ProjectName,
-			Description: submission.Description,
-			Images:      append(strings.Split(submission.Images, ","), imagePath),
-		}
-		err = submissionModel.Update(submission.TeamID, submissionForm)
 		if err != nil {
 			context.JSON(http.StatusNotAcceptable, gin.H{"message": "Error uploading Image", "error": err.Error()})
 			context.Abort()

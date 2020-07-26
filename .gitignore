@@ -142,3 +142,4 @@ postgres-data/
 
 secrets/
 /api/secrets/
+/api/submission_files/
