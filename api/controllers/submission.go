@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
@@ -227,6 +228,9 @@ func (ctrl SubmissionController) UploadFile(context *gin.Context) {
 		}
 
 		imagePath := fmt.Sprintf("submission_files/%s/%d/%s", event, submission.ID, file.Filename)
+		if _, err := os.Stat(fmt.Sprintf("submission_files/%s/%d", event, submission.ID)); os.IsNotExist(err) {
+			os.Mkdir(fmt.Sprintf("submission_files/%s/%d", event, submission.ID), os.ModeDir)
+		}
 
 		err = context.SaveUploadedFile(file, imagePath)
 		if err != nil {
