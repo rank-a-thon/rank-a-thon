@@ -227,9 +227,15 @@ func (ctrl SubmissionController) UploadFile(context *gin.Context) {
 			log.Fatal(err)
 		}
 
+		imageFolder := fmt.Sprintf("submission_files/%s/%d", event, submission.ID)
 		imagePath := fmt.Sprintf("submission_files/%s/%d/%s", event, submission.ID, file.Filename)
-		if _, err := os.Stat(fmt.Sprintf("submission_files/%s/%d", event, submission.ID)); os.IsNotExist(err) {
-			os.Mkdir(fmt.Sprintf("submission_files/%s/%d", event, submission.ID), os.ModeDir)
+		if _, err := os.Stat(imageFolder); os.IsNotExist(err) {
+			err = os.MkdirAll(imageFolder, os.ModeDir)
+			if err != nil {
+				context.JSON(http.StatusNotAcceptable, gin.H{"message": "Error creating directory", "error": err.Error()})
+				context.Abort()
+				return
+			}
 		}
 
 		err = context.SaveUploadedFile(file, imagePath)
