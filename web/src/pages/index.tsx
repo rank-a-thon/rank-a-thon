@@ -230,24 +230,27 @@ type PageProps = {
 
 const HomepageLayout: NextPage<PageProps> = ({ getWidth }) => (
   <ResponsiveContainer getWidth={getWidth}>
-    <Segment style={{ padding: '8em 0em' }} vertical>
+    <Segment style={{ padding: '4em 0em' }} vertical>
       <Grid container stackable verticalAlign="middle">
         <Grid.Row>
           <Grid.Column width={8}>
             <Header as="h3" style={{ fontSize: '2em' }}>
-              We Help Companies and Companions
+              Smart, Reliable, Efficient Hackathons
             </Header>
             <p style={{ fontSize: '1.33em' }}>
-              We can give your company superpowers to do things that they never
-              thought possible. Let us delight your customers and empower your
-              needs... through pure data analytics.
+              Rank-a-thon is E2E, B2B progressive web application that manages hackathons. It allows for algorithmic judging based on pairwise ranking algorithms. This reduces subjectivity, enhances reliability, efficiency, and transparency of the judging process.
             </p>
             <Header as="h3" style={{ fontSize: '2em' }}>
-              We Make Bananas That Can Dance
+              Features
             </Header>
             <p style={{ fontSize: '1.33em' }}>
-              Yes that's right, you thought it was the stuff of dreams, but even
-              bananas can be bioengineered.
+              <ul>
+                <li> Find hackathon key information </li>
+                <li> View other team’s projects </li>
+                <li> Easily find teams assigned for judging </li>
+                <li> Judge teams based on rankings </li>
+                <li> Live-generate prize winners </li>
+              </ul>
             </p>
           </Grid.Column>
           <Grid.Column floated="right" width={6}>
@@ -256,7 +259,7 @@ const HomepageLayout: NextPage<PageProps> = ({ getWidth }) => (
         </Grid.Row>
         <Grid.Row>
           <Grid.Column textAlign="center">
-            <Button size="huge">Check Them Out</Button>
+            <Button size="huge">Sign Up Now</Button>
           </Grid.Column>
         </Grid.Row>
       </Grid>
@@ -267,19 +270,20 @@ const HomepageLayout: NextPage<PageProps> = ({ getWidth }) => (
         <Grid.Row textAlign="center">
           <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
             <Header as="h3" style={{ fontSize: '2em' }}>
-              "What a Company"
+              "I recommend this for any serious hackathon goer"
             </Header>
             <p style={{ fontSize: '1.33em' }}>
-              That is what they all say about us
+              <Image avatar src="1667473.jpg" />
+              <b>Jethro Kuan</b> Organiser of Singapore's largets hackathon
             </p>
           </Grid.Column>
           <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
             <Header as="h3" style={{ fontSize: '2em' }}>
-              "I shouldn't have gone with their competitor."
+              "I see potential in this being bigger than devpost"
             </Header>
             <p style={{ fontSize: '1.33em' }}>
-              <Image avatar src="img/icon.svg" />
-              <b>Nan</b> Chief Fun Officer Acme Toys
+              <Image avatar src="1296541.png" />
+              <b>Raynold Ng</b> Software Engineer at Stripe Singapore
             </p>
           </Grid.Column>
         </Grid.Row>
@@ -289,13 +293,15 @@ const HomepageLayout: NextPage<PageProps> = ({ getWidth }) => (
     <Segment style={{ padding: '8em 0em' }} vertical>
       <Container text>
         <Header as="h3" style={{ fontSize: '2em' }}>
-          Breaking The Grid, Grabs Your Attention
+          Motivation
         </Header>
         <p style={{ fontSize: '1.33em' }}>
-          Instead of focusing on content creation and hard work, we have learned
-          how to master the art of doing nothing by providing massive amounts of
-          whitespace and generic content that can seem massive, monolithic and
-          worth your attention.
+        In large-scale hackathons such as Hack&Roll (a hackathon organised by NUS Hackers which has over 500 participants), 
+        it is always a challenge to ensure that teams are judged sufficiently, fairly, and quickly. 
+        Teams need to be given enough time to talk about their work and showcase their product, 
+        and need to be given more opportunities to present their work to judges of different backgrounds, 
+        to reduce bias and variance in the judging process. However, judging at such hackathons often have tight time and manpower constraints, 
+        which greatly increases the complexity of such a large-scale judging operation. 
         </p>
         <Button as="a" size="large">
           Read More
@@ -313,15 +319,13 @@ const HomepageLayout: NextPage<PageProps> = ({ getWidth }) => (
         </Divider>
 
         <Header as="h3" style={{ fontSize: '2em' }}>
-          Did We Tell You About Our Bananas?
+          Hack & Roll 2021
         </Header>
         <p style={{ fontSize: '1.33em' }}>
-          Yes I know you probably disregarded the earlier boasts as non-sequitur
-          filler content, but it's really true. It took years of gene splicing
-          and combinatory DNA research, but our bananas can really dance.
+          To be deployed for Hack&Roll 2021, Singapore’s largest student-run hackathon.
         </p>
         <Button as="a" size="large">
-          I'm Still Quite Interested
+          Read More
         </Button>
       </Container>
     </Segment>
@@ -333,26 +337,16 @@ const HomepageLayout: NextPage<PageProps> = ({ getWidth }) => (
             <Grid.Column width={3}>
               <Header inverted as="h4" content="About" />
               <List link inverted>
-                <List.Item as="a">Sitemap</List.Item>
+                <List.Item as="a">About</List.Item>
                 <List.Item as="a">Contact Us</List.Item>
-                <List.Item as="a">Religious Ceremonies</List.Item>
-                <List.Item as="a">Gazebo Plans</List.Item>
-              </List>
-            </Grid.Column>
-            <Grid.Column width={3}>
-              <Header inverted as="h4" content="Services" />
-              <List link inverted>
-                <List.Item as="a">Banana Pre-Order</List.Item>
-                <List.Item as="a">DNA FAQ</List.Item>
-                <List.Item as="a">How To Access</List.Item>
-                <List.Item as="a">Favorite X-Men</List.Item>
+                <List.Item as="a">Sitemap</List.Item>
               </List>
             </Grid.Column>
             <Grid.Column width={7}>
               <Header as="h4" inverted>
                 &copy; Rankathon 2020
               </Header>
-              <p>Orbital is hard.</p>
+              <p>We Rank Hackathons</p>
             </Grid.Column>
           </Grid.Row>
         </Grid>
