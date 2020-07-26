@@ -1,4 +1,5 @@
 FROM node:12.18.0-alpine
+EXPOSE 3000
 WORKDIR /web
 COPY ./package.json ./yarn.lock ./
 RUN yarn install
