@@ -230,7 +230,7 @@ func (ctrl SubmissionController) UploadFile(context *gin.Context) {
 		imageFolder := fmt.Sprintf("submission_files/%s/%d", event, submission.ID)
 		imagePath := fmt.Sprintf("submission_files/%s/%d/%s", event, submission.ID, file.Filename)
 		if _, err := os.Stat(imageFolder); os.IsNotExist(err) {
-			err = os.MkdirAll(imageFolder, os.ModeDir)
+			err = os.MkdirAll(imageFolder, 0777)
 			if err != nil {
 				context.JSON(http.StatusNotAcceptable, gin.H{"message": "Error creating directory", "error": err.Error()})
 				context.Abort()
@@ -257,6 +257,6 @@ func (ctrl SubmissionController) UploadFile(context *gin.Context) {
 			return
 		}
 
-		context.JSON(http.StatusOK, gin.H{"image_url": "api/" + imagePath})
+		context.JSON(http.StatusOK, gin.H{"image_url": "api/v1/" + imagePath})
 	}
 }

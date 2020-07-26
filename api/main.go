@@ -153,7 +153,7 @@ func main() {
 		v1.DELETE("/submission-like", TokenAuthMiddleware(), submission.UnlikeSubmission)
 
 		/** Submission Images **/
-		v1.Static("/submission-file", "submission_files")
+		v1.Static("/submission_files", "submission_files")
 		v1.POST("/submission-file-upload/:event", TokenAuthMiddleware(), submission.UploadFile)
 
 		/*** START Evaluation ***/
