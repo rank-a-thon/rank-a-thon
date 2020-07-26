@@ -247,6 +247,6 @@ func (ctrl SubmissionController) UploadFile(context *gin.Context) {
 			return
 		}
 
-		context.String(http.StatusOK, fmt.Sprintf("'%s' uploaded", file.Filename))
+		context.JSON(http.StatusOK, gin.H{"image_url": "api/" + imagePath})
 	}
 }
