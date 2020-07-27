@@ -13,7 +13,7 @@ const DashboardLayout: NextPage<PageProps> = () => {
     <MobilePostAuthContainer title="Schedule" requireAuth>
       <Segment basic textAlign="center" style={{ padding: '1em' }}>
         <p style={{ fontSize: '1.3em', marginBottom: '0' }}>
-          This schedule will always be updated:
+          Do check here from time to time for any updates to the event schedule.
         </p>
         <Table
           celled
