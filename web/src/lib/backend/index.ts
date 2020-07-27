@@ -57,6 +57,7 @@ export async function makeAuthedBackendRequest(
       }
     } else if (err.response.status === 401) {
       Router.push('/login');
+      return;
     }
     // Rethrow error so that call site can handle
     throw err;
@@ -99,8 +100,8 @@ export async function sendAuthedFormData(
         throw 'Unable to refresh JWT token';
       }
     } else if (err.response.status === 401) {
-      console.log('THIS IS A 401!!');
       Router.push('/login');
+      return;
     }
     // Rethrow error so that call site can handle
     throw err;

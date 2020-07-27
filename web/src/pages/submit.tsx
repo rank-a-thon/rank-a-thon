@@ -39,6 +39,7 @@ const uploadFile = async (file) => {
 
 const SubmitLayout: NextPage<PageProps> = () => {
   const fileUploadRef = useRef<any>(null);
+  const [imageUploading, setimageUploading] = useState<boolean>(false);
   const [coverImageUrl, setCoverImageUrl] = useState<string>('');
   const [coverImageName, setCoverImageName] = useState<string>('');
   const [error, setError] = useState<string>('');
@@ -48,12 +49,46 @@ const SubmitLayout: NextPage<PageProps> = () => {
   const [projDesc, setProjDesc] = useState<string>('');
   const [rulesChecked, setRulesChecked] = useState<boolean>(false);
   const [voidChecked, setVoidChecked] = useState<boolean>(false);
+  const [submitSending, setSubmitSending] = useState<boolean>(false);
 
   const uploadCoverImage = async (event) => {
+    setimageUploading(true);
     const file = event.target.files[0];
     const uploadedImageUrl = await uploadFile(file);
     setCoverImageUrl(uploadedImageUrl);
     setCoverImageName(file.name);
+    setimageUploading(false);
+  };
+
+  const sendSubmission = async () => {
+    setSubmitSending(true);
+    setError('');
+    setSuccess('');
+    if (
+      !coverImageUrl ||
+      !projName ||
+      !projDesc ||
+      !rulesChecked ||
+      !voidChecked
+    ) {
+      setError('Please fill up all fields!');
+      setSubmitSending(false);
+      return;
+    }
+
+    try {
+      await makeAuthedBackendRequest('post', 'v1/submission/testevent', {
+        project_name: projName,
+        description: projDesc,
+        images: [coverImageUrl],
+      });
+    } catch (err) {
+      setError(err.response?.data?.error || JSON.stringify(err.response));
+      setSubmitSending(false);
+      return;
+    }
+    setSubmitSending(false);
+    setSuccess('Project submitted successfully! All the best for judging! 😇');
   };
 
   return (
@@ -81,7 +116,25 @@ const SubmitLayout: NextPage<PageProps> = () => {
             rows={8}
           />
           <Form.Field required>
+            <label>Cover Image</label>
+            {coverImageUrl && (
+              <div
+                style={{
+                  width: '100%',
+                  border: '1px solid #d1d1d1',
+                  borderRadius: '10px',
+                  padding: '0.5em 0.8em',
+                  marginBottom: '1em',
+                }}
+              >
+                <Image inline src={coverImageUrl} size="tiny" />
+                <span style={{ marginLeft: '0.8em', color: '#a8a8a8' }}>
+                  {coverImageName}
+                </span>
+              </div>
+            )}
             <Button
+              loading={imageUploading}
               content={
                 coverImageUrl ? 'Replace Cover Image' : 'Upload Cover Image'
               }
@@ -97,22 +150,7 @@ const SubmitLayout: NextPage<PageProps> = () => {
               onChange={uploadCoverImage}
             />
           </Form.Field>
-          {coverImageUrl && (
-            <div
-              style={{
-                width: '100%',
-                border: '1px solid #d1d1d1',
-                borderRadius: '10px',
-                padding: '0.5em 0.8em',
-                marginBottom: '1em',
-              }}
-            >
-              <Image inline src={coverImageUrl} size="tiny" />
-              <span style={{ marginLeft: '0.8em', color: '#a8a8a8' }}>
-                {coverImageName}
-              </span>
-            </div>
-          )}
+
           <Form.Field required>
             <Checkbox
               checked={rulesChecked}
@@ -130,7 +168,12 @@ const SubmitLayout: NextPage<PageProps> = () => {
 
           <Message error content={error} />
           <Message success content={success} />
-          <Button primary type="submit">
+          <Button
+            primary
+            type="submit"
+            onClick={sendSubmission}
+            loading={submitSending}
+          >
             Submit
           </Button>
         </Form>
