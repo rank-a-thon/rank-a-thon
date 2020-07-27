@@ -51,6 +51,10 @@ const SubmitLayout: NextPage<PageProps> = () => {
   const [voidChecked, setVoidChecked] = useState<boolean>(false);
   const [submitSending, setSubmitSending] = useState<boolean>(false);
 
+  const [hasExistingSubmissions, setHasExistingSubmissions] = useState<boolean>(
+    false,
+  );
+
   const uploadCoverImage = async (event) => {
     setimageUploading(true);
     const file = event.target.files[0];
@@ -77,24 +81,69 @@ const SubmitLayout: NextPage<PageProps> = () => {
     }
 
     try {
-      await makeAuthedBackendRequest('post', 'v1/submission/testevent', {
-        project_name: projName,
-        description: projDesc,
-        images: [coverImageUrl],
-      });
+      await makeAuthedBackendRequest(
+        hasExistingSubmissions ? 'put' : 'post',
+        'v1/submission/testevent',
+        {
+          project_name: projName,
+          description: projDesc,
+          images: [coverImageUrl],
+        },
+      );
     } catch (err) {
       setError(err.response?.data?.error || JSON.stringify(err.response));
       setSubmitSending(false);
       return;
     }
     setSubmitSending(false);
-    setSuccess('Project submitted successfully! All the best for judging! 😇');
+    setSuccess(
+      hasExistingSubmissions
+        ? 'Project updated successfully! All the best for judging! 😇'
+        : 'Project submitted successfully! All the best for judging! 😇',
+    );
+    setHasExistingSubmissions(true);
   };
 
+  const loadPreviousSubmission = async () => {
+    try {
+      const prevSubmissionResponse = await makeAuthedBackendRequest(
+        'get',
+        'v1/submission/testevent',
+      );
+      const {
+        project_name: projName,
+        description: projDesc,
+        images: coverImageUrl,
+      } = prevSubmissionResponse.data.data;
+      setHasExistingSubmissions(true);
+      setProjName(projName);
+      setProjDesc(projDesc);
+      setCoverImageUrl(coverImageUrl);
+      setCoverImageName(coverImageUrl.split('/').slice(-1)[0]);
+      setVoidChecked(true);
+      setRulesChecked(true);
+    } catch (err) {
+      if (err.response.status === 404) {
+        setHasExistingSubmissions(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    loadPreviousSubmission();
+  }, []);
+
   return (
-    <MobilePostAuthContainer title="Submit" requireAuth>
+    <MobilePostAuthContainer
+      title={hasExistingSubmissions ? 'Update' : 'Submit'}
+      requireAuth
+    >
       <Segment basic textAlign="left" style={{ padding: '1.5em 2em' }}>
-        <p style={{ fontSize: '1.4em' }}>Make a submission for your team!</p>
+        <p style={{ fontSize: '1.4em' }}>
+          {hasExistingSubmissions
+            ? "Update your team's submission"
+            : 'Make a submission for your team!'}
+        </p>
         <Form error={!!error} success={!!success}>
           <Form.Input
             required
