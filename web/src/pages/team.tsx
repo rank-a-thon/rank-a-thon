@@ -12,6 +12,7 @@ import {
 import { makeAuthedBackendRequest, makeBackendRequest } from '../lib/backend';
 import MobilePostAuthContainer from '../components/MobilePostAuthContainer';
 import { getMe } from '../data/me';
+import Link from 'next/link';
 
 type PageProps = {
   getWidth?: () => number;
@@ -31,7 +32,9 @@ const DashboardLayout: NextPage<PageProps> = () => {
   const [inviteSuccess, setInviteSuccess] = useState<boolean>(false);
   const [inviteErr, setInviteErr] = useState<string | null>(null);
   const [routineTask, setRoutineTask] = useState<any>();
-
+  const [hasExistingSubmissions, setHasExistingSubmissions] = useState<boolean>(
+    false,
+  );
   const [teamInvites, setTeamInvites] = useState<TeamInvite[]>(null);
 
   async function getTeamNameAndMembers() {
@@ -162,6 +165,24 @@ const DashboardLayout: NextPage<PageProps> = () => {
     setRoutineTask(setTimeout(getInvites, 5000));
   }
 
+  const loadPreviousSubmission = async () => {
+    try {
+      const prevSubmissionResponse = await makeAuthedBackendRequest(
+        'get',
+        'v1/submission/testevent',
+      );
+      setHasExistingSubmissions(true);
+    } catch (err) {
+      if (err.response.status === 404) {
+        setHasExistingSubmissions(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    loadPreviousSubmission();
+  }, [teamName]);
+
   useEffect(() => {
     clearTimeout();
     getTeamNameAndMembers();
@@ -286,24 +307,33 @@ const DashboardLayout: NextPage<PageProps> = () => {
             )}
           </Segment>
 
-          <Message warning>
-            <Message.Header>
-              Your team has not made your project submission!
-            </Message.Header>
-            <p>
-              Please ensure you submit your project before the judging deadline
-              of 0900hrs on Day 2 of the event!
-            </p>
-          </Message>
+          {hasExistingSubmissions ? (
+            <Message positive>
+              <Message.Header>Project Submitted!</Message.Header>
+              <p>Good job! Your team has already submitted your project!</p>
+            </Message>
+          ) : (
+            <Message warning>
+              <Message.Header>
+                Your team has not made your project submission!
+              </Message.Header>
+              <p>
+                Please ensure you submit your project before the judging
+                deadline of 0900hrs on Day 2 of the event!
+              </p>
+            </Message>
+          )}
 
-          <Button
-            size="medium"
-            style={{ display: 'block', margin: '1em auto', width: '100%' }}
-            primary
-            onClick={() => alert('Not supported yet. Sorry!')}
-          >
-            Submit your project
-          </Button>
+          <Link href="/submit">
+            <Button
+              size="medium"
+              style={{ display: 'block', margin: '1em auto', width: '100%' }}
+              primary
+              as="a"
+            >
+              {hasExistingSubmissions ? 'Update' : 'Submit'} your project
+            </Button>
+          </Link>
           <Button
             size="medium"
             style={{ display: 'block', margin: '1em auto', width: '100%' }}
