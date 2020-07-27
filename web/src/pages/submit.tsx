@@ -40,35 +40,51 @@ const uploadFile = async (file) => {
 const SubmitLayout: NextPage<PageProps> = () => {
   const fileUploadRef = useRef<any>(null);
   const [coverImageUrl, setCoverImageUrl] = useState<string>('');
+  const [coverImageName, setCoverImageName] = useState<string>('');
+  const [error, setError] = useState<string>('');
+  const [success, setSuccess] = useState<string>('');
+
+  const [projName, setProjName] = useState<string>('');
+  const [projDesc, setProjDesc] = useState<string>('');
+  const [rulesChecked, setRulesChecked] = useState<boolean>(false);
+  const [voidChecked, setVoidChecked] = useState<boolean>(false);
 
   const uploadCoverImage = async (event) => {
     const file = event.target.files[0];
     const uploadedImageUrl = await uploadFile(file);
     setCoverImageUrl(uploadedImageUrl);
+    setCoverImageName(file.name);
   };
 
   return (
     <MobilePostAuthContainer title="Submit" requireAuth>
       <Segment basic textAlign="left" style={{ padding: '1.5em 2em' }}>
         <p style={{ fontSize: '1.4em' }}>Make a submission for your team!</p>
-        <Form>
-          <Form.Field>
-            <Form.Input
-              fluid
-              label="Project Name"
-              placeholder="Give your project a name!"
-            />
-          </Form.Field>
-          <Form.Field>
-            <Form.TextArea
-              label="Description"
-              placeholder="Write a short paragraph about your project!"
-              rows={8}
-            />
-          </Form.Field>
-          <Form.Field>
+        <Form error={!!error} success={!!success}>
+          <Form.Input
+            required
+            fluid
+            label="Project Name"
+            value={projName}
+            onChange={(e) => setProjName(e.target.value)}
+            placeholder="Give your project a name!"
+          />
+          <Form.TextArea
+            required
+            style={{ fontFamily: 'Lato, sans-serif' }}
+            label="Description"
+            value={projDesc}
+            onChange={(e) =>
+              setProjDesc((e.target as HTMLTextAreaElement).value)
+            }
+            placeholder="Write a short paragraph about your project!"
+            rows={8}
+          />
+          <Form.Field required>
             <Button
-              content="Upload Cover Image"
+              content={
+                coverImageUrl ? 'Replace Cover Image' : 'Upload Cover Image'
+              }
               labelPosition="left"
               icon="picture"
               onClick={() => fileUploadRef.current.click()}
@@ -82,14 +98,38 @@ const SubmitLayout: NextPage<PageProps> = () => {
             />
           </Form.Field>
           {coverImageUrl && (
-            <Card>
+            <div
+              style={{
+                width: '100%',
+                border: '1px solid #d1d1d1',
+                borderRadius: '10px',
+                padding: '0.5em 0.8em',
+                marginBottom: '1em',
+              }}
+            >
               <Image inline src={coverImageUrl} size="tiny" />
-              Wow
-            </Card>
+              <span style={{ marginLeft: '0.8em', color: '#a8a8a8' }}>
+                {coverImageName}
+              </span>
+            </div>
           )}
-          <Form.Field>
-            <Checkbox label="I acknowledge that my team’s submission adheres to the rules of regulations of the hackathon, and if any part of my team’s submission is found to contravene the rules, or is incomplete, the organisers have the right to void my team’s submission." />
+          <Form.Field required>
+            <Checkbox
+              checked={rulesChecked}
+              onChange={() => setRulesChecked(!rulesChecked)}
+              label="I acknowledge that my team’s submission adheres to the rules and regulations of the hackathon."
+            />
           </Form.Field>
+          <Form.Field required>
+            <Checkbox
+              checked={voidChecked}
+              onChange={() => setVoidChecked(!voidChecked)}
+              label="I acknowledge that if any part of my team’s submission is found to contravene the rules, or is incomplete, the organisers have the right to void my team’s submission."
+            />
+          </Form.Field>
+
+          <Message error content={error} />
+          <Message success content={success} />
           <Button primary type="submit">
             Submit
           </Button>
