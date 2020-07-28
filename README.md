@@ -8,11 +8,9 @@ this project is about.
 
 This project is LIVE and deployed on http://rankathon.io.
 
-Note: This is still a very early alpha of the project, where a lot of functionality is still missing and lacking polish. However, it should still give you a good feel of what the app is meant to do.
-
 # Orbital Milestone Submissions
 
-To view our Orbital Milestone 2 submission, [click here](https://hackmd.io/@sunyitao/rankathon-2).
+To view our Orbital Milestone 3 submission, [click here](https://hackmd.io/@sunyitao/rankathon-3).
 
 ## Setting Up for Development
 
@@ -30,12 +28,6 @@ To view our Orbital Milestone 2 submission, [click here](https://hackmd.io/@suny
    $ docker exec -ti postgres /bin/sh
    ```
 
-1. You should be in a shell within the container now. Now import the database schema by running.
-
-   ```bash
-   # psql -U postgres -h localhost < /db/database.sql
-   ```
-
 1. Now restart docker-compose by pressing Ctrl+C in your docker-compose shell, then running
 
    ```bash
@@ -46,7 +38,7 @@ To view our Orbital Milestone 2 submission, [click here](https://hackmd.io/@suny
    <http://localhost:5555/api> for the backend.
 
 Note that both the client and backend have hot-reload working. Any changes you
-make will (mostly) be hot-reloaded in a few seconds.
+make will be hot-reloaded in a few seconds.
 
 ## Deployment to Production
 
@@ -73,27 +65,26 @@ make will (mostly) be hot-reloaded in a few seconds.
 
 1) Enter the PostgreSQL container with
 
-   ```
+   ```bash
    $ docker exec -ti postgres /bin/sh
-   ```
-
-1) You should be in a shell within the container now. Now import the database schema by running.
-
-   ```
-   # psql -U postgres -h localhost < /db/database.sql
    ```
 
 1) Go back to your docker-compose shell by pressing Ctrl+B then 0.
 
 1) Now restart docker-compose by pressing Ctrl+C in your docker-compose shell, then running
 
-   ```
+   ```bash
    $ ./deploy-prod.sh
    ```
 
 1) Voila! It should be working! Visit either <http://localhost> or your server's URL and Rankathon should be up!
 
 Note that this creates a production build of Rankathon and is not suitable for development purposes.
+
+## Running Tests
+
+1. `cd api`
+2. `sh test_all.sh`
 
 ## Golang Backend Documentation
 
@@ -109,10 +100,10 @@ Note that this creates a production build of Rankathon and is not suitable for d
 
 2. Update your workspace's `settings.json` (Preferences: Open User Settings > Open settings.json):
 
-```
+```json
 {
   // Let eslint and prettier format code on save
-  "editor.formatOnSave": true,
+  "editor.formatOnSave": true
 }
 ```
 
