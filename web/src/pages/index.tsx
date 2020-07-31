@@ -238,7 +238,10 @@ const HomepageLayout: NextPage<PageProps> = ({ getWidth }) => (
               Smart, Reliable, Efficient Hackathons
             </Header>
             <p style={{ fontSize: '1.33em' }}>
-              Rank-a-thon is E2E, B2B progressive web application that manages hackathons. It allows for algorithmic judging based on pairwise ranking algorithms. This reduces subjectivity, enhances reliability, efficiency, and transparency of the judging process.
+              Rank-a-thon is E2E, B2B web application that manages hackathons.
+              It allows for algorithmic judging based on pairwise ranking
+              algorithms. This reduces subjectivity, enhances reliability,
+              efficiency, and transparency of the judging process.
             </p>
             <Header as="h3" style={{ fontSize: '2em' }}>
               Features
@@ -270,20 +273,19 @@ const HomepageLayout: NextPage<PageProps> = ({ getWidth }) => (
         <Grid.Row textAlign="center">
           <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
             <Header as="h3" style={{ fontSize: '2em' }}>
-              "I recommend this for any serious hackathon goer"
+              "What a Company"
             </Header>
             <p style={{ fontSize: '1.33em' }}>
-              <Image avatar src="1667473.jpg" />
-              <b>Jethro Kuan</b> Organiser of Singapore's largets hackathon
+              That is what they all say about us
             </p>
           </Grid.Column>
           <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
             <Header as="h3" style={{ fontSize: '2em' }}>
-              "I see potential in this being bigger than devpost"
+              "I shouldn't have gone with their competitor."
             </Header>
             <p style={{ fontSize: '1.33em' }}>
-              <Image avatar src="1296541.png" />
-              <b>Raynold Ng</b> Software Engineer at Stripe Singapore
+              <Image avatar src="img/icon.svg" />
+              <b>Nan</b> Chief Fun Officer Acme Toys
             </p>
           </Grid.Column>
         </Grid.Row>
@@ -296,12 +298,16 @@ const HomepageLayout: NextPage<PageProps> = ({ getWidth }) => (
           Motivation
         </Header>
         <p style={{ fontSize: '1.33em' }}>
-        In large-scale hackathons such as Hack&Roll (a hackathon organised by NUS Hackers which has over 500 participants), 
-        it is always a challenge to ensure that teams are judged sufficiently, fairly, and quickly. 
-        Teams need to be given enough time to talk about their work and showcase their product, 
-        and need to be given more opportunities to present their work to judges of different backgrounds, 
-        to reduce bias and variance in the judging process. However, judging at such hackathons often have tight time and manpower constraints, 
-        which greatly increases the complexity of such a large-scale judging operation. 
+          In large-scale hackathons such as Hack&amp;Roll (a hackathon organised
+          by NUS Hackers which has over 500 participants), it is always a
+          challenge to ensure that teams are judged sufficiently, fairly, and
+          quickly. Teams need to be given enough time to talk about their work
+          and showcase their product, and need to be given more opportunities to
+          present their work to judges of different backgrounds, to reduce bias
+          and variance in the judging process. However, judging at such
+          hackathons often have tight time and manpower constraints, which
+          greatly increases the complexity of such a large-scale judging
+          operation.
         </p>
         <Button as="a" size="large">
           Read More
@@ -319,10 +325,11 @@ const HomepageLayout: NextPage<PageProps> = ({ getWidth }) => (
         </Divider>
 
         <Header as="h3" style={{ fontSize: '2em' }}>
-          Hack & Roll 2021
+          Hack&amp;Roll 2021
         </Header>
         <p style={{ fontSize: '1.33em' }}>
-          To be deployed for Hack&Roll 2021, Singapore’s largest student-run hackathon.
+          To be deployed for Hack&amp;Roll 2021, Singapore’s largest student-run
+          hackathon.
         </p>
         <Button as="a" size="large">
           Read More
