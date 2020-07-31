@@ -273,19 +273,20 @@ const HomepageLayout: NextPage<PageProps> = ({ getWidth }) => (
         <Grid.Row textAlign="center">
           <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
             <Header as="h3" style={{ fontSize: '2em' }}>
-              "What a Company"
+              "Best thing since sliced pizza."
             </Header>
             <p style={{ fontSize: '1.33em' }}>
-              That is what they all say about us
+              <Image avatar src="1667473.jpg" />
+              <b>Jethro Kuan</b> Organiser of Singapore's largest hackathon
             </p>
           </Grid.Column>
           <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
             <Header as="h3" style={{ fontSize: '2em' }}>
-              "I shouldn't have gone with their competitor."
+              "10x software for 10x engineers."
             </Header>
             <p style={{ fontSize: '1.33em' }}>
-              <Image avatar src="img/icon.svg" />
-              <b>Nan</b> Chief Fun Officer Acme Toys
+              <Image avatar src="1296541.png" />
+              <b>Raynold Ng</b> Aspiring 1x-er
             </p>
           </Grid.Column>
         </Grid.Row>
