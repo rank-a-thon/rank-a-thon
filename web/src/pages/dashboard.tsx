@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Button, Segment } from 'semantic-ui-react';
 import MobilePostAuthContainer from '../components/MobilePostAuthContainer';
 import { getMe } from '../data/me';
+import { makeAuthedBackendRequest } from '../lib/backend';
 
 type PageProps = {
   getWidth?: () => number;
@@ -11,13 +12,42 @@ type PageProps = {
 
 const DashboardLayout: NextPage<PageProps> = () => {
   const [name, setName] = useState<string>('');
+  const [userType, setUserType] = useState<'user' | 'judge' | 'superuser'>(
+    'user',
+  );
+
+  const getNameOnLoad = async () => {
+    const response = await makeAuthedBackendRequest('get', 'v1/user');
+    setName(response?.data?.user?.name);
+  };
+
+  const getUserTypeOnLoad = async () => {
+    const response = await makeAuthedBackendRequest('get', 'v1/user');
+    switch (response.data.user.user_type) {
+      case 2:
+        setUserType('judge');
+        return;
+      case 3:
+        setUserType('superuser');
+        return;
+      default:
+        setUserType('user');
+        return;
+    }
+  };
+
   useEffect(() => {
-    const me = getMe();
-    setName(me ? me.name : 'Christopher Goh');
+    getNameOnLoad();
+    getUserTypeOnLoad();
   }, []);
 
   return (
-    <MobilePostAuthContainer title="Dashboard" requireAuth>
+    <MobilePostAuthContainer
+      title="Dashboard"
+      requireAuth
+      judge={userType === 'judge'}
+      superuser={userType === 'superuser'}
+    >
       <Segment basic textAlign="left" style={{ padding: '1.5em 2em' }}>
         <p style={{ fontSize: '2.5em', marginBottom: '0' }}>Good morning,</p>
         <p style={{ fontSize: '2.5em', fontWeight: 'bold' }}>{name}</p>
