@@ -39,7 +39,7 @@ export async function makeAuthedBackendRequest(
     });
     return response;
   } catch (err) {
-    if (err.response.status === 400 || err.response.status === 401) {
+    if (err.response.status === 401) {
       // Auth expiry - refresh token
       try {
         const response = await axios({
@@ -53,7 +53,7 @@ export async function makeAuthedBackendRequest(
         // TODO: we can do better
         return makeAuthedBackendRequest(method, endpoint, data);
       } catch {
-        throw 'Unable to refresh JWT token';
+        throw err;
       }
     } else if (err.response.status === 401) {
       Router.push('/login');
@@ -97,7 +97,7 @@ export async function sendAuthedFormData(
         // TODO: we can do better
         return sendAuthedFormData(method, endpoint, formData);
       } catch {
-        throw 'Unable to refresh JWT token';
+        throw err;
       }
     } else if (err.response.status === 401) {
       Router.push('/login');

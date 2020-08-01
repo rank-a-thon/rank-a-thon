@@ -10,6 +10,7 @@ const SuperDashboard: React.FC<{ name: string }> = ({ name }) => {
   const sendStartEval = async () => {
     setSuccess('');
     setFailure('');
+    console.log('wtf');
     try {
       await makeAuthedBackendRequest(
         'put',
@@ -19,7 +20,14 @@ const SuperDashboard: React.FC<{ name: string }> = ({ name }) => {
         'Request sent successfully! Evaluations are now being generated and assigned to judges.',
       );
     } catch (err) {
-      setFailure(err?.response?.data?.message || err);
+      console.log(err);
+      if (err.response.status === 400) {
+        setSuccess(
+          'Request sent successfully! Evaluations are now being generated and assigned to judges.',
+        );
+      } else {
+        setFailure(err?.response?.data?.message || err);
+      }
     }
   };
 
