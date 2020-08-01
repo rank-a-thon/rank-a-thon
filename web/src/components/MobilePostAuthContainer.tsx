@@ -11,18 +11,36 @@ import {
 } from 'semantic-ui-react';
 
 import { clearMe, getMe } from '../data/me';
+import { makeAuthedBackendRequest } from '../lib/backend';
 
 type MobileContainerProps = {
   getWidth?: () => number;
   children: React.ReactNode;
   title: string;
   requireAuth?: boolean;
-  judge?: boolean;
-  superuser?: boolean;
 };
 
 function MobilePostAuthContainer(props: MobileContainerProps) {
   const [sidebarOpened, setSidebarOpened] = useState<boolean>(false);
+  const [userType, setUserType] = useState<'user' | 'judge' | 'superuser'>(
+    'user',
+  );
+
+  const getUserTypeOnLoad = async () => {
+    const response = await makeAuthedBackendRequest('get', 'v1/user');
+    switch (response.data.user.user_type) {
+      case 2:
+        setUserType('judge');
+        return;
+      case 3:
+        setUserType('superuser');
+        return;
+      default:
+        setUserType('user');
+        return;
+    }
+  };
+
   const router = useRouter();
   function handleSidebarHide() {
     setSidebarOpened(false);
@@ -44,6 +62,10 @@ function MobilePostAuthContainer(props: MobileContainerProps) {
     }
   }, []);
 
+  useEffect(() => {
+    getUserTypeOnLoad();
+  }, []);
+
   return (
     <>
       <Sidebar.Pushable style={{ height: '100vh' }}>
@@ -56,7 +78,7 @@ function MobilePostAuthContainer(props: MobileContainerProps) {
           visible={sidebarOpened}
         >
           <SidebarItem name="Dashboard" href="/dashboard" />
-          {!props.judge && !props.superuser && (
+          {userType !== 'judge' && userType !== 'superuser' && (
             <>
               <SidebarItem name="Announcements" href="/announcements" />
               <SidebarItem name="Manage Team" href="/team" />
@@ -101,7 +123,7 @@ function MobilePostAuthContainer(props: MobileContainerProps) {
         </Sidebar.Pusher>
       </Sidebar.Pushable>
       <Menu
-        widths={!props.judge && !props.superuser ? 4 : 3}
+        widths={userType !== 'judge' && userType !== 'superuser' ? 4 : 3}
         icon="labeled"
         fixed="bottom"
         size="tiny"
@@ -124,7 +146,7 @@ function MobilePostAuthContainer(props: MobileContainerProps) {
             Map
           </Menu.Item>
         </Link>
-        {!props.judge && !props.superuser && (
+        {userType !== 'judge' && userType !== 'superuser' && (
           <Link href="/team">
             <Menu.Item as="a" name="Team">
               <Icon name="group" />

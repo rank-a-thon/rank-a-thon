@@ -41,12 +41,7 @@ const DashboardLayout: NextPage<PageProps> = () => {
   }, []);
 
   return (
-    <MobilePostAuthContainer
-      title="Dashboard"
-      requireAuth
-      judge={userType === 'judge'}
-      superuser={userType === 'superuser'}
-    >
+    <MobilePostAuthContainer title="Dashboard" requireAuth>
       {userType === 'user' && <UserDashboard name={name} />}
       {userType === 'superuser' && <SuperuserDashboard name={name} />}
     </MobilePostAuthContainer>
