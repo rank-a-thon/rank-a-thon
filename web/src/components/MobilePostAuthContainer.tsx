@@ -17,6 +17,8 @@ type MobileContainerProps = {
   children: React.ReactNode;
   title: string;
   requireAuth?: boolean;
+  judge?: boolean;
+  superuser?: boolean;
 };
 
 function MobilePostAuthContainer(props: MobileContainerProps) {
@@ -54,8 +56,12 @@ function MobilePostAuthContainer(props: MobileContainerProps) {
           visible={sidebarOpened}
         >
           <SidebarItem name="Dashboard" href="/dashboard" />
-          <SidebarItem name="Announcements" href="/announcements" />
-          <SidebarItem name="Manage Team" href="/team" />
+          {!props.judge && !props.superuser && (
+            <>
+              <SidebarItem name="Announcements" href="/announcements" />
+              <SidebarItem name="Manage Team" href="/team" />
+            </>
+          )}
           <SidebarItem name="View Projects" href="/explore" />
           <SidebarItem name="Map" href="/map" />
           <SidebarItem name="Schedule" href="/schedule" />
@@ -94,7 +100,12 @@ function MobilePostAuthContainer(props: MobileContainerProps) {
           </div>
         </Sidebar.Pusher>
       </Sidebar.Pushable>
-      <Menu widths={4} icon="labeled" fixed="bottom" size="tiny">
+      <Menu
+        widths={!props.judge && !props.superuser ? 4 : 3}
+        icon="labeled"
+        fixed="bottom"
+        size="tiny"
+      >
         <Link href="/explore">
           <Menu.Item as="a" name="Explore">
             <Icon name="search" />
@@ -113,12 +124,14 @@ function MobilePostAuthContainer(props: MobileContainerProps) {
             Map
           </Menu.Item>
         </Link>
-        <Link href="/team">
-          <Menu.Item as="a" name="Team">
-            <Icon name="group" />
-            Team
-          </Menu.Item>
-        </Link>
+        {!props.judge && !props.superuser && (
+          <Link href="/team">
+            <Menu.Item as="a" name="Team">
+              <Icon name="group" />
+              Team
+            </Menu.Item>
+          </Link>
+        )}
       </Menu>
     </>
   );
