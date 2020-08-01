@@ -3,6 +3,7 @@ import type { NextPage } from 'next';
 import MobilePostAuthContainer from '../components/MobilePostAuthContainer';
 import { makeAuthedBackendRequest } from '../lib/backend';
 import UserDashboard from '../components/UserDashboard';
+import SuperuserDashboard from '../components/SuperuserDashboard';
 
 type PageProps = {
   getWidth?: () => number;
@@ -46,7 +47,8 @@ const DashboardLayout: NextPage<PageProps> = () => {
       judge={userType === 'judge'}
       superuser={userType === 'superuser'}
     >
-      <UserDashboard name={name} />
+      {userType === 'user' && <UserDashboard name={name} />}
+      {userType === 'superuser' && <SuperuserDashboard name={name} />}
     </MobilePostAuthContainer>
   );
 };
