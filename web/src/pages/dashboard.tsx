@@ -4,6 +4,7 @@ import MobilePostAuthContainer from '../components/MobilePostAuthContainer';
 import { makeAuthedBackendRequest } from '../lib/backend';
 import UserDashboard from '../components/UserDashboard';
 import SuperuserDashboard from '../components/SuperuserDashboard';
+import JudgeDashboard from '../components/JudgeDashboard';
 
 type PageProps = {
   getWidth?: () => number;
@@ -44,6 +45,7 @@ const DashboardLayout: NextPage<PageProps> = () => {
     <MobilePostAuthContainer title="Dashboard" requireAuth>
       {userType === 'user' && <UserDashboard name={name} />}
       {userType === 'superuser' && <SuperuserDashboard name={name} />}
+      {userType === 'judge' && <JudgeDashboard name={name} />}
     </MobilePostAuthContainer>
   );
 };
