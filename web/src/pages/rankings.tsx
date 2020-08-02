@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { NextPage } from 'next';
-import { Segment, Table, Menu, Button } from 'semantic-ui-react';
+import { Segment, Table, Button } from 'semantic-ui-react';
 import MobilePostAuthContainer from '../components/MobilePostAuthContainer';
-import schedule from '../data/schedule.json';
 import { makeAuthedBackendRequest } from '../lib/backend';
 
 type PageProps = {
@@ -28,15 +27,17 @@ const RankingLayout: NextPage<PageProps> = () => {
         'get',
         'v1/submissions/testevent',
       );
-      const allSubmissions = submissionsResponse.data.data.map((submission) => {
-        return {
-          projId: submission.ID,
-          projName: submission.project_name,
-          projDesc: submission.description,
-          projCoverImg: submission.images,
-          teamName: submission.team.team_name,
-        };
-      });
+      const allSubmissions = submissionsResponse?.data?.data?.map(
+        (submission) => {
+          return {
+            projId: submission.ID,
+            projName: submission.project_name,
+            projDesc: submission.description,
+            projCoverImg: submission.images,
+            teamName: submission.team.team_name,
+          };
+        },
+      );
       return allSubmissions;
     } catch (err) {
       console.error(err.response);
@@ -54,12 +55,12 @@ const RankingLayout: NextPage<PageProps> = () => {
           end_index: 8,
         },
       );
-      const winnersSubmissions = response.data.data.map(
+      const winnersSubmissions = response?.data?.data?.map(
         (winner) => winner.submission_id,
       );
       const allSubmissions = await loadSubmissions();
       const winners = winnersSubmissions
-        .map((subId) => {
+        ?.map((subId) => {
           return allSubmissions.filter((sub) => sub.projId == subId)[0]
             .teamName;
         })
@@ -112,7 +113,7 @@ const RankingLayout: NextPage<PageProps> = () => {
           </Table.Header>
 
           <Table.Body>
-            {winners.map((name, idx) => (
+            {winners?.map((name, idx) => (
               <Table.Row>
                 <Table.Cell>{idx + 1}</Table.Cell>
                 <Table.Cell>{name}</Table.Cell>
