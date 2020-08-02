@@ -10,7 +10,10 @@ const JudgeDashboard: React.FC<{ name: string }> = ({ name }) => {
 
   const getNumberOfEvaluations = async () => {
     const response = await makeAuthedBackendRequest('get', 'v1/evaluations');
-    setNumEvaluations(response.data.data.length);
+    setNumEvaluations(
+      response.data.data.filter((item) => item.CreatedAt === item.UpdatedAt)
+        .length,
+    );
   };
 
   useEffect(() => {
