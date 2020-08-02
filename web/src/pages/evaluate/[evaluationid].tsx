@@ -13,7 +13,7 @@ import {
   makeAuthedBackendRequest,
   makeBackendRequest,
 } from '../../lib/backend';
-import MobilePostAuthContainer from '../../components/MobilePostAuthContainer';
+import MobilePostAuthEvaluateContainer from '../../components/MobilePostAuthEvaluateContainer';
 import { getMe } from '../../data/me';
 import Link from 'next/link';
 
@@ -26,7 +26,7 @@ const EvaluateLayout: NextPage<PageProps> = () => {
   const { evaluationid } = router.query;
 
   return (
-    <MobilePostAuthContainer title="Evaluate" requireAuth>
+    <MobilePostAuthEvaluateContainer title="Evaluate" requireAuth>
       <Segment
         basic
         textAlign="left"
@@ -139,7 +139,7 @@ const EvaluateLayout: NextPage<PageProps> = () => {
           </p>
         </div>
       </Segment>
-    </MobilePostAuthContainer>
+    </MobilePostAuthEvaluateContainer>
   );
 };
 
