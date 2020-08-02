@@ -73,7 +73,7 @@ const SuperDashboard: React.FC<{ name: string }> = ({ name }) => {
       >
         Generate Rankings
       </Button>
-      <Link href="/explore">
+      <Link href="/rankings">
         <Button
           as="a"
           size="big"
