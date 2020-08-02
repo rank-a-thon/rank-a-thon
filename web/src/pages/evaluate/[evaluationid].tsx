@@ -33,46 +33,138 @@ const EvaluateLayout: NextPage<PageProps> = () => {
         style={{ padding: '1.5em 2em 0.8em 2em' }}
       >
         <p style={{ fontSize: '1.4em', margin: '0' }}>
-          You have not joined a team yet. {evaluationid}
+          Rate each category from 1 (worst) to 5 (best):
         </p>
-        <Segment color="violet" style={{ overflow: 'hidden' }}>
+
+        <div style={{ textAlign: 'center', margin: '1em' }}>
           <p
             style={{
-              fontSize: '1.1em',
+              fontSize: '1.2em',
               fontWeight: 'bold',
-              margin: '0.2em 0em',
+              marginBottom: '0.4em',
             }}
           >
-            Create a Team
+            Annoyingness
           </p>
-          <Input
-            placeholder="Team Name"
-            style={{ margin: '0.4em 0', width: '100%' }}
-            onChange={null}
-          />
-          <Button
-            primary
-            size="medium"
-            floated="right"
-            onClick={null}
-            style={{ margin: '0.8em 0 0 0' }}
-          >
-            Submit
-          </Button>
-        </Segment>
-        <Segment color="teal" style={{ overflow: 'hidden' }}>
+          <RatingScale setCategoryScore={console.log} />
+        </div>
+
+        <div style={{ textAlign: 'center', margin: '1em' }}>
           <p
             style={{
-              fontSize: '1.1em',
+              fontSize: '1.2em',
               fontWeight: 'bold',
-              margin: '0.2em 0em',
+              marginBottom: '0.4em',
             }}
           >
-            Accept Team Invites
+            Entertainment
           </p>
-        </Segment>
+          <RatingScale setCategoryScore={console.log} />
+        </div>
+
+        <div style={{ textAlign: 'center', margin: '1em' }}>
+          <p
+            style={{
+              fontSize: '1.2em',
+              fontWeight: 'bold',
+              marginBottom: '0.4em',
+            }}
+          >
+            Beauty
+          </p>
+          <RatingScale setCategoryScore={console.log} />
+        </div>
+
+        <div style={{ textAlign: 'center', margin: '1em' }}>
+          <p
+            style={{
+              fontSize: '1.2em',
+              fontWeight: 'bold',
+              marginBottom: '0.4em',
+            }}
+          >
+            Social Usefulness
+          </p>
+          <RatingScale setCategoryScore={console.log} />
+        </div>
+
+        <div style={{ textAlign: 'center', margin: '1em' }}>
+          <p
+            style={{
+              fontSize: '1.2em',
+              fontWeight: 'bold',
+              marginBottom: '0.4em',
+            }}
+          >
+            Hardware
+          </p>
+          <RatingScale setCategoryScore={console.log} />
+        </div>
+
+        <div style={{ textAlign: 'center', margin: '1em' }}>
+          <p
+            style={{
+              fontSize: '1.2em',
+              fontWeight: 'bold',
+              marginBottom: '0.4em',
+            }}
+          >
+            Awesomely Useless
+          </p>
+          <RatingScale setCategoryScore={console.log} />
+        </div>
+
+        <hr />
+        <div style={{ textAlign: 'center', margin: '1em' }}>
+          <p
+            style={{
+              fontSize: '1.2em',
+              fontWeight: 'bold',
+              marginBottom: '0.4em',
+            }}
+          >
+            Overall Rating
+          </p>
+          <RatingScale setCategoryScore={console.log} />
+        </div>
+
+        <div style={{ textAlign: 'center', margin: '2em 0' }}>
+          <p
+            style={{
+              fontSize: '1.2em',
+              fontWeight: 'bold',
+            }}
+          >
+            All changes are saved automatically.
+          </p>
+        </div>
       </Segment>
     </MobilePostAuthContainer>
+  );
+};
+
+const RatingScale: React.FC<{ setCategoryScore: (number) => void }> = ({
+  setCategoryScore,
+}) => {
+  const [selected, setSelected] = useState<number>(0);
+  return (
+    <Button.Group>
+      {[1, 2, 3, 4, 5].map((rating) => {
+        const rateOnClick = () => {
+          setSelected(rating);
+          setCategoryScore(rating);
+        };
+        return (
+          <Button
+            key={rating}
+            active={rating === selected}
+            onClick={rateOnClick}
+          >
+            {rating}
+          </Button>
+        );
+      })}
+    </Button.Group>
   );
 };
 
