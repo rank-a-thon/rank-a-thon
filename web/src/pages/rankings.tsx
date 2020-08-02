@@ -1,20 +1,44 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { NextPage } from 'next';
-import { Segment, Table } from 'semantic-ui-react';
+import { Segment, Table, Menu, Button } from 'semantic-ui-react';
 import MobilePostAuthContainer from '../components/MobilePostAuthContainer';
 import schedule from '../data/schedule.json';
 
 type PageProps = {
   getWidth?: () => number;
 };
+const prizes = [
+  { name: 'Top 8', key: 'main' },
+  { name: 'Most Annoying', key: 'annoying' },
+  { name: 'Most Entertaining', key: 'entertaining' },
+  { name: 'Most Beautiful', key: 'beautiful' },
+  { name: 'Most Socially Useful', key: 'socially_useful' },
+  { name: 'Best Hardware', key: 'hardware' },
+  { name: 'Most Awesomely Useless', key: 'awesomely_useless' },
+];
 
 const RankingLayout: NextPage<PageProps> = () => {
+  const [currCat, setCurrCat] = useState<number>(0);
   return (
     <MobilePostAuthContainer title="Schedule" requireAuth>
       <Segment basic textAlign="center" style={{ padding: '1em' }}>
         <p style={{ fontSize: '1.3em', marginBottom: '0' }}>
-          Do check here from time to time for any updates to the event schedule.
+          <b>Cur:</b> {prizes[currCat].name}
         </p>
+        <p style={{ fontSize: '1.3em', marginBottom: '0' }}>
+          <b>Next:</b> {prizes[currCat + 1]?.name}
+        </p>
+        <Button.Group>
+          <Button onClick={() => setCurrCat(Math.max(0, currCat - 1))}>
+            Prev
+          </Button>
+          <Button
+            primary
+            onClick={() => setCurrCat(Math.min(prizes.length - 1, currCat + 1))}
+          >
+            Next
+          </Button>
+        </Button.Group>
         <Table
           celled
           unstackable
@@ -26,8 +50,8 @@ const RankingLayout: NextPage<PageProps> = () => {
         >
           <Table.Header>
             <Table.Row>
-              <Table.HeaderCell>Time</Table.HeaderCell>
-              <Table.HeaderCell>Activity</Table.HeaderCell>
+              <Table.HeaderCell>Pos</Table.HeaderCell>
+              <Table.HeaderCell>Team Name</Table.HeaderCell>
             </Table.Row>
           </Table.Header>
 
