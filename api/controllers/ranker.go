@@ -77,7 +77,7 @@ func (ctrl RankerController) CreateEvaluations(context *gin.Context) {
 		context.Abort()
 		return
 	} else {
-		context.JSON(http.StatusBadRequest, gin.H{"message": "Created evaluations"})
+		context.JSON(http.StatusOK, gin.H{"message": "Created evaluations"})
 	}
 
 }
