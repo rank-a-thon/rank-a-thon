@@ -39,7 +39,7 @@ export async function makeAuthedBackendRequest(
     });
     return response;
   } catch (err) {
-    if (err.response.status === 401) {
+    if (err.response.status === 400 || err.response.status === 401) {
       // Auth expiry - refresh token
       try {
         const response = await axios({
