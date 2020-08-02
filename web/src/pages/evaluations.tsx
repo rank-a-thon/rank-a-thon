@@ -3,6 +3,7 @@ import type { NextPage } from 'next';
 import { Segment, Card } from 'semantic-ui-react';
 import MobilePostAuthContainer from '../components/MobilePostAuthContainer';
 import { makeAuthedBackendRequest } from '../lib/backend';
+import Link from 'next/link';
 
 type PageProps = {
   getWidth?: () => number;
@@ -58,14 +59,15 @@ const ExploreLayout: NextPage<PageProps> = () => {
   function renderSubmission(submission: Submission) {
     const { projId, projName, projDesc, projCoverImg, teamName } = submission;
     return (
-      <Card
-        key={projId}
-        image={projCoverImg}
-        header={projName}
-        meta={`by ${teamName}`}
-        description={projDesc}
-        fluid
-      />
+      <Link href={`/evaluate/${projId}`} key={projId}>
+        <Card
+          image={projCoverImg}
+          header={projName}
+          meta={`by ${teamName}`}
+          description={projDesc}
+          fluid
+        />
+      </Link>
     );
   }
 
