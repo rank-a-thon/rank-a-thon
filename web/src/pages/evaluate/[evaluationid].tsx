@@ -1,21 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import type { NextPage } from 'next';
-import Router, { useRouter } from 'next/router';
-import {
-  Segment,
-  Input,
-  Button,
-  List,
-  Message,
-  Table,
-} from 'semantic-ui-react';
-import {
-  makeAuthedBackendRequest,
-  makeBackendRequest,
-} from '../../lib/backend';
+import { useRouter } from 'next/router';
+import { Segment, Button } from 'semantic-ui-react';
+import { makeAuthedBackendRequest } from '../../lib/backend';
 import MobilePostAuthEvaluateContainer from '../../components/MobilePostAuthEvaluateContainer';
-import { getMe } from '../../data/me';
-import Link from 'next/link';
 
 type PageProps = {
   getWidth?: () => number;
@@ -24,6 +12,81 @@ type PageProps = {
 const EvaluateLayout: NextPage<PageProps> = () => {
   const router = useRouter();
   const { evaluationid } = router.query;
+  console.log(evaluationid);
+
+  const [annoying, setAnnoying] = useState<number>(0);
+  const [entertaining, setEntertaining] = useState<number>(0);
+  const [beauty, setBeauty] = useState<number>(0);
+  const [useful, setUseful] = useState<number>(0);
+  const [hardware, setHardware] = useState<number>(0);
+  const [useless, setUseless] = useState<number>(0);
+  const [overall, setOverall] = useState<number>(0);
+  const [evalFetched, setEvalFetched] = useState<boolean>(false);
+
+  const getEvaluation = async () => {
+    const response = await makeAuthedBackendRequest(
+      'get',
+      `v1/evaluation/${evaluationid}`,
+    );
+    const {
+      main_rating,
+      annoying_rating,
+      entertaining_rating,
+      beautiful_rating,
+      socially_useful_rating,
+      hardware_rating,
+      awesomely_useless_rating,
+    } = response?.data?.data;
+    setOverall(main_rating);
+    setAnnoying(annoying_rating);
+    setEntertaining(entertaining_rating);
+    setBeauty(beautiful_rating);
+    setUseful(socially_useful_rating);
+    setHardware(hardware_rating);
+    setUseless(awesomely_useless_rating);
+    setEvalFetched(true);
+    console.log('fetched');
+    console.log(response);
+  };
+
+  useEffect(() => {
+    if (evaluationid !== undefined) {
+      getEvaluation();
+    }
+  }, [evaluationid]);
+
+  const updateEvaluation = async () => {
+    try {
+      await makeAuthedBackendRequest('put', `v1/evaluation/${evaluationid}`, {
+        main_rating: overall,
+        annoying_rating: annoying,
+        entertaining_rating: entertaining,
+        beautiful_rating: beauty,
+        socially_useful_rating: useful,
+        hardware_rating: hardware,
+        awesomely_useless_rating: useless,
+      });
+    } catch (err) {
+      console.error(err.response);
+    }
+  };
+
+  useEffect(() => {
+    if (
+      evalFetched &&
+      ![
+        overall,
+        annoying,
+        entertaining,
+        beauty,
+        useful,
+        hardware,
+        useless,
+      ].includes(0)
+    ) {
+      updateEvaluation();
+    }
+  }, [overall, annoying, entertaining, beauty, useful, hardware, useless]);
 
   return (
     <MobilePostAuthEvaluateContainer title="Evaluate" requireAuth>
@@ -46,7 +109,7 @@ const EvaluateLayout: NextPage<PageProps> = () => {
           >
             Annoyingness
           </p>
-          <RatingScale setCategoryScore={console.log} />
+          <RatingScale setCategoryScore={setAnnoying} selected={annoying} />
         </div>
 
         <div style={{ textAlign: 'center', margin: '1em' }}>
@@ -59,7 +122,10 @@ const EvaluateLayout: NextPage<PageProps> = () => {
           >
             Entertainment
           </p>
-          <RatingScale setCategoryScore={console.log} />
+          <RatingScale
+            setCategoryScore={setEntertaining}
+            selected={entertaining}
+          />
         </div>
 
         <div style={{ textAlign: 'center', margin: '1em' }}>
@@ -72,7 +138,7 @@ const EvaluateLayout: NextPage<PageProps> = () => {
           >
             Beauty
           </p>
-          <RatingScale setCategoryScore={console.log} />
+          <RatingScale setCategoryScore={setBeauty} selected={beauty} />
         </div>
 
         <div style={{ textAlign: 'center', margin: '1em' }}>
@@ -85,7 +151,7 @@ const EvaluateLayout: NextPage<PageProps> = () => {
           >
             Social Usefulness
           </p>
-          <RatingScale setCategoryScore={console.log} />
+          <RatingScale setCategoryScore={setUseful} selected={useful} />
         </div>
 
         <div style={{ textAlign: 'center', margin: '1em' }}>
@@ -98,7 +164,7 @@ const EvaluateLayout: NextPage<PageProps> = () => {
           >
             Hardware
           </p>
-          <RatingScale setCategoryScore={console.log} />
+          <RatingScale setCategoryScore={setHardware} selected={hardware} />
         </div>
 
         <div style={{ textAlign: 'center', margin: '1em' }}>
@@ -111,7 +177,7 @@ const EvaluateLayout: NextPage<PageProps> = () => {
           >
             Awesomely Useless
           </p>
-          <RatingScale setCategoryScore={console.log} />
+          <RatingScale setCategoryScore={setUseless} selected={useless} />
         </div>
 
         <hr />
@@ -125,7 +191,7 @@ const EvaluateLayout: NextPage<PageProps> = () => {
           >
             Overall Rating
           </p>
-          <RatingScale setCategoryScore={console.log} />
+          <RatingScale setCategoryScore={setOverall} selected={overall} />
         </div>
 
         <div style={{ textAlign: 'center', margin: '2em 0' }}>
@@ -143,15 +209,14 @@ const EvaluateLayout: NextPage<PageProps> = () => {
   );
 };
 
-const RatingScale: React.FC<{ setCategoryScore: (number) => void }> = ({
-  setCategoryScore,
-}) => {
-  const [selected, setSelected] = useState<number>(0);
+const RatingScale: React.FC<{
+  setCategoryScore: (number) => void;
+  selected: number;
+}> = ({ setCategoryScore, selected }) => {
   return (
     <Button.Group>
       {[1, 2, 3, 4, 5].map((rating) => {
         const rateOnClick = () => {
-          setSelected(rating);
           setCategoryScore(rating);
         };
         return (
