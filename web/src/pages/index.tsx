@@ -262,7 +262,11 @@ const HomepageLayout: NextPage<PageProps> = ({ getWidth }) => (
         </Grid.Row>
         <Grid.Row>
           <Grid.Column textAlign="center">
-            <Button size="huge">Sign Up Now</Button>
+            <Link href="/signup">
+              <Button size="huge" as="a">
+                Sign Up Now
+              </Button>
+            </Link>
           </Grid.Column>
         </Grid.Row>
       </Grid>
