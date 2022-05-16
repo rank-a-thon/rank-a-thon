@@ -14,7 +14,7 @@
     "ci": "yarn lint-check && yarn prettier-check && yarn build && yarn export"
   },
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.2",
     "classnames": "^2.2.6",
     "firebase": "^7.15.1",
     "mobile-detect": "^1.4.4",
